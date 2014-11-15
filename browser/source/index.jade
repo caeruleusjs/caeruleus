@@ -1,0 +1,354 @@
+extends layout
+
+append head
+
+    title Таски, таски, таски
+
+    script(src='components/jquery/dist/jquery.min.js')
+
+    script(src='components/angular/angular.min.js')
+    script(src='components/angular-route/angular-route.min.js')
+    script(src='components/angular-i18n/angular-locale_ru.js')
+
+    script(src='components/localforage/dist/localforage.nopromises.min.js')
+
+    script.
+
+        /*
+         * GUID generator
+         *
+         * http://stackoverflow.com/a/105074
+         */
+        var guid = (function() {
+          function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                       .toString(16)
+                       .substring(1);
+          }
+          return function() {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                   s4() + '-' + s4() + s4() + s4();
+          };
+        })();
+
+        angular.module('aeSchedule', ['ngRoute'])
+
+            .controller('ScheduleCtrl', function ($scope, $interval, Issue) {
+                var schedule= this
+
+                this.splitIntervalToChunks= function (beginDate, endDate, numOfChunks) {
+                    var chunkDuration= (endDate - beginDate) / numOfChunks
+                    var chunks= []
+                    for (var i= 0, date= new Date(beginDate); i < numOfChunks; i++, date.setTime(date.getTime() + chunkDuration)) {
+                        var chunkBeginDate= new Date(date)
+                        var chunkEndDate= new Date(chunkBeginDate)
+                        chunkEndDate.setTime( chunkEndDate.getTime() + chunkDuration )
+                        var chunk= {
+                            beginDate: chunkBeginDate,
+                            endDate: chunkEndDate,
+                        }
+                        chunks.push(chunk)
+                    }
+                    return chunks
+                }
+
+                $scope.showHour= function (date) {
+                    $scope.schedule.mode= 'hour'
+                    var hourBeginDate= new Date(
+                        date.getFullYear(), date.getMonth(), date.getDate(),
+                        date.getHours()
+                    )
+                    var hourEndDate= new Date(
+                        date.getFullYear(), date.getMonth(), date.getDate(),
+                        date.getHours() + 1
+                    )
+                    $scope.schedule.chunks= schedule.splitIntervalToChunks(
+                        hourBeginDate,
+                        hourEndDate,
+                        12
+                    )
+                }
+
+                $scope.showDay= function () {
+                    $scope.schedule.mode= 'day'
+                    $scope.schedule.chunks= schedule.splitIntervalToChunks(
+                        new Date(2014, 10, 15, 0),
+                        new Date(2014, 10, 16, 0),
+                        24
+                    )
+                }
+
+                $scope.showWeek= function () {
+                    $scope.schedule.mode= 'week'
+                    $scope.schedule.chunks= schedule.splitIntervalToChunks(
+                        new Date(2014, 10, 14, 0),
+                        new Date(2014, 10, 21, 0),
+                        7
+                    )
+                }
+
+                $scope.startedIssue= null
+
+                $scope.issues= Issue.query()
+                $scope.issues.$promise
+                    .then(function (issues) {
+                        angular.forEach(issues, function (issue) {
+                            if (!($scope.startedIssue)) {
+                                if (issue.startedAt) {
+                                    $scope.startedIssue= issue
+                                }
+                            } else if ($scope.startedIssue.guid !== issue.guid) {
+                                issue.startedAt= null
+                            }
+                        })
+                        console.warn('started issue', $scope.startedIssue)
+                    })
+                ;
+
+                $scope.schedule= {
+                    chunks: [],
+                    issues: $scope.issues
+                }
+
+                $scope.showDay()
+
+
+
+                var startedIssueRefreshInProgress
+
+                $scope.startWork= function (issue) {
+                    var beginDate= new Date()
+                    var endDate= new Date(beginDate)
+                    var interval
+                    issue.intervals= issue.intervals || []
+                    issue.intervals.push(interval= {
+                        guid: guid(),
+                        beginDate: beginDate,
+                        endDate: endDate,
+                    })
+                    issue.startedAt= issue.updatedAt= new Date
+                    if (startedIssueRefreshInProgress) {
+                        $interval.cancel(startedIssueRefreshInProgress)
+                    }
+                    startedIssueRefreshInProgress= $interval(function () {
+                        endDate.setSeconds(
+                            endDate.getSeconds() + 1
+                        )
+                        issue.updatedAt= new Date
+                    }, 1000)
+                }
+
+                $scope.stopWork= function (issue) {
+                    var lastInterval= issue.intervals[issue.intervals.length-1]
+                    lastInterval.endDate= new Date
+                    issue.startedAt= null
+                    issue.updatedAt= new Date
+                    if (startedIssueRefreshInProgress) {
+                        $interval.cancel(startedIssueRefreshInProgress)
+                    }
+                    $scope.saveWork(issue)
+                }
+
+                $scope.continueWork= function (issue) {
+                    var lastInterval= issue.intervals[issue.intervals.length-1]
+                    lastInterval.endDate= new Date
+                    if (startedIssueRefreshInProgress) {
+                        $interval.cancel(startedIssueRefreshInProgress)
+                    }
+                    startedIssueRefreshInProgress= $interval(function () {
+                        lastInterval.endDate.setSeconds(
+                            lastInterval.endDate.getSeconds() + 1
+                        )
+                        issue.updatedAt= new Date
+                    }, 1000)
+                }
+
+                $scope.saveWork= function (issue) {
+                    Issue.save(issue).$promise
+                        .then(function (issue) {
+                            console.log('saved.')
+                        })
+                    ;
+                }
+            
+
+            })
+
+            .controller('ScheduleIssueCtrl', function ($scope, Issue) {
+                this.chunks= []
+
+                this.splitIntervalsToChunks= function (chunks) {
+                    this.chunks= []
+                    if (chunks && chunks.length) {
+                        angular.forEach(chunks, function (chunk) {
+                            this.chunks.push(chunk= {
+                                beginDate: chunk.beginDate,
+                                endDate: chunk.endDate,
+                            })
+                            if ($scope.issue && $scope.issue.intervals) {
+                                angular.forEach($scope.issue.intervals, function (issueInterval) {
+                                    if (issueInterval.beginDate < chunk.endDate && issueInterval.endDate > chunk.beginDate) {
+                                        var chunkIntervalBeginDate= (issueInterval.beginDate < chunk.beginDate) ? chunk.beginDate : issueInterval.beginDate
+                                        var chunkIntervalEndDate= (issueInterval.endDate > chunk.endDate) ? chunk.endDate : issueInterval.endDate
+                                        var chunkIntervalIsBegin= (issueInterval.beginDate >= chunk.beginDate)
+                                        var chunkIntervalIsEnd= (issueInterval.endDate <= chunk.endDate)
+                                        chunk.intervals= chunk.intervals || []
+                                        chunk.intervals.push({
+                                            beginDate: chunkIntervalBeginDate, isBegin: chunkIntervalIsBegin,
+                                            endDate: chunkIntervalEndDate, isEnd: chunkIntervalIsEnd,
+                                            interval: issueInterval,
+                                        })
+                                    }
+                                }.bind(this))
+                            }
+                        }.bind(this))
+                    }
+                }
+                
+                $scope.$watchCollection('schedule.chunks', function (chunks) {
+                    this.splitIntervalsToChunks(chunks)
+                }.bind(this))
+
+                $scope.$watchCollection('issue', function (issue) {
+                    this.splitIntervalsToChunks($scope.schedule.chunks)
+                    if (issue.startedAt && issue.guid) {
+                        $scope.saveWork(issue)
+                    }
+                }.bind(this))
+
+                $scope.calcChunkIntervalLeft= function (chunk, interval) {
+                    var chunkPercent= (chunk.endDate.getTime() - chunk.beginDate.getTime()) / 100
+                    var left= ((interval.beginDate.getTime() - chunk.beginDate.getTime()) / chunkPercent)
+                    var right= ((chunk.endDate.getTime() - interval.endDate.getTime()) / chunkPercent)
+                    return left +'%'
+                }
+                $scope.calcChunkIntervalRight= function (chunk, interval) {
+                    var chunkPercent= (chunk.endDate.getTime() - chunk.beginDate.getTime()) / 100
+                    var right= ((chunk.endDate.getTime() - interval.endDate.getTime()) / chunkPercent)
+                    return right +'%'
+                }
+
+                if ($scope.issue.startedAt) {
+                    $scope.continueWork($scope.issue)
+                }
+            })
+
+            .controller('IssueFormCtrl', function ($scope, Issue) {
+                $scope.issue= {}
+                $scope.saveIssue= function (issue, IssueForm) {
+                    if (!(issue.guid)) { // create new issue
+                        issue.guid= guid()
+                    }
+                    Issue.save(issue).$promise
+                        .then(function (issue) {
+                            $scope.issues.unshift(issue)
+                            $scope.issue= {}
+                        })
+                    ;
+                }
+            })
+
+            .service('Issue', function ($q) {
+                
+                this.query= function () {
+                    var key= ['caeruleus','issues'].join(':')
+                    var dfd= $q.defer()
+                    var issues= []
+                    Object.defineProperty(issues, '$promise', { configurable:true, value:dfd.promise })
+                    localforage.keys(function (err, keys) {
+                        var guids= []
+                        var promises= []
+                        angular.forEach(keys, function (key) {
+                            var match
+                            if (match= key.match(/^caeruleus:issues:([a-z0-9\-]{1,})$/)) {
+                                guids.push(match[1])
+                                promises.push($q(function (resolve, reject) {
+                                    localforage.getItem(key, function (err, value) {
+                                        if (err) {
+                                            reject(err)
+                                        } else {
+                                            resolve(value)
+                                        }
+                                    })
+                                }))
+                            }
+                        })
+                        if (promises.length) {
+                            $q.all(promises)
+                                .then(function (values) {
+                                    values.sort(function (a, b) {
+                                        return a.updatedAt - b.updatedAt
+                                    })
+                                    angular.forEach(values, function (value) {
+                                        issues.push(value)
+                                    })
+                                    dfd.resolve(issues)
+                                })
+                            ;
+                        } else {
+                            dfd.resolve(issues)
+                        }
+                    })
+                    return issues
+                }
+
+                this.save= function (issue) {
+                    if (!(issue) || !(issue.guid)) {
+                        throw new Error
+                    }
+                    var key= ['caeruleus','issues',issue.guid].join(':')
+                    var dfd= $q.defer()
+                    Object.defineProperty(issue, '$promise', { configurable:true, value:dfd.promise })
+                    localforage.setItem(key, issue, function (err, value) {
+                        if (err) {
+                            dfd.reject(err)
+                        } else {
+                            setTimeout(function () {
+                                jQuery.extend(true, issue, value)
+                                dfd.resolve(issue)
+                            }, 137)
+                        }
+                    })
+                    return issue
+                }
+            
+            })
+        ;
+
+append body
+
+    .b-app(ng-app="aeSchedule", ng-controller="ScheduleCtrl")
+
+        nav
+            button(ng-click="showHour()") HOUR
+            button(ng-click="showDay()") DAY
+            button(ng-click="showWeek()") WEEK
+            button(ng-click="showMonth()") MONTH
+
+        table.b-table.b-table-schedule
+
+            thead.b-table__head
+                tr
+                    th.b-table__cel.b-table-schedule__cel_title
+                    th.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="chunk in schedule.chunks", title="{{chunk.beginDate}} — {{chunk.endDate}}")
+                        a(ng-if="schedule.mode=='hour'") {{chunk.beginDate | date:'HH:mm'}}
+                        a(ng-if="schedule.mode=='day'", ng-click="showHour(chunk.beginDate)") {{chunk.beginDate | date:'HH'}}
+
+            tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
+                tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
+                    td.b-table__cel.b-table-schedule__cel_title {{issue.title}}
+                        button(ng-if="!issue.startedAt", ng-click="startWork(issue)") ►
+                        button(ng-if="issue.startedAt", ng-click="stopWork(issue)") ■
+                    td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
+                        .b-table-schedule__cel
+                            .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
+                                //span {{issueChunkInterval.beginDate.getHours()}}:{{issueChunkInterval.beginDate.getMinutes()}} — {{issueChunkInterval.endDate.getHours()}}:{{issueChunkInterval.endDate.getMinutes()}}
+
+        hr
+
+        fieldset(ng-form="IssueForm", ng-controller="IssueFormCtrl")
+            legend CREATE ISSUE
+
+            input(name="title", ng-model="issue.title", required)
+
+            button(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") SAVE ISSUE
