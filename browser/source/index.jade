@@ -501,14 +501,14 @@ append body
                                 label {{chunk.beginDate | date:'MM.dd'}}
                                 a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}")
 
-                tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
+                tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid", ng-class="{'b-table__body_last':$last}")
                     tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
 
                         td.b-table__cel.b-table-schedule__cel_title
                             .b-table-schedule__issue-title
                                 a(ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')"): u {{issue.title}}
 
-                        td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
+                        td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks", ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}")
                             .b-table-schedule__cel
                                 .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
 
