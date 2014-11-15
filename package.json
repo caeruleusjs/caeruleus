@@ -1,10 +1,11 @@
 {
-    "name": "caeruleus", "version": "0.0.1",
+    "name": "caeruleus", "version": "0.1.1",
 
     "repository": "caeruleusjs/caeruleus",
 
     "scripts": {
-        "install": "bower install"
+        "install": "bower install",
+        "start": "gulp"
     },
 
     "devDependencies": {

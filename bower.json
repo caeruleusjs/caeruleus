@@ -1,10 +1,5 @@
 {
-    "name": "caeruleus", "version": "0.0.1",
-
-    "scripts": {
-        "install": "bower install",
-        "start": "gulp"
-    },
+    "name": "caeruleus", "version": "0.1.1",
 
     "dependencies": {
         "jquery": "latest",
