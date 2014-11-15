@@ -7,5 +7,12 @@
         "install": "bower install"
     },
 
+    "devDependencies": {
+        "bower": "latest",
+        "gulp": "latest",
+        "gulp-less": "latest",
+        "gulp-jade": "latest"
+    },
+
     "license": "GPL"
 }

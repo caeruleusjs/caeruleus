@@ -2,7 +2,8 @@
     "name": "caeruleus", "version": "0.0.1",
 
     "scripts": {
-        "install": "bower install"
+        "install": "bower install",
+        "start": "gulp"
     },
 
     "dependencies": {
