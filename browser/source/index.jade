@@ -318,20 +318,21 @@ append body
 
     .b-app(ng-app="aeSchedule", ng-controller="ScheduleCtrl")
 
-        nav
-            button(ng-click="showHour()") HOUR
-            button(ng-click="showDay()") DAY
-            button(ng-click="showWeek()") WEEK
-            button(ng-click="showMonth()") MONTH
-
         table.b-table.b-table-schedule
+
+            caption
+                button(ng-click="showHour()") HOUR
+                button(ng-click="showDay()") DAY
+                button(ng-click="showWeek()") WEEK
+                button(ng-click="showMonth()") MONTH
 
             thead.b-table__head
                 tr
                     th.b-table__cel.b-table-schedule__cel_title
-                    th.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="chunk in schedule.chunks", title="{{chunk.beginDate}} — {{chunk.endDate}}")
-                        a(ng-if="schedule.mode=='hour'") {{chunk.beginDate | date:'HH:mm'}}
-                        a(ng-if="schedule.mode=='day'", ng-click="showHour(chunk.beginDate)") {{chunk.beginDate | date:'HH'}}
+                    th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
+                        .b-table-schedule__chunk-head__head
+                            a(ng-if="schedule.mode=='hour'") {{chunk.beginDate | date:'HH:mm'}}
+                            a(ng-if="schedule.mode=='day'", ng-click="showHour(chunk.beginDate)") {{chunk.beginDate | date:'HH:mm'}}
 
             tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
                 tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
@@ -341,7 +342,6 @@ append body
                     td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
                         .b-table-schedule__cel
                             .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
-                                //span {{issueChunkInterval.beginDate.getHours()}}:{{issueChunkInterval.beginDate.getMinutes()}} — {{issueChunkInterval.endDate.getHours()}}:{{issueChunkInterval.endDate.getMinutes()}}
 
         hr
 

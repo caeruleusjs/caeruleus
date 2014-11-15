@@ -589,13 +589,14 @@ body {
     }
 
     &-schedule &__head &__cel {
-        padding: 5px 0;
-        font-size: 12px;
+        padding: 0;
+        font-size: 11px;
         font-weight: normal;
         text-align: left;
     }
 
     &-schedule {
+
         &__cel {
             position: relative;
             width: 100%; height: 32px;
@@ -605,6 +606,7 @@ body {
                 width: 17%;
             }
         }
+
         &__cel-interval {
             position: absolute; top: 3px; bottom: 3px;
             width: auto; min-width: 1px;
@@ -616,6 +618,39 @@ body {
             &:not(._isEnd) {
                 right: -1px !important;
             }
+        }
+
+        &__chunk-head {
+
+            &__head {
+                position: relative;
+                width: 100%; height: 20px;
+                text-align: center;
+
+                & > a {
+                    display: block;
+                    position: absolute; left: -50%;
+                    width: 100%;
+                    margin-left: -1px;
+                    line-height: 20px;
+                }
+            }
+
+        }
+
+        &__cel_chunk-odd &__chunk-head__head {
+            top: -20px;
+        }
+
+    }
+}
+
+
+
+@media (min-width: 1200px) {
+    .b-table-schedule {
+        &__cel_chunk-odd &__chunk-head__head {
+            top: 0;
         }
     }
 }
