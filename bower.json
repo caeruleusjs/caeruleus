@@ -1,0 +1,12 @@
+{
+    "name": "caeruleus", "version": "0.0.1",
+
+    "dependencies": {
+        "jquery": "latest",
+        "angular": "latest",
+        "angular-route": "latest",
+        "localforage": "latest"
+    },
+
+    "license": "GPL"
+}

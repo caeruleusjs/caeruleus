@@ -1,0 +1,11 @@
+{
+    "name": "caeruleus", "version": "0.0.1",
+
+    "repository": "caeruleusjs/caeruleus",
+
+    "scripts": {
+        "install": "bower install"
+    },
+
+    "license": "GPL"
+}
