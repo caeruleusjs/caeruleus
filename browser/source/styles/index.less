@@ -19,6 +19,52 @@ body {
     color: #373737
 }
 
+a {
+    color: #4082C4;
+    cursor: pointer;
+
+    &, & > u {
+        text-decoration: none;
+    }
+    & > u {
+        line-height: 18px;
+        border-bottom: 1px dashed #b2b2b2;
+    }
+
+    &:hover {
+        color: #373737;
+    }
+    &:hover > u {
+        border-bottom-color: #a2a2a2;
+    }
+}
+
+button {
+    display: inline-block;
+    width: auto; height: auto;
+    margin: 0; padding: 0px 9px;
+    line-height: 18px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #373737;
+    background: #e2e2e2;
+    border: 1px solid;
+    border-color: #fff #b2b2b2 #b2b2b2 #fff;
+    outline: 0;
+    text-shadow: -1px -1px 0 rgba(255,255,255,.37);
+    box-shadow: 0 0 0 5px #f2f2f2;
+
+    &:active {
+        //border-color: #b2b2b2 #fff #fff #b2b2b2;
+        box-shadow: 0 0 0 5px #f2f2f2, inset 1px 0 0 0 rgba(178,178,178,.37), inset -1px 0 0 0 rgba(255,255,255,.37), inset 0 1px 0 0 rgba(178,178,178,.37), inset 0 -1px 0 0 rgba(255,255,255,.37);
+        text-shadow: 1px 1px 0 rgba(255,255,255,.37);
+    }
+
+    &:disabled {
+        color: #a2a2a2;
+    }
+}
+
 
 
 .row {
@@ -599,6 +645,71 @@ body {
 
     &-schedule {
 
+        &__caption {
+            width: 100%; height: 30px;
+            margin: 0; padding: 0;
+        }
+
+        &__caption-title {
+            float: left;
+            width: 27%;
+            padding-right: 20px;
+            & > button {
+                width: 100%;
+                line-height: 28px;
+            }
+        }
+
+        &__caption-nav {
+            float: left;
+            position: relative;
+            width: 73%;
+        }
+            &__caption-nav-prev,
+            &__caption-nav-next,
+            &__caption-nav-mode {
+                position: absolute; top: 0;
+                width: (100%)/3;
+                line-height: 30px;
+                & > a {
+                    display: inline-block;
+                    padding: 0 10px;
+                }
+            }
+            &__caption-nav-prev,
+            &__caption-nav-next {
+
+            }
+            &__caption-nav-prev {
+                left: 0;
+                text-align: right;
+                border-left: 1px solid #e2e2e2;
+                & > a {
+                    display: block;
+                    width: 100%;
+                    line-height: 30px;
+                    &:hover {
+                        background: #e2e2e2;
+                    }
+                }
+            }
+            &__caption-nav-mode {
+                left: (100%)/3;
+            }
+            &__caption-nav-next {
+                right: 0;
+                text-align: left;
+                border-right: 1px solid #e2e2e2;
+                & > a {
+                    display: block;
+                    width: 100%;
+                    line-height: 30px;
+                    &:hover {
+                        background: #e2e2e2;
+                    }
+                }
+            }
+
         &__cel {
             position: relative;
             width: 100%; height: 32px;
@@ -658,12 +769,39 @@ body {
         &__cel_chunk-first &__chunk-head__head > label {
             display: none !important;
         }
+
+        &__issue-title {
+            display: block;
+            position: relative;
+            padding-right: 10px;
+            line-height: 20px;
+            & > a {
+                display: block;
+                position: relative;
+                width: 100%; height: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            & > button {
+                position: absolute; top: 0; right: 0;
+                width: 22px; height: 22px;
+            }
+        }
     }
 }
 
 
 @media (min-width: 992px) {
     .b-table-schedule {
+        &__caption-title {
+            float: left;
+            width: 24%;
+        }
+        &__caption-nav {
+            float: left;
+            width: 76%;
+        }
         &__cel_title {
             width: 24%;
         }
@@ -678,33 +816,47 @@ body {
         &__cel_chunk-even &__chunk-head__head > label {
             display: block;
         }
+        &__caption-title {
+            float: left;
+            width: 21%;
+        }
+        &__caption-nav {
+            float: left;
+            width: 79%;
+        }
     }
 }
 
 
 
-button {
-    display: inline-block;
+.app-overlay {
+    &__bg {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(255,255,255,.68);
+    }
+    &__dialog {
+
+    }
+}
+
+.app-dialog {
+    position: fixed; top: 110px; right: 30px; left: 30px;
     width: auto; height: auto;
-    margin: 0; padding: 0px 9px;
-    line-height: 18px;
-    font-family: inherit;
-    font-size: 14px;
-    color: #373737;
-    background: #e2e2e2;
     border: 1px solid;
     border-color: #fff #b2b2b2 #b2b2b2 #fff;
-    outline: 0;
-    text-shadow: -1px -1px 0 rgba(255,255,255,.37);
-    box-shadow: 0 0 0 5px #f2f2f2;
+    box-shadow: 0 1px 7px -3px rgba(0,0,0,.73);
+    overflow: hidden; overflow-y: auto;
 
-    &:active {
-        //border-color: #b2b2b2 #fff #fff #b2b2b2;
-        box-shadow: 0 0 0 5px #f2f2f2, inset 1px 0 0 0 rgba(178,178,178,.37), inset -1px 0 0 0 rgba(255,255,255,.37), inset 0 1px 0 0 rgba(178,178,178,.37), inset 0 -1px 0 0 rgba(255,255,255,.37);
-        text-shadow: 1px 1px 0 rgba(255,255,255,.37);
+    &__head {
+        padding: 10px 15px;
+        line-height: 30px;
+        background: #e2e2e2;
     }
 
-    &:disabled {
-        color: #737373;
+    &__body {
+        padding: 10px 15px;
+        line-height: 20px;
+        background: #f2f2f2;
     }
 }

@@ -44,12 +44,6 @@ append head
                 ;
             })
 
-            .run(function ($rootScope) {
-                $rootScope.$on('$routeChangeSuccess', function (evt, route) {
-                    $rootScope.route= route
-                })
-            })
-
             .controller('ScheduleCtrl', function ($scope, $interval, Issue) {
                 var schedule= this
 
@@ -215,6 +209,12 @@ append head
                 }
             
 
+
+                $scope.selectedIssue
+                $scope.selectIssue= function (issue) {
+                    $scope.selectedIssue= issue
+                }
+
             })
 
             .controller('ScheduleIssueCtrl', function ($scope, Issue) {
@@ -356,23 +356,95 @@ append head
                 }
             
             })
+
+            .directive('app', function ($rootScope) {
+                return {
+                    restrict: 'A',
+                    controller: function ($scope) {
+                        $rootScope.$on('$routeChangeSuccess', function (evt, route) {
+                            $rootScope.route= route
+                        })
+                        $rootScope.isRoute= function (name, returnIfTrue, returnIfFalse) {
+                            if ($rootScope.route && $rootScope.route.name == name) {
+                                return (arguments.length > 1) ? returnIfTrue : true
+                            } else {
+                                return (arguments.length > 2) ? returnIfFalse : false
+                            }
+                        }
+                        $rootScope.appDialog= {}
+                        $rootScope.appDialogShow= function (name) {
+                            if ($rootScope.appDialog[name]) {
+                                $rootScope.appDialog[name].$shown= true
+                            }
+                        }
+                        $rootScope.appDialogHide= function (name) {
+                            if ($rootScope.appDialog[name]) {
+                                $rootScope.appDialog[name].$shown= false
+                            }
+                        }
+                        $rootScope.appDialogToggle= function (name) {
+                            if ($rootScope.appDialog[name]) {
+                                $rootScope.appDialog[name].$shown= !$rootScope.appDialog[name].$shown
+                            }
+                        }
+                    }
+                }
+            })
+
+                .directive('appDialog', function ($rootScope) {
+                    return {
+                        restrict: 'A',
+                        require: '^app',
+                        transclude: 'element',
+                        link: function ($scope, $e, $a, app, $transclude) {
+                            $rootScope.appDialog[$a.appDialog]= {
+                                $scope: $scope,
+                                $e: $e,
+                                $transclude: $transclude,
+                            }
+                        }
+                    }
+                })
+
+                .directive('appDialogTransclude', function ($rootScope) {
+                    return {
+                        restrict: 'A',
+                        require: '^app',
+                        transclude: true,
+                        link: function ($scope, $e, $a) {
+                            var appDialogTemplate= $rootScope.appDialog[$a.appDialogTransclude]
+                            if (appDialogTemplate) appDialogTemplate.$transclude(appDialogTemplate.$scope, function ($eTranscluded) {
+                                $e.empty()
+                                $e.append($eTranscluded)
+                            })
+                        }
+                    }
+                })
+
         ;
 
 append body
 
-    .b-app(ng-app="aeSchedule", ng-controller="ScheduleCtrl")
+    .b-app(app, ng-app="aeSchedule", ng-controller="ScheduleCtrl")
 
         div(ng-view)
 
-        div(ng-if="'schedule'===route.name")
+        div(ng-if="isRoute('schedule')")
 
             table.b-table.b-table-schedule
 
-                caption
-                    button(style='float:left;') Add issue
-                    a(href="#/?view=hour") HOUR
-                    a(href="#/?view=day") DAY
-                    a(href="#/?view=week") WEEK
+                caption.b-table-schedule__caption
+                    .b-table-schedule__caption-title
+                        button(ng-click="appDialogToggle('IssueFormDialog')") Add issue
+                    .b-table-schedule__caption-nav
+                        .b-table-schedule__caption-nav-prev
+                            a(href="#/?view=hour") ←
+                        .b-table-schedule__caption-nav-mode
+                            a(href="#/?view=hour"): u HOUR
+                            a(href="#/?view=day"): u DAY
+                            a(href="#/?view=week"): u WEEK
+                        .b-table-schedule__caption-nav-next
+                            a(href="#/?view=hour") →
 
                 thead.b-table__head
                     tr
@@ -391,19 +463,37 @@ append body
                 tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
                     tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
 
-                        td.b-table__cel.b-table-schedule__cel_title {{issue.title}}
-                            button(ng-if="!issue.startedAt", ng-click="startWork(issue)") ►
-                            button(ng-if="issue.startedAt", ng-click="stopWork(issue)") ■
+                        td.b-table__cel.b-table-schedule__cel_title
+                            .b-table-schedule__issue-title
+                                a(ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')"): u {{issue.title}}
 
                         td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
                             .b-table-schedule__cel
                                 .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
 
-            hr
 
-            fieldset(ng-form="IssueForm", ng-controller="IssueFormCtrl")
-                legend CREATE ISSUE
 
-                input(name="title", ng-model="issue.title", required)
+            .app-dialog(app-dialog="IssueFormDialog")
 
-                button(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") SAVE ISSUE
+                .app-dialog__head
+                    .app-dialog__heading New issue
+
+                .app-dialog__body(ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                    input(name="title", ng-model="issue.title", required)
+                    button(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
+
+
+
+            .app-dialog(app-dialog="IssueViewDialog")
+
+                .app-dialog__head
+                    .app-dialog__heading Issue
+
+                .app-dialog__body(ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                    button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ►
+                    button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■
+
+
+        .app-overlay(ng-repeat="(key, dialog) in appDialog")
+            .app-overlay__bg(ng-if="dialog.$shown", ng-click="appDialogHide(key)")
+            .app-overlay__dialog(ng-if="dialog.$shown", app-dialog-transclude="{{key}}")
