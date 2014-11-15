@@ -1,5 +1,5 @@
 {
-    "name": "caeruleus", "version": "0.1.5",
+    "name": "caeruleus", "version": "0.1.7",
 
     "dependencies": {
         "jquery": "latest",

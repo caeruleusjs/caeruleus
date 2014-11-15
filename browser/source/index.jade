@@ -162,12 +162,14 @@ append head
                 $scope.issues.$promise
                     .then(function (issues) {
                         angular.forEach(issues, function (issue) {
-                            if (!($scope.startedIssue)) {
-                                if (issue.startedAt) {
+                            if (issue.startedAt) {
+                                if (!($scope.startedIssue)) {
                                     $scope.startedIssue= issue
+                                } else {
+                                    if ($scope.startedIssue.guid !== issue.guid) {
+                                        issue.startedAt= null
+                                    }
                                 }
-                            } else if ($scope.startedIssue.guid !== issue.guid) {
-                                issue.startedAt= null
                             }
                         })
                     })
@@ -187,6 +189,9 @@ append head
                 var startedIssueRefreshInProgress
 
                 $scope.startWork= function (issue) {
+                    if ($scope.startedIssue) {
+                        $scope.stopWork($scope.startedIssue)
+                    }
                     var beginDate= new Date()
                     var endDate= new Date(beginDate)
                     var interval
@@ -205,6 +210,9 @@ append head
                             endDate.getSeconds() + 1
                         )
                         issue.updatedAt= new Date
+                        if (issue.startedAt && issue.guid) {
+                            $scope.saveWork(issue)
+                        }
                     }, 1000)
                 }
 
@@ -230,6 +238,9 @@ append head
                             lastInterval.endDate.getSeconds() + 1
                         )
                         issue.updatedAt= new Date
+                        if (issue.startedAt && issue.guid) {
+                            $scope.saveWork(issue)
+                        }
                     }, 1000)
                 }
 
@@ -248,6 +259,18 @@ append head
                     $scope.selectedIssue= issue
                 }
 
+                $scope.deleteIssue= function (issue) {
+                    Issue.delete(issue).$promise
+                        .then(function (issue) {
+                            var i= $scope.schedule.issues.indexOf(issue)
+                            if (~i) {
+                                $scope.schedule.issues.splice(i, 1)
+                            }
+                            $scope.selectedIssue= null
+                            $scope.appDialogToggle('IssueViewDialog')
+                        })
+                    ;
+                }
             })
 
             .controller('ScheduleIssueCtrl', function ($scope, Issue) {
@@ -287,9 +310,6 @@ append head
 
                 $scope.$watchCollection('issue', function (issue) {
                     this.splitIntervalsToChunks($scope.schedule.chunks)
-                    if (issue.startedAt && issue.guid) {
-                        $scope.saveWork(issue)
-                    }
                 }.bind(this))
 
                 $scope.calcChunkIntervalLeft= function (chunk, interval) {
@@ -314,11 +334,14 @@ append head
                 $scope.saveIssue= function (issue, IssueForm) {
                     if (!(issue.guid)) { // create new issue
                         issue.guid= guid()
+                        issue.updatedAt= new Date
                     }
                     Issue.save(issue).$promise
                         .then(function (issue) {
                             $scope.issues.unshift(issue)
                             $scope.issue= {}
+                            $scope.selectedIssue= null
+                            $scope.appDialogToggle('IssueFormDialog')
                         })
                     ;
                 }
@@ -352,9 +375,6 @@ append head
                         if (promises.length) {
                             $q.all(promises)
                                 .then(function (values) {
-                                    values.sort(function (a, b) {
-                                        return a.updatedAt - b.updatedAt
-                                    })
                                     angular.forEach(values, function (value) {
                                         issues.push(value)
                                     })
@@ -388,6 +408,22 @@ append head
                     return issue
                 }
             
+                this.delete= function (issue) {
+                    if (!(issue) || !(issue.guid)) {
+                        throw new Error
+                    }
+                    var key= ['caeruleus','issues',issue.guid].join(':')
+                    var dfd= $q.defer()
+                    Object.defineProperty(issue, '$promise', { configurable:true, value:dfd.promise })
+                    localforage.removeItem(key, function (err, value) {
+                        if (err) {
+                            dfd.reject(err)
+                        } else {
+                            dfd.resolve(issue)
+                        }
+                    })
+                    return issue
+                }
             })
 
             .directive('app', function ($rootScope) {
@@ -501,7 +537,7 @@ append body
                                 label {{chunk.beginDate | date:'MM.dd'}}
                                 a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}")
 
-                tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid", ng-class="{'b-table__body_last':$last}")
+                tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid", ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}")
                     tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
 
                         td.b-table__cel.b-table-schedule__cel_title
@@ -510,7 +546,7 @@ append body
 
                         td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks", ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}")
                             .b-table-schedule__cel
-                                .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
+                                .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
 
 
 
@@ -533,6 +569,8 @@ append body
                 .app-dialog__body(ng-form="IssueForm", ng-controller="IssueFormCtrl")
                     button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ►
                     button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■
+
+                    button(ng-click="deleteIssue(selectedIssue)", style="float:right") DELETE
 
 
         .app-overlay(ng-repeat="(key, dialog) in appDialog")
