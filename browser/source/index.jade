@@ -369,6 +369,7 @@ append body
             table.b-table.b-table-schedule
 
                 caption
+                    button(style='float:left;') Add issue
                     a(href="#/?view=hour") HOUR
                     a(href="#/?view=day") DAY
                     a(href="#/?view=week") WEEK
@@ -376,17 +377,24 @@ append body
                 thead.b-table__head
                     tr
                         th.b-table__cel.b-table-schedule__cel_title
-                        th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
-                            .b-table-schedule__chunk-head__head
-                                a(ng-if="schedule.mode=='hour'") {{chunk.beginDate | date:'HH:mm'}}
-                                a(ng-if="schedule.mode=='day'", ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate | date:'HH.mm'}}
-                                a(ng-if="schedule.mode=='week'", ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate | date:'MM.dd'}}
+
+                        th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
+                            .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='hour'")
+                                label {{chunk.beginDate | date:'HH:mm'}}
+                            .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='day'")
+                                label {{chunk.beginDate | date:'HH.mm'}}
+                                a(ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}")
+                            .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='week'")
+                                label {{chunk.beginDate | date:'MM.dd'}}
+                                a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}")
 
                 tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
                     tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
+
                         td.b-table__cel.b-table-schedule__cel_title {{issue.title}}
                             button(ng-if="!issue.startedAt", ng-click="startWork(issue)") ►
                             button(ng-if="issue.startedAt", ng-click="stopWork(issue)") ■
+
                         td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
                             .b-table-schedule__cel
                                 .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
