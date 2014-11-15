@@ -110,10 +110,43 @@ append head
                     )
                 }
 
+                $scope.getPrevWeekDate= function () {
+                    var weekBeginDate= new Date($scope.schedule.chunks[0].beginDate)
+                    weekBeginDate.setDate( weekBeginDate.getDate() -7)
+                    return weekBeginDate
+                }
+                $scope.getNextWeekDate= function () {
+                    var weekBeginDate= new Date($scope.schedule.chunks[0].beginDate)
+                    weekBeginDate.setDate( weekBeginDate.getDate() +7)
+                    return weekBeginDate
+                }
+
+                $scope.getPrevDayDate= function () {
+                    var dayBeginDate= new Date($scope.schedule.chunks[0].beginDate)
+                    dayBeginDate.setDate( dayBeginDate.getDate() -1)
+                    return dayBeginDate
+                }
+                $scope.getNextDayDate= function () {
+                    var dayBeginDate= new Date($scope.schedule.chunks[0].beginDate)
+                    dayBeginDate.setDate( dayBeginDate.getDate() +1)
+                    return dayBeginDate
+                }
+
+                $scope.getPrevHourDate= function () {
+                    var hourBeginDate= new Date($scope.schedule.chunks[0].beginDate)
+                    hourBeginDate.setHours( hourBeginDate.getHours() -1)
+                    return hourBeginDate
+                }
+                $scope.getNextHourDate= function () {
+                    var hourBeginDate= new Date($scope.schedule.chunks[0].beginDate)
+                    hourBeginDate.setHours( hourBeginDate.getHours() +1)
+                    return hourBeginDate
+                }
+
                 $scope.$on('$routeChangeSuccess', function (evt, route) {
                     var date= (route.params.date) ? new Date(route.params.date) : new Date
                     if ('week' === route.params.view) {
-                        $scope.showWeek()
+                        $scope.showWeek(date)
                     } else if ('day' === route.params.view) {
                         $scope.showDay(date)
                     } else if ('hour' === route.params.view) {
@@ -437,14 +470,22 @@ append body
                     .b-table-schedule__caption-title
                         button(ng-click="appDialogToggle('IssueFormDialog')") Add issue
                     .b-table-schedule__caption-nav
-                        .b-table-schedule__caption-nav-prev
-                            a(href="#/?view=hour") ←
+                        .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='week'")
+                            a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
+                        .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='day'")
+                            a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
+                        .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='hour'")
+                            a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
                         .b-table-schedule__caption-nav-mode
-                            a(href="#/?view=hour"): u HOUR
-                            a(href="#/?view=day"): u DAY
-                            a(href="#/?view=week"): u WEEK
-                        .b-table-schedule__caption-nav-next
-                            a(href="#/?view=hour") →
+                            a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}"): u HOUR
+                            a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}"): u DAY
+                            a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}"): u WEEK
+                        .b-table-schedule__caption-nav-next(ng-if="schedule.mode=='hour'")
+                            a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
+                        .b-table-schedule__caption-nav-next(ng-if="schedule.mode=='day'")
+                            a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
+                        .b-table-schedule__caption-nav-next(ng-if="schedule.mode=='week'")
+                            a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
 
                 thead.b-table__head
                     tr
