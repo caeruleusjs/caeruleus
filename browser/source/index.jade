@@ -33,6 +33,23 @@ append head
 
         angular.module('aeSchedule', ['ngRoute'])
 
+            .config(function ($routeProvider) {
+                $routeProvider
+                    .when('/', { name: 'schedule',
+                        template: ''
+                    })
+                    .otherwise({
+                        redirectTo: '/'
+                    })
+                ;
+            })
+
+            .run(function ($rootScope) {
+                $rootScope.$on('$routeChangeSuccess', function (evt, route) {
+                    $rootScope.route= route
+                })
+            })
+
             .controller('ScheduleCtrl', function ($scope, $interval, Issue) {
                 var schedule= this
 
@@ -52,6 +69,12 @@ append head
                     return chunks
                 }
 
+                this.findFirstDayOfWeek= function (date) {
+                    var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                    resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
+                    return resultDate
+                }
+
                 $scope.showHour= function (date) {
                     $scope.schedule.mode= 'hour'
                     var hourBeginDate= new Date(
@@ -69,23 +92,42 @@ append head
                     )
                 }
 
-                $scope.showDay= function () {
+                $scope.showDay= function (date) {
+                    date= date || new Date
+                    var dayBeginDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                    var dayEndDate= new Date(dayBeginDate.getFullYear(), dayBeginDate.getMonth(), dayBeginDate.getDate()+1)
                     $scope.schedule.mode= 'day'
                     $scope.schedule.chunks= schedule.splitIntervalToChunks(
-                        new Date(2014, 10, 15, 0),
-                        new Date(2014, 10, 16, 0),
+                        dayBeginDate,
+                        dayEndDate,
                         24
                     )
                 }
 
-                $scope.showWeek= function () {
+                $scope.showWeek= function (date) {
+                    date= date || new Date
+                    var weekBeginDate= schedule.findFirstDayOfWeek(date)
+                    var weekEndDate= new Date(weekBeginDate.getFullYear(), weekBeginDate.getMonth(), weekBeginDate.getDate()+7)
                     $scope.schedule.mode= 'week'
                     $scope.schedule.chunks= schedule.splitIntervalToChunks(
-                        new Date(2014, 10, 14, 0),
-                        new Date(2014, 10, 21, 0),
+                        weekBeginDate,
+                        weekEndDate,
                         7
                     )
                 }
+
+                $scope.$on('$routeChangeSuccess', function (evt, route) {
+                    var date= (route.params.date) ? new Date(route.params.date) : new Date
+                    if ('week' === route.params.view) {
+                        $scope.showWeek()
+                    } else if ('day' === route.params.view) {
+                        $scope.showDay(date)
+                    } else if ('hour' === route.params.view) {
+                        $scope.showHour(date)
+                    } else {
+                        $scope.showDay()
+                    }
+                })
 
                 $scope.startedIssue= null
 
@@ -103,6 +145,8 @@ append head
                         })
                     })
                 ;
+
+
 
                 $scope.schedule= {
                     chunks: [],
@@ -318,36 +362,40 @@ append body
 
     .b-app(ng-app="aeSchedule", ng-controller="ScheduleCtrl")
 
-        table.b-table.b-table-schedule
+        div(ng-view)
 
-            caption
-                button(ng-click="showHour()") HOUR
-                button(ng-click="showDay()") DAY
-                button(ng-click="showWeek()") WEEK
-                button(ng-click="showMonth()") MONTH
+        div(ng-if="'schedule'===route.name")
 
-            thead.b-table__head
-                tr
-                    th.b-table__cel.b-table-schedule__cel_title
-                    th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
-                        .b-table-schedule__chunk-head__head
-                            a(ng-if="schedule.mode=='hour'") {{chunk.beginDate | date:'HH:mm'}}
-                            a(ng-if="schedule.mode=='day'", ng-click="showHour(chunk.beginDate)") {{chunk.beginDate | date:'HH:mm'}}
+            table.b-table.b-table-schedule
 
-            tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
-                tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
-                    td.b-table__cel.b-table-schedule__cel_title {{issue.title}}
-                        button(ng-if="!issue.startedAt", ng-click="startWork(issue)") ►
-                        button(ng-if="issue.startedAt", ng-click="stopWork(issue)") ■
-                    td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
-                        .b-table-schedule__cel
-                            .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
+                caption
+                    a(href="#/?view=hour") HOUR
+                    a(href="#/?view=day") DAY
+                    a(href="#/?view=week") WEEK
 
-        hr
+                thead.b-table__head
+                    tr
+                        th.b-table__cel.b-table-schedule__cel_title
+                        th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
+                            .b-table-schedule__chunk-head__head
+                                a(ng-if="schedule.mode=='hour'") {{chunk.beginDate | date:'HH:mm'}}
+                                a(ng-if="schedule.mode=='day'", ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate | date:'HH.mm'}}
+                                a(ng-if="schedule.mode=='week'", ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate | date:'MM.dd'}}
 
-        fieldset(ng-form="IssueForm", ng-controller="IssueFormCtrl")
-            legend CREATE ISSUE
+                tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid")
+                    tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
+                        td.b-table__cel.b-table-schedule__cel_title {{issue.title}}
+                            button(ng-if="!issue.startedAt", ng-click="startWork(issue)") ►
+                            button(ng-if="issue.startedAt", ng-click="stopWork(issue)") ■
+                        td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks")
+                            .b-table-schedule__cel
+                                .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
 
-            input(name="title", ng-model="issue.title", required)
+            hr
 
-            button(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") SAVE ISSUE
+            fieldset(ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                legend CREATE ISSUE
+
+                input(name="title", ng-model="issue.title", required)
+
+                button(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") SAVE ISSUE
