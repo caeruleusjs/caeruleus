@@ -611,7 +611,6 @@ button:disabled {
   background: #f2f2f2;
   border: 1px solid;
   border-color: #fff #eee #fff #eee;
-  box-shadow: 0 0 0 5px #f2f2f2;
 }
 .b-table-schedule .b-table__head .b-table__cel {
   padding: 0;
@@ -632,6 +631,12 @@ button:disabled {
 }
 .b-table__body_last .b-table__cel {
   border-bottom: 1px solid #d2d2d2;
+}
+.b-table-schedule .b-table__body {
+  box-shadow: 0 0 0 5px #f2f2f2;
+}
+.b-table-schedule .b-table__body._isStarted .b-table__cel {
+  background-color: #e2e2e2;
 }
 .b-table-schedule__caption {
   height: 50px;
@@ -712,13 +717,16 @@ button:disabled {
   bottom: 3px;
   width: auto;
   min-width: 1px;
-  background: orange;
+  background: #4082C4;
 }
 .b-table-schedule__cel-interval:not(._isBegin) {
   left: -1px !important;
 }
 .b-table-schedule__cel-interval:not(._isEnd) {
   right: -1px !important;
+}
+.b-table-schedule__cel-interval._isStarted {
+  background-color: orange !important;
 }
 .b-table-schedule__chunk-head__head {
   display: block;
@@ -735,7 +743,7 @@ button:disabled {
   height: 100%;
 }
 .b-table-schedule__chunk-head__head > a:hover {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 .b-table-schedule__chunk-head__head > label {
   display: block;
