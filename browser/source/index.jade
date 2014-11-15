@@ -162,12 +162,14 @@ append head
                 $scope.issues.$promise
                     .then(function (issues) {
                         angular.forEach(issues, function (issue) {
-                            if (!($scope.startedIssue)) {
-                                if (issue.startedAt) {
+                            if (issue.startedAt) {
+                                if (!($scope.startedIssue)) {
                                     $scope.startedIssue= issue
+                                } else {
+                                    if ($scope.startedIssue.guid !== issue.guid) {
+                                        issue.startedAt= null
+                                    }
                                 }
-                            } else if ($scope.startedIssue.guid !== issue.guid) {
-                                issue.startedAt= null
                             }
                         })
                     })
@@ -187,6 +189,9 @@ append head
                 var startedIssueRefreshInProgress
 
                 $scope.startWork= function (issue) {
+                    if ($scope.startedIssue) {
+                        $scope.stopWork($scope.startedIssue)
+                    }
                     var beginDate= new Date()
                     var endDate= new Date(beginDate)
                     var interval
