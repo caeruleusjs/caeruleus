@@ -596,12 +596,41 @@ button:disabled {
     columns: 3;
   }
 }
+.app-overlay__bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.68);
+}
+.app-dialog {
+  position: fixed;
+  top: 110px;
+  right: 30px;
+  left: 30px;
+  width: auto;
+  height: auto;
+  border: 1px solid;
+  border-color: #fff #b2b2b2 #b2b2b2 #fff;
+  box-shadow: 0 1px 7px -3px rgba(0, 0, 0, 0.73);
+  overflow: hidden;
+  overflow-y: auto;
+}
+.app-dialog__head {
+  padding: 10px 15px;
+  line-height: 30px;
+  background: #e2e2e2;
+}
+.app-dialog__body {
+  padding: 15px;
+  line-height: 20px;
+  background: #f2f2f2;
+}
 .b-table {
   display: table;
   width: 100%;
   height: auto;
-}
-.b-table {
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
@@ -645,6 +674,18 @@ button:disabled {
   width: 27%;
   padding-right: 15px;
 }
+@media (min-width: 992px) {
+  .b-table-schedule__caption-title {
+    float: left;
+    width: 24%;
+  }
+}
+@media (min-width: 1200px) {
+  .b-table-schedule__caption-title {
+    float: left;
+    width: 21%;
+  }
+}
 .b-table-schedule__caption-title > button {
   width: 100%;
   line-height: 28px;
@@ -653,6 +694,18 @@ button:disabled {
   float: left;
   position: relative;
   width: 73%;
+}
+@media (min-width: 992px) {
+  .b-table-schedule__caption-nav {
+    float: left;
+    width: 76%;
+  }
+}
+@media (min-width: 1200px) {
+  .b-table-schedule__caption-nav {
+    float: left;
+    width: 79%;
+  }
 }
 .b-table-schedule__caption-nav-prev,
 .b-table-schedule__caption-nav-next,
@@ -706,6 +759,16 @@ button:disabled {
 .b-table-schedule__cel_title {
   width: 27%;
 }
+@media (min-width: 992px) {
+  .b-table-schedule__cel_title {
+    width: 24%;
+  }
+}
+@media (min-width: 1200px) {
+  .b-table-schedule__cel_title {
+    width: 21%;
+  }
+}
 .b-table-schedule__cel-interval {
   position: absolute;
   top: 3px;
@@ -752,6 +815,11 @@ button:disabled {
 .b-table-schedule__cel_chunk-even .b-table-schedule__chunk-head__head > label {
   display: none;
 }
+@media (min-width: 1200px) {
+  .b-table-schedule__cel_chunk-even .b-table-schedule__chunk-head__head > label {
+    display: block;
+  }
+}
 .b-table-schedule__cel_chunk-first .b-table-schedule__chunk-head__head > label {
   display: none !important;
 }
@@ -777,66 +845,6 @@ button:disabled {
   right: 0;
   width: 22px;
   height: 22px;
-}
-@media (min-width: 992px) {
-  .b-table-schedule__caption-title {
-    float: left;
-    width: 24%;
-  }
-  .b-table-schedule__caption-nav {
-    float: left;
-    width: 76%;
-  }
-  .b-table-schedule__cel_title {
-    width: 24%;
-  }
-}
-@media (min-width: 1200px) {
-  .b-table-schedule__cel_title {
-    width: 21%;
-  }
-  .b-table-schedule__cel_chunk-even .b-table-schedule__chunk-head__head > label {
-    display: block;
-  }
-  .b-table-schedule__caption-title {
-    float: left;
-    width: 21%;
-  }
-  .b-table-schedule__caption-nav {
-    float: left;
-    width: 79%;
-  }
-}
-.app-overlay__bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.68);
-}
-.app-dialog {
-  position: fixed;
-  top: 110px;
-  right: 30px;
-  left: 30px;
-  width: auto;
-  height: auto;
-  border: 1px solid;
-  border-color: #fff #b2b2b2 #b2b2b2 #fff;
-  box-shadow: 0 1px 7px -3px rgba(0, 0, 0, 0.73);
-  overflow: hidden;
-  overflow-y: auto;
-}
-.app-dialog__head {
-  padding: 10px 15px;
-  line-height: 30px;
-  background: #e2e2e2;
-}
-.app-dialog__body {
-  padding: 15px;
-  line-height: 20px;
-  background: #f2f2f2;
 }
 .b-table-schedule__head .b-table__cel {
   padding: 0;
