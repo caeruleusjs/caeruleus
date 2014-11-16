@@ -53,6 +53,7 @@
                 width: 24%;
             }
             @media (min-width: 1200px) {
+                float: left;
                 width: 21%;
             }
 
@@ -127,6 +128,12 @@
 
             &_title {
                 width: 27%;
+                @media (min-width: 992px) {
+                    width: 24%;
+                }
+                @media (min-width: 1200px) {
+                    width: 21%;
+                }
             }
 
             &_chunk {
@@ -182,6 +189,9 @@
 
         &__cel_chunk-even &__chunk-head__head > label {
             display: none;
+            @media (min-width: 1200px) {
+                display: block;
+            }
         }
 
         &__cel_chunk-first &__chunk-head__head > label {
@@ -209,10 +219,6 @@
         }
     }
 
-    &-schedule {
-
-    }
-
     &-schedule__head &__cel {
         padding: 0;
 
@@ -230,25 +236,3 @@
 
 
 }
-
-//
-//
-//@media (min-width: 992px) {
-//    .b-table-schedule {
-//        &__cel_title {
-//            width: 24%;
-//        }
-//    }
-//}
-//
-//@media (min-width: 1200px) {
-//    .b-table-schedule {
-//        &__cel_chunk-even &__chunk-head__head > label {
-//            display: block;
-//        }
-//        &__caption-title {
-//            float: left;
-//            width: 21%;
-//        }
-//    }
-//}
