@@ -12,14 +12,14 @@ gulp.task('scripts', function () {
 })
 
 gulp.task('styles', function () {
-    return gulp.src(['browser/source/styles/**/*.less'])
+    return gulp.src(['browser/source/styles/**/*.less', '!browser/source/styles/**/_*.less'])
         .pipe(gulpLess())
         .pipe(gulp.dest('browser/release/styles'))
     ;
 })
 
 gulp.task('templates', function() {
-    return gulp.src('browser/source/**/*.jade')
+    return gulp.src(['browser/source/**/*.jade', '!browser/source/**/layout.jade'])
         .pipe(gulpJade({ locals: {}, pretty: true }))
         .pipe(gulp.dest('browser/release'))
     ;
