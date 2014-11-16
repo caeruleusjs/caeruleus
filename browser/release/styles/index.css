@@ -612,13 +612,8 @@ button:disabled {
   border: 1px solid;
   border-color: #fff #eee #fff #eee;
 }
-.b-table-schedule .b-table__head .b-table__cel {
-  padding: 0;
-  font-size: 11px;
-  font-weight: normal;
-  text-align: left;
-  border-color: transparent;
-  border-bottom-color: #fff;
+.b-table-schedule .b-table__body .b-table__cel {
+  border-top-color: #fff;
 }
 .b-table-schedule .b-table__body .b-table__cel_first {
   border-left: 1px solid #fff;
@@ -839,7 +834,17 @@ button:disabled {
   background: #e2e2e2;
 }
 .app-dialog__body {
-  padding: 10px 15px;
+  padding: 15px;
   line-height: 20px;
   background: #f2f2f2;
+}
+.b-table-schedule__head .b-table__cel {
+  padding: 0;
+  font-size: 11px;
+  font-weight: normal;
+  text-align: left;
+  border-color: transparent;
+}
+.b-table-schedule__head_last .b-table__cel {
+  border-bottom-color: #fff;
 }

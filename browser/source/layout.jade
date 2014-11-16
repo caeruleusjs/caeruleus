@@ -1,12 +1,23 @@
 doctype html
 html(lang='ru')
 
-    head
-        block head
+    head: block head
 
-            block head-styles
+        meta(charset="utf-8")
 
-                link(rel='stylesheet', href='styles/index.css')
+        block head-title
+
+        block head-styles
+
+        block head-scripts
+
+            script(src='components/jquery/dist/jquery.min.js')
+
+            script(src='components/angular/angular.min.js')
+            script(src='components/angular-route/angular-route.min.js')
+            script(src='components/angular-i18n/angular-locale_ru.js')
+
+            script(src='components/localforage/dist/localforage.nopromises.min.js')
 
     body
         block body

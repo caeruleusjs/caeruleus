@@ -645,15 +645,8 @@ button {
         border-color: #fff #eee #fff #eee;
     }
 
-    &-schedule &__head &__cel {
-        padding: 0;
-        font-size: 11px;
-        font-weight: normal;
-        text-align: left;
-        border-color: transparent;
-        border-bottom-color: #fff;
-    }
     &-schedule &__body &__cel {
+        border-top-color: #fff;
         &_first {
             border-left: 1px solid #fff;
         }
@@ -901,8 +894,32 @@ button {
     }
 
     &__body {
-        padding: 10px 15px;
+        padding: 15px;
         line-height: 20px;
         background: #f2f2f2;
+    }
+}
+
+
+
+.b-table {
+
+    &-schedule {
+
+    }
+
+    &-schedule__head &__cel {
+        padding: 0;
+
+        font-size: 11px;
+        font-weight: normal;
+        text-align: left;
+
+        border-color: transparent;
+
+    }
+
+    &-schedule__head_last &__cel {
+        border-bottom-color: #fff;
     }
 }
