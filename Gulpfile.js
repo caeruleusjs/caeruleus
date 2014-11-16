@@ -19,7 +19,7 @@ gulp.task('styles', function () {
 })
 
 gulp.task('templates', function() {
-    return gulp.src('browser/source/**/*.jade')
+    return gulp.src(['browser/source/**/*.jade', '!browser/source/**/layout.jade'])
         .pipe(gulpJade({ locals: {}, pretty: true }))
         .pipe(gulp.dest('browser/release'))
     ;
