@@ -179,10 +179,36 @@ angular.module('Caeruleus', ['ngRoute'])
 
         var startedIssueRefreshInProgress
 
+        this.updateDate= function (date, newDate, updatedAt) {
+            newDate= newDate || new Date
+            date.setHours(
+                newDate.getHours()
+            )
+            date.setMinutes(
+                newDate.getMinutes()
+            )
+            date.setSeconds(
+                newDate.getSeconds()
+            )
+        }
+
+        $scope.startIssueRefresh= function (issue, interval) {
+            if (startedIssueRefreshInProgress) {
+                $interval.cancel(startedIssueRefreshInProgress)
+            }
+            var intervalEndDate= interval.endDate
+            schedule.updateDate(intervalEndDate)
+            return startedIssueRefreshInProgress= $interval(function () {
+                schedule.updateDate(intervalEndDate)
+                issue.updatedAt= new Date
+            }, 1000)
+        }
+
         $scope.startWork= function (issue) {
             if ($scope.startedIssue) {
                 $scope.stopWork($scope.startedIssue)
             }
+            $scope.startedIssue= issue
             var beginDate= new Date()
             var endDate= new Date(beginDate)
             var interval
@@ -193,18 +219,8 @@ angular.module('Caeruleus', ['ngRoute'])
                 endDate: endDate,
             })
             issue.startedAt= issue.updatedAt= new Date
-            if (startedIssueRefreshInProgress) {
-                $interval.cancel(startedIssueRefreshInProgress)
-            }
-            startedIssueRefreshInProgress= $interval(function () {
-                endDate.setSeconds(
-                    endDate.getSeconds() + 1
-                )
-                issue.updatedAt= new Date
-                if (issue.startedAt && issue.guid) {
-                    $scope.saveWork(issue)
-                }
-            }, 1000)
+            $scope.saveWork(issue)
+            $scope.startIssueRefresh(issue, interval)
         }
 
         $scope.stopWork= function (issue) {
@@ -215,24 +231,13 @@ angular.module('Caeruleus', ['ngRoute'])
             if (startedIssueRefreshInProgress) {
                 $interval.cancel(startedIssueRefreshInProgress)
             }
+            $scope.startedIssue= null
             $scope.saveWork(issue)
         }
 
         $scope.continueWork= function (issue) {
             var lastInterval= issue.intervals[issue.intervals.length-1]
-            lastInterval.endDate= new Date
-            if (startedIssueRefreshInProgress) {
-                $interval.cancel(startedIssueRefreshInProgress)
-            }
-            startedIssueRefreshInProgress= $interval(function () {
-                lastInterval.endDate.setSeconds(
-                    lastInterval.endDate.getSeconds() + 1
-                )
-                issue.updatedAt= new Date
-                if (issue.startedAt && issue.guid) {
-                    $scope.saveWork(issue)
-                }
-            }, 1000)
+            $scope.startIssueRefresh(issue, lastInterval)
         }
 
         $scope.saveWork= function (issue) {
