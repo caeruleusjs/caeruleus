@@ -628,6 +628,13 @@ button {
 
 
 
-@import "./_app-dialog.less";
+@import (reference) "_bDialog.less";
 
-@import "./_b-table.less";
+.app-overlay {
+    .bOverlay();
+}
+.app-dialog {
+    .bDialog();
+}
+
+@import "_bTable.less";

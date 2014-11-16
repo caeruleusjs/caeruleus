@@ -1,9 +1,6 @@
 .b-table {
     display: table;
     width: 100%; height: auto;
-}
-
-.b-table {
     table-layout: fixed;
     border-collapse: collapse;
     border-spacing: 0;
@@ -28,15 +25,12 @@
         border-left: 1px solid #fff;
     }
 
-
     &__body_last &__cel {
         border-bottom: 1px solid #d2d2d2;
     }
-
     &-schedule &__body {
         box-shadow: 0 0 0 5px #f2f2f2;
     }
-
     &-schedule &__body._isStarted &__cel {
         background-color: #e2e2e2;
     }
@@ -54,6 +48,14 @@
             float: left;
             width: 27%;
             padding-right: 15px;
+            @media (min-width: 992px) {
+                float: left;
+                width: 24%;
+            }
+            @media (min-width: 1200px) {
+                width: 21%;
+            }
+
             & > button {
                 width: 100%;
                 line-height: 28px;
@@ -64,6 +66,14 @@
             float: left;
             position: relative;
             width: 73%;
+            @media (min-width: 992px) {
+                float: left;
+                width: 76%;
+            }
+            @media (min-width: 1200px) {
+                float: left;
+                width: 79%;
+            }
         }
             &__caption-nav-prev,
             &__caption-nav-next,
@@ -198,47 +208,6 @@
             }
         }
     }
-}
-
-
-@media (min-width: 992px) {
-    .b-table-schedule {
-        &__caption-title {
-            float: left;
-            width: 24%;
-        }
-        &__caption-nav {
-            float: left;
-            width: 76%;
-        }
-        &__cel_title {
-            width: 24%;
-        }
-    }
-}
-
-@media (min-width: 1200px) {
-    .b-table-schedule {
-        &__cel_title {
-            width: 21%;
-        }
-        &__cel_chunk-even &__chunk-head__head > label {
-            display: block;
-        }
-        &__caption-title {
-            float: left;
-            width: 21%;
-        }
-        &__caption-nav {
-            float: left;
-            width: 79%;
-        }
-    }
-}
-
-
-
-.b-table {
 
     &-schedule {
 
@@ -258,4 +227,28 @@
     &-schedule__head_last &__cel {
         border-bottom-color: #fff;
     }
+
+
 }
+
+//
+//
+//@media (min-width: 992px) {
+//    .b-table-schedule {
+//        &__cel_title {
+//            width: 24%;
+//        }
+//    }
+//}
+//
+//@media (min-width: 1200px) {
+//    .b-table-schedule {
+//        &__cel_chunk-even &__chunk-head__head > label {
+//            display: block;
+//        }
+//        &__caption-title {
+//            float: left;
+//            width: 21%;
+//        }
+//    }
+//}
