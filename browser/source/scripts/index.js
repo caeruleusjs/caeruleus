@@ -36,6 +36,11 @@ angular.module('Caeruleus', ['ngRoute'])
 
     .directive('bSchedule', bScheduleDirective)
 
+    .directive('app', appDirective)
+
+        .directive('appDialog', appDialogDirective)
+        .directive('appDialogTransclude', appDialogTranscludeDirective)
+
     .controller('ScheduleIssueCtrl', function ($scope, Issue) {
         this.chunks= []
 
@@ -189,75 +194,79 @@ angular.module('Caeruleus', ['ngRoute'])
         }
     })
 
-    .directive('app', function ($rootScope) {
-        return {
-            restrict: 'A',
-            controller: function ($scope) {
-                $rootScope.$on('$routeChangeSuccess', function (evt, route) {
-                    $rootScope.route= route
-                })
-                $rootScope.isRoute= function (name, returnIfTrue, returnIfFalse) {
-                    if ($rootScope.route && $rootScope.route.name == name) {
-                        return (arguments.length > 1) ? returnIfTrue : true
-                    } else {
-                        return (arguments.length > 2) ? returnIfFalse : false
-                    }
-                }
-                $rootScope.appDialog= {}
-                $rootScope.appDialogShow= function (name) {
-                    if ($rootScope.appDialog[name]) {
-                        $rootScope.appDialog[name].$shown= true
-                    }
-                }
-                $rootScope.appDialogHide= function (name) {
-                    if ($rootScope.appDialog[name]) {
-                        $rootScope.appDialog[name].$shown= false
-                    }
-                }
-                $rootScope.appDialogToggle= function (name) {
-                    if ($rootScope.appDialog[name]) {
-                        $rootScope.appDialog[name].$shown= !$rootScope.appDialog[name].$shown
-                    }
-                }
-            }
-        }
-    })
-
-        .directive('appDialog', function ($rootScope) {
-            return {
-                restrict: 'A',
-                require: '^app',
-                transclude: 'element',
-                link: function ($scope, $e, $a, app, $transclude) {
-                    $rootScope.appDialog[$a.appDialog]= {
-                        $scope: $scope,
-                        $e: $e,
-                        $transclude: $transclude,
-                    }
-                }
-            }
-        })
-
-        .directive('appDialogTransclude', function ($rootScope) {
-            return {
-                restrict: 'A',
-                require: '^app',
-                transclude: true,
-                link: function ($scope, $e, $a) {
-                    var appDialogTemplate= $rootScope.appDialog[$a.appDialogTransclude]
-                    if (appDialogTemplate) appDialogTemplate.$transclude(appDialogTemplate.$scope, function ($eTranscluded) {
-                        $e.empty()
-                        $e.append($eTranscluded)
-                    })
-                }
-            }
-        })
-
 ;
 
 
 
-function bScheduleDirective($compile, $interval, Issue) {
+function appDirective($rootScope) {
+    return {
+        restrict: 'A',
+        controller: function ($scope) {
+            $rootScope.$on('$routeChangeSuccess', function (evt, route) {
+                $rootScope.route= route
+            })
+            $rootScope.isRoute= function (name, returnIfTrue, returnIfFalse) {
+                if ($rootScope.route && $rootScope.route.name == name) {
+                    return (arguments.length > 1) ? returnIfTrue : true
+                } else {
+                    return (arguments.length > 2) ? returnIfFalse : false
+                }
+            }
+            $rootScope.appDialog= {}
+            $rootScope.appDialogShow= function (name) {
+                if ($rootScope.appDialog[name]) {
+                    $rootScope.appDialog[name].$shown= true
+                }
+            }
+            $rootScope.appDialogHide= function (name) {
+                if ($rootScope.appDialog[name]) {
+                    $rootScope.appDialog[name].$shown= false
+                }
+            }
+            $rootScope.appDialogToggle= function (name) {
+                if ($rootScope.appDialog[name]) {
+                    $rootScope.appDialog[name].$shown= !$rootScope.appDialog[name].$shown
+                }
+            }
+        }
+    }
+}
+
+
+
+function appDialogDirective($rootScope) {
+    return {
+        restrict: 'A',
+        require: '^app',
+        transclude: 'element',
+        link: function ($scope, $e, $a, app, $transclude) {
+            $rootScope.appDialog[$a.appDialog]= {
+                $scope: $scope,
+                $e: $e,
+                $transclude: $transclude,
+            }
+        }
+    }
+}
+
+function appDialogTranscludeDirective($rootScope) {
+    return {
+        restrict: 'A',
+        require: '^app',
+        transclude: true,
+        link: function ($scope, $e, $a) {
+            var appDialogTemplate= $rootScope.appDialog[$a.appDialogTransclude]
+            if (appDialogTemplate) appDialogTemplate.$transclude(appDialogTemplate.$scope, function ($eTranscluded) {
+                $e.empty()
+                $e.append($eTranscluded)
+            })
+        }
+    }
+}
+
+
+
+function bScheduleDirective($rootScope, $compile, $interval, Issue) {
 
     return {
         restrict: 'EA',
@@ -367,7 +376,7 @@ function bScheduleDirective($compile, $interval, Issue) {
             return hourBeginDate
         }
 
-        $scope.$on('$routeChangeSuccess', function (evt, route) {
+        $rootScope.$watch('route', function (route) {
             var date= (route.params.date) ? new Date(route.params.date) : new Date
             if ('week' === route.params.view) {
                 $scope.showWeek(date)
@@ -488,6 +497,11 @@ function bScheduleDirective($compile, $interval, Issue) {
             $scope.selectedIssue= issue
         }
 
+        $scope.selectedIssueInterval
+        $scope.selectIssueInterval= function (issue, interval) {
+            $scope.selectedIssueInterval= interval
+        }
+
         $scope.deleteIssue= function (issue) {
             Issue.delete(issue).$promise
                 .then(function (issue) {
@@ -500,6 +514,7 @@ function bScheduleDirective($compile, $interval, Issue) {
                 })
             ;
         }
+
     }
 
     function bScheduleDirectiveLink($scope, $e, $a) {

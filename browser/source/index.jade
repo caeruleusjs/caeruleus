@@ -74,7 +74,7 @@ append body
 
                         td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks", ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}")
                             .b-table-schedule__cel
-                                .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}")
+                                .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}", ng-click="selectIssueInterval(issue, issueChunkInterval.interval)")
 
             .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
@@ -106,31 +106,62 @@ append body
                                 .col.col-xs-3.col-lg-2  
                                 button.col.col-xs-5.col-lg-5(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
 
-            .app-dialog(app-dialog="IssueViewDialog")
+            .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl", ng-init="mode='view'")
 
                 .app-dialog__head
-                    .app-dialog__heading Issue
+                    .app-dialog__heading Issue 
+                        button(ng-show="'edit'==mode", ng-click="mode='view'") view
+                        button(ng-show="'view'==mode", ng-click="mode='edit'") edit
+                        button(ng-show="'edit'==mode", ng-click="deleteIssue(selectedIssue)") delete
 
-                .app-dialog__body(ng-form="IssueForm", ng-controller="IssueFormCtrl")
+
+                .app-dialog__body(ng-show="'view'==mode")
+                    .row
+
+                        .col.col-xs-12.col-md-4.col-md-push-8
+                            .row
+                                .col.col-xs-12
+                                    button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ► Start work
+                                    button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■ Stop work
+
+                        .app-form.col.col-xs-12.col-md-8.col-md-pull-4
+                            .row
+                                .col.col-xs-3.col-lg-2  
+                                div.col.col-xs-9.col-lg-10
+                                    strong {{selectedIssue.title}}
+                            .row
+                                label.col.col-xs-3.col-lg-2  
+                                div.col.col-xs-9.col-lg-10
+                                    span {{selectedIssue.content}}
+
+                .app-dialog__body(ng-show="'edit'==mode")
                     .row
 
                         .col.col-xs-12.col-md-4.col-md-push-8
                             .row
                                 .col.col-xs-12 ...
 
-                        .app-form.col.col-xs-12.col-md-8.col-md-pull-4
+                        fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
                             .row
-                                .col.col-xs-3.col-lg-2
-                                .col.col-xs-9.col-lg-10
+                                label.col.col-xs-3.col-lg-2(required) Title
+                                input.col.col-xs-9.col-lg-10(name="title", ng-model="selectedIssue.title", required)
+                            .row
+                                label.col.col-xs-3.col-lg-2() Tags
+                                input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
+                            .row
+                                label.col.col-xs-3.col-lg-2() Details
+                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((issue.content.split('\n').length + 1) > 7 && issue.content.split('\n').length + 1) || 7}}")
 
-                                    h2 {{selectedIssue.title}}
 
-                                    button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ►
-                                    button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■
+                .app-dialog__foot(ng-show="'edit'==mode||IssueForm.$dirty")
+                    .row
+                        .col.col-xs-12.col-md-8
+                            .row
+                                .col.col-xs-3.col-lg-2  
+                                button.col.col-xs-5.col-lg-6(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Save issue
+                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';appDialogHide('IssueViewDialog')") Cancel
+                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';appDialogHide('IssueViewDialog')") Close
 
-                                    div {{selectedIssue.content}}
-
-                                    button(ng-click="deleteIssue(selectedIssue)", style="float:right") DELETE
 
         .app-overlay(ng-repeat="(key, dialog) in appDialog")
             .app-overlay__bg(ng-if="dialog.$shown", ng-click="appDialogHide(key)")
