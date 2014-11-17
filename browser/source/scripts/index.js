@@ -41,6 +41,28 @@ angular.module('Caeruleus', ['ngRoute'])
         .directive('appDialog', appDialogDirective)
         .directive('appDialogTransclude', appDialogTranscludeDirective)
 
+    .controller('AppDialogCtrl', function ($scope, $q) {
+        var dfd= $q.defer()
+        this.promise= dfd.promise
+        this.resolve= function (value) {
+            dfd.resolve(value)
+        }
+        this.reject= function (err) {
+            dfd.reject(err)
+        }
+        dfd.promise
+            .then(function () {
+                console.log('dialog resolved')
+            })
+            .catch(function () {
+                console.log('dialog rejected')
+            })
+            .finally(function () {
+                $scope.appDialogHide($scope.key)
+            })
+        ;
+    })
+
     .controller('ScheduleIssueCtrl', function ($scope, Issue) {
         this.chunks= []
 
@@ -98,18 +120,32 @@ angular.module('Caeruleus', ['ngRoute'])
     })
 
     .controller('IssueFormCtrl', function ($scope, Issue) {
+
+        $scope.$watch('AppDialog', function (AppDialog) {
+            if (AppDialog) {
+                AppDialog.mode='view'
+            }
+        })
+
         $scope.issue= {}
         $scope.saveIssue= function (issue, IssueForm) {
+            var create= false
             if (!(issue.guid)) { // create new issue
+                create= true
                 issue.guid= guid()
                 issue.updatedAt= new Date
             }
             Issue.save(issue).$promise
                 .then(function (issue) {
-                    $scope.issues.unshift(issue)
-                    $scope.issue= {}
-                    $scope.selectedIssue= null
-                    $scope.appDialogToggle('IssueFormDialog')
+                    if (create) {
+                        $scope.issues.unshift(issue)
+                        $scope.issue= {}
+                        $scope.selectedIssue= null
+                        $scope.appDialogToggle('IssueFormDialog')
+                    } else {
+                        IssueForm.$setPristine(true)
+                        $scope.AppDialog.mode='view'
+                    }
                 })
             ;
         }
@@ -212,20 +248,37 @@ function appDirective($rootScope) {
                     return (arguments.length > 2) ? returnIfFalse : false
                 }
             }
-            $rootScope.appDialog= {}
+
+            var dialogs= $rootScope.dialogs= {}
+            $rootScope.useDialog= function (name, dialog) {
+                if (name && dialog) {
+                    dialogs[name]= dialog
+                }
+            }
+            $rootScope.getDialog= function (name) {
+                return dialogs[name] || null
+            }
+
             $rootScope.appDialogShow= function (name) {
-                if ($rootScope.appDialog[name]) {
-                    $rootScope.appDialog[name].$shown= true
+                var dialog= $rootScope.getDialog(name)
+                if (dialog) {
+                    dialog.$shown= true
                 }
             }
             $rootScope.appDialogHide= function (name) {
-                if ($rootScope.appDialog[name]) {
-                    $rootScope.appDialog[name].$shown= false
+                var dialog= $rootScope.getDialog(name)
+                if (dialog) {
+                    dialog.$shown= false
                 }
             }
             $rootScope.appDialogToggle= function (name) {
-                if ($rootScope.appDialog[name]) {
-                    $rootScope.appDialog[name].$shown= !$rootScope.appDialog[name].$shown
+                var dialog= $rootScope.getDialog(name)
+                if (dialog) {
+                    if (dialog.$shown) {
+                        $rootScope.appDialogHide(name)
+                    } else {
+                        $rootScope.appDialogShow(name)
+                    }
                 }
             }
         }
@@ -240,11 +293,11 @@ function appDialogDirective($rootScope) {
         require: '^app',
         transclude: 'element',
         link: function ($scope, $e, $a, app, $transclude) {
-            $rootScope.appDialog[$a.appDialog]= {
+            $rootScope.useDialog($a.appDialog, {
                 $scope: $scope,
                 $e: $e,
                 $transclude: $transclude,
-            }
+            })
         }
     }
 }
@@ -255,8 +308,11 @@ function appDialogTranscludeDirective($rootScope) {
         require: '^app',
         transclude: true,
         link: function ($scope, $e, $a) {
-            var appDialogTemplate= $rootScope.appDialog[$a.appDialogTransclude]
-            if (appDialogTemplate) appDialogTemplate.$transclude(appDialogTemplate.$scope, function ($eTranscluded) {
+            var appDialogTemplate= $rootScope.getDialog($a.appDialogTransclude)
+            //var appDialogScope= appDialogTemplate.$scope.$new()
+            var appDialogScope= appDialogTemplate.$scope
+            appDialogScope.AppDialog= $scope.AppDialog
+            if (appDialogTemplate) appDialogTemplate.$transclude(appDialogScope, function ($eTranscluded) {
                 $e.empty()
                 $e.append($eTranscluded)
             })

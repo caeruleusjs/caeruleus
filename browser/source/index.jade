@@ -106,16 +106,16 @@ append body
                                 .col.col-xs-3.col-lg-2  
                                 button.col.col-xs-5.col-lg-5(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
 
-            .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl", ng-init="mode='view'")
+            .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
                 .app-dialog__head
                     .app-dialog__heading Issue 
-                        button(ng-show="'edit'==mode", ng-click="mode='view'") view
-                        button(ng-show="'view'==mode", ng-click="mode='edit'") edit
-                        button(ng-show="'edit'==mode", ng-click="deleteIssue(selectedIssue)") delete
+                        button(ng-show="'edit'==AppDialog.mode", ng-click="AppDialog.mode='view'") view
+                        button(ng-show="'view'==AppDialog.mode", ng-click="AppDialog.mode='edit'") edit
+                        button(ng-show="'edit'==AppDialog.mode", ng-click="deleteIssue(selectedIssue)") delete
 
 
-                .app-dialog__body(ng-show="'view'==mode")
+                .app-dialog__body(ng-show="'view'==AppDialog.mode")
                     .row
 
                         .col.col-xs-12.col-md-4.col-md-push-8
@@ -134,7 +134,7 @@ append body
                                 div.col.col-xs-9.col-lg-10
                                     span {{selectedIssue.content}}
 
-                .app-dialog__body(ng-show="'edit'==mode")
+                .app-dialog__body(ng-show="'edit'==AppDialog.mode")
                     .row
 
                         .col.col-xs-12.col-md-4.col-md-push-8
@@ -153,16 +153,16 @@ append body
                                 textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((issue.content.split('\n').length + 1) > 7 && issue.content.split('\n').length + 1) || 7}}")
 
 
-                .app-dialog__foot(ng-show="'edit'==mode||IssueForm.$dirty")
+                .app-dialog__foot(ng-show="'edit'==AppDialog.mode||IssueForm.$dirty")
                     .row
                         .col.col-xs-12.col-md-8
                             .row
                                 .col.col-xs-3.col-lg-2  
                                 button.col.col-xs-5.col-lg-6(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Save issue
-                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';appDialogHide('IssueViewDialog')") Cancel
-                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';appDialogHide('IssueViewDialog')") Close
+                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';") Cancel
+                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';AppDialog.resolve(false)") Close
 
 
-        .app-overlay(ng-repeat="(key, dialog) in appDialog" ng-show="dialog.$shown")
-            .app-overlay__bg(ng-if="dialog.$shown", ng-click="appDialogHide(key)")
-            .app-overlay__dialog(ng-if="dialog.$shown", app-dialog-transclude="{{key}}")
+        .app-overlay(ng-repeat="(key, dialog) in dialogs", ng-if="dialog.$shown", ng-controller="AppDialogCtrl as AppDialog")
+            .app-overlay__bg(ng-click="AppDialog.resolve(false)")
+            .app-overlay__dialog(app-dialog-transclude="{{key}}")
