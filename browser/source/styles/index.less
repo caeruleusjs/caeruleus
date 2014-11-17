@@ -59,16 +59,80 @@ button {
     border-color: #fff #b2b2b2 #b2b2b2 #fff;
     outline: 0;
     text-shadow: -1px -1px 0 rgba(255,255,255,.37);
-    box-shadow: 0 0 0 5px #f2f2f2;
 
     &:active {
         //border-color: #b2b2b2 #fff #fff #b2b2b2;
-        box-shadow: 0 0 0 5px #f2f2f2, inset 1px 0 0 0 rgba(178,178,178,.37), inset -1px 0 0 0 rgba(255,255,255,.37), inset 0 1px 0 0 rgba(178,178,178,.37), inset 0 -1px 0 0 rgba(255,255,255,.37);
         text-shadow: 1px 1px 0 rgba(255,255,255,.37);
+        box-shadow:
+            inset 1px 0 0 0 rgba(178,178,178,.37),
+            inset -1px 0 0 0 rgba(255,255,255,.37),
+            inset 0 1px 0 0 rgba(178,178,178,.37),
+            inset 0 -1px 0 0 rgba(255,255,255,.37)
+        ;
     }
 
     &:disabled {
         color: #a2a2a2;
+    }
+
+    &.col {
+        padding: 9px 14px;
+    }
+}
+
+label {
+    display: inline-block;
+    width: auto; height: auto;
+    margin: 0 0 10px; padding: 5px 10px;
+    line-height: 18px;
+    font-size: inherit;
+    text-align: right;
+    color: #737373;
+
+    &.col {
+        padding: 10px 15px;
+    }
+
+    &[required] {
+        &:before {
+            display: inline; content: '* ';
+            color: red;
+        }
+    }
+}
+
+input, textarea {
+    display: inline-block;
+    width: auto; height: auto;
+    margin: 0 0 10px; padding: 4px 9px;
+    line-height: 18px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #373737;
+    background: #fff;
+    border: 1px solid;
+    border-color: #b2b2b2 #fff #fff #b2b2b2;
+    outline: 0;
+    resize: none;
+
+    &.col {
+        padding: 9px 14px;
+    }
+}
+
+
+
+fieldset {
+    display: block;
+    position: relative;
+    margin: 0; margin-bottom: -10px;
+    padding: 0;
+    border: 0;
+}
+.app-form {
+    &__foot.row {
+        padding: 6px 0;
+        background: #efefef;
     }
 }
 
@@ -627,6 +691,25 @@ button {
 }
 
 
+
+html,
+body {
+    position: relative;
+    overflow: hidden;
+    width: 100%; height: 100%;
+    padding: 0;
+}
+
+.b-app {
+    position: relative; top: 0; left: 0;
+    width: 100%; height: 100%;
+    &__body {
+        overflow-x: auto; overflow-y: scroll;
+        position: relative; top: 0; left: 0;
+        width: 100%; height: 100%;
+        padding: 30px;
+    }
+}
 
 @import (reference) "_bDialog.less";
 
