@@ -163,6 +163,6 @@ append body
                                 button.col.col-xs-2.col-lg-2(ng-click="mode='view';appDialogHide('IssueViewDialog')") Close
 
 
-        .app-overlay(ng-repeat="(key, dialog) in appDialog")
+        .app-overlay(ng-repeat="(key, dialog) in appDialog" ng-show="dialog.$shown")
             .app-overlay__bg(ng-if="dialog.$shown", ng-click="appDialogHide(key)")
             .app-overlay__dialog(ng-if="dialog.$shown", app-dialog-transclude="{{key}}")
