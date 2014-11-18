@@ -412,7 +412,7 @@ function appDialogTranscludeDirective($rootScope) {
 
 
 
-function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
+function bScheduleDirective($rootScope, $compile, $interval, $location, Issue, Tag) {
 
     return {
         restrict: 'EA',
@@ -554,6 +554,7 @@ function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
             })
         ;
 
+        $scope.tagsIdx= {}
         $scope.tags= Tag.query()
         $scope.tags.$promise
             .then(function (tags) {
@@ -679,17 +680,33 @@ function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
                 return false
             } else {
                 $scope.selectedTags[tag.name]= tag
+                $location.search('tags', Object.keys($scope.selectedTags))
                 return true
             }
         }
         $scope.unselectTag= function (tag) {
             if ($scope.selectedTags[tag.name]) {
                 delete $scope.selectedTags[tag.name]
+                $location.search('tags', Object.keys($scope.selectedTags))
                 return true
             } else {
                 return false
             }
         }
+
+        $rootScope.$watch('route.params', function (params) {
+            if (params && params.tags) {
+                var tags= params.tags
+                if (!angular.isArray(tags)) {
+                    tags= [tags]
+                }
+                console.log('tags', tags, $scope.tagsIdx)
+                angular.forEach(tags, function (tag) {
+                    //$scope.selectTag(true)
+                })
+            }
+        })
+
         $scope.$watchCollection('selectedTags', function (selectedTags) {
             if (Object.keys(selectedTags).length) {
                 $scope.matchedIssues= []
