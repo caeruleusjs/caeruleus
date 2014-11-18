@@ -28,7 +28,7 @@ append body
 
                 caption.b-table-schedule__caption
                     .b-table-schedule__caption-title
-                        button(ng-click="appDialogToggle('IssueFormDialog')") Add issue
+                        button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
                     .b-table-schedule__caption-nav
                         .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='week'")
                             a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
@@ -82,7 +82,7 @@ append body
                     ul.b-tags
                         li.b-tags__tag(ng-repeat="tag in tagsIdx")
                             a.b-tag(ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)") {{tag.name}}
-                            span(ng-if="!$last") , 
+                            span(ng-if="!$last") ,
 
             .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
@@ -94,25 +94,28 @@ append body
 
                         .col.col-xs-12.col-md-4.col-md-push-8
                             .row
-                                .col.col-xs-12 ...
+                                .col.col-xs-12
+                                    span(ng-repeat="tag in selectedIssueTags")
+                                        a() {{tag.name}}
+                                        span(ng-if="!$last") , 
 
                         fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
                             .row
                                 label.col.col-xs-3.col-lg-2(required) Title
-                                input.col.col-xs-9.col-lg-10(name="title", ng-model="issue.title", required)
+                                input.col.col-xs-9.col-lg-10(name="title", ng-model="selectedIssue.title", required)
                             .row
                                 label.col.col-xs-3.col-lg-2() Tags
-                                input.col.col-xs-9.col-lg-10(name="tags", ng-model="issue.tags", ng-list)
+                                input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
                             .row
                                 label.col.col-xs-3.col-lg-2() Details
-                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="issue.content", rows="{{((issue.content.split('\n').length + 1) > 7 && issue.content.split('\n').length + 1) || 7}}")
+                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((selectedIssue.content.split('\n').length + 1) > 7 && selectedIssue.content.split('\n').length + 1) || 7}}")
 
                 .app-dialog__foot
                     .row
                         .col.col-xs-12.col-md-8
                             .row
                                 .col.col-xs-3.col-lg-2  
-                                button.col.col-xs-5.col-lg-5(ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
+                                button.col.col-xs-5.col-lg-5(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
 
             .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
@@ -133,7 +136,7 @@ append body
                                 .col.col-xs-12
                                     span(ng-repeat="tag in selectedIssueTags")
                                         a() {{tag.name}}
-                                        span(ng-if="!$last") , 
+                                        span(ng-if="!$last") , 
 
                         .app-form.col.col-xs-12.col-md-8.col-md-pull-4
                             .row
@@ -153,7 +156,7 @@ append body
                                 .col.col-xs-12
                                     span(ng-repeat="tag in selectedIssueTags")
                                         a() {{tag.name}}
-                                        span(ng-if="!$last") , 
+                                        span(ng-if="!$last") , 
 
                         fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
                             .row
@@ -164,7 +167,7 @@ append body
                                 input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
                             .row
                                 label.col.col-xs-3.col-lg-2() Details
-                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((issue.content.split('\n').length + 1) > 7 && issue.content.split('\n').length + 1) || 7}}")
+                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((selectedIssue.content.split('\n').length + 1) > 7 && selectedIssue.content.split('\n').length + 1) || 7}}")
 
 
                 .app-dialog__foot(ng-show="'edit'==AppDialog.mode||IssueForm.$dirty")
