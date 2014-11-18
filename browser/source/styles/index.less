@@ -700,14 +700,61 @@ body {
     padding: 0;
 }
 
+@viewPadding: 30px;
+@headHeight: 80px;
+@footHeight: 30px;
+
 .b-app {
     position: relative; top: 0; left: 0;
     width: 100%; height: 100%;
-    &__body {
+
+    &__view {
         overflow-x: auto; overflow-y: scroll;
         position: relative; top: 0; left: 0;
         width: 100%; height: 100%;
-        padding: 30px;
+        padding: @viewPadding @viewPadding @footHeight;
+    }
+        &__view-inner {
+            position: relative; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+    &__head {
+        position: absolute; top: -@viewPadding; left: -@viewPadding; right: -@viewPadding; z-index: 7;
+        height: @headHeight;
+        padding: 0 @viewPadding;
+        line-height: 20px;
+        background: #e2e2e2;
+    }
+
+        &__head-hero {
+            position: relative;
+            height: 50px;
+            padding: 15px 0;
+        }
+
+        &__head-menu {
+            position: relative;
+            height: 30px;
+            padding: 5px 0;
+        }
+
+    &__body {
+        position: relative; top: 0; left: 0;
+        width: 100%; min-height: 100%;
+        padding-top: @headHeight - @viewPadding;
+    }
+
+        &__body-page {
+            padding: 15px 0;
+        }
+
+    &__foot {
+        position: relative;
+        height: @footHeight;
+        margin: 0 -@viewPadding;
+        padding: 0 @viewPadding;
+        line-height: 20px;
     }
 }
 

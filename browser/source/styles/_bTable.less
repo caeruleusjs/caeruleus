@@ -38,102 +38,84 @@
     &-schedule {
 
         &__caption {
-            height: 50px;
+            height: 80px;
             margin: 0;
-            padding: 0; padding-bottom: 20px;
+            padding: 0 15px; padding-bottom: 30px;
+            text-align: left;
             border: 1px solid transparent;
         }
+            &__caption-inner {
+                position: relative;
+                height: 50px;
+            }
 
         &__caption-title {
-            float: left;
-            width: 27%;
-            padding-right: 15px;
-            @media (min-width: 992px) {
-                float: left;
-                width: 24%;
-            }
-            @media (min-width: 1200px) {
-                float: left;
-                width: 21%;
-            }
-
             & > button {
-                width: 100%;
+                width: 100%; height: 50px;
                 line-height: 28px;
             }
         }
 
         &__caption-nav {
-            float: left;
             position: relative;
-            width: 73%;
-            @media (min-width: 992px) {
-                float: left;
-                width: 76%;
+            height: 30px;
+
+            &_prev {
+                margin-left: -15px;
+                text-align: right;
             }
-            @media (min-width: 1200px) {
-                float: left;
-                width: 79%;
+
+            &_next {
+                margin-right: -15px;
+                text-align: left;
             }
-        }
-            &__caption-nav-prev,
-            &__caption-nav-next,
-            &__caption-nav-mode {
-                position: absolute; top: 0;
-                width: (100%)/3;
-                line-height: 30px;
+
+            & > a {
+                display: block;
+                width: 100%;
+                padding: 0 15px;
+                line-height: 50px;
+                &:hover {
+                    background: #e2e2e2;
+                }
+            }
+
+            &_mode {
+                text-align: center;
                 & > a {
                     display: inline-block;
-                    padding: 0 10px;
+                    width: auto;
+                    &:hover {
+                        background: transparent;
+                    }
                 }
             }
-            &__caption-nav-prev,
-            &__caption-nav-next {
 
-            }
-            &__caption-nav-prev {
-                left: 0;
-                text-align: right;
-                border-left: 1px solid #e2e2e2;
-                & > a {
-                    display: block;
-                    width: 100%;
-                    line-height: 30px;
-                    &:hover {
-                        background: #e2e2e2;
-                    }
+        }
+
+        &__caption-menu {
+            line-height: 30px;
+            font-size: 12px;
+            & a {
+                color: #aaaaaa;
+                &:hover {
+                    color: #212121;
+                }
+                &._active {
+                    font-weight: bold;
+                    color: #212121;
                 }
             }
-            &__caption-nav-mode {
-                left: (100%)/3;
-            }
-            &__caption-nav-next {
-                right: 0;
-                text-align: left;
-                border-right: 1px solid #e2e2e2;
-                & > a {
-                    display: block;
-                    width: 100%;
-                    line-height: 30px;
-                    &:hover {
-                        background: #e2e2e2;
-                    }
-                }
-            }
+        }
 
         &__cel {
             position: relative;
-            width: 100%; height: 32px;
+            width: 100%; height: 38px;
+            line-height: 20px;
             background: #e2e2e2;
 
             &_title {
-                width: 27%;
-                @media (min-width: 992px) {
-                    width: 24%;
-                }
-                @media (min-width: 1200px) {
-                    width: 21%;
-                }
+                width: 25%;
             }
 
             &_chunk {
@@ -203,8 +185,8 @@
         &__issue-title {
             display: block;
             position: relative;
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: 15px;
+            padding-right: 15px;
             line-height: 20px;
             & > a {
                 display: block;

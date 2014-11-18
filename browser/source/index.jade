@@ -22,163 +22,198 @@ append body
 
         div(ng-view)
 
-        .b-app__body(ng-if="isRoute('schedule')", b-schedule)
+        .b-app__view(ng-if="isRoute('schedule')", b-schedule): .b-app__view-inner
 
-            table.b-table.b-table-schedule
+            .b-app__head
+                .b-app__head-hero
 
-                caption.b-table-schedule__caption
-                    .b-table-schedule__caption-title
-                        button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
-                    .b-table-schedule__caption-nav
-                        .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='week'")
-                            a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
-                        .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='day'")
-                            a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
-                        .b-table-schedule__caption-nav-prev(ng-if="schedule.mode=='hour'")
-                            a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
-                        .b-table-schedule__caption-nav-mode
-                            a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}"): u HOUR
-                            a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}"): u DAY
-                            a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}"): u WEEK
-                        .b-table-schedule__caption-nav-next(ng-if="schedule.mode=='hour'")
-                            a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
-                        .b-table-schedule__caption-nav-next(ng-if="schedule.mode=='day'")
-                            a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
-                        .b-table-schedule__caption-nav-next(ng-if="schedule.mode=='week'")
-                            a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
+                    //.row
+                        .col.col-xs-12 12
 
-                //thead.b-table__head.b-table-schedule__head
-                    tr
-                        th.b-table__cel.b-table-schedule__cel_title
-                        th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}") h
+                .b-app__head-menu
 
-                thead.b-table__head.b-table-schedule__head.b-table-schedule__head_last
-                    tr
-                        th.b-table__cel.b-table-schedule__cel_title
-                        th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
-                            .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='hour'")
-                                label {{chunk.beginDate | date:'HH:mm'}}
-                            .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='day'")
-                                label {{chunk.beginDate | date:'HH.mm'}}
-                                a(ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}")
-                            .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='week'")
-                                label {{chunk.beginDate | date:'MM.dd'}}
-                                a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}")
+                    //.row
+                        .col.col-xs-12 12
 
-                tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid", ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}")
-                    tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
+            .b-app__body: .b-app__body-page
 
-                        td.b-table__cel.b-table-schedule__cel_title
-                            .b-table-schedule__issue-title
-                                a(ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')"): u {{issue.title}}
+                .row: table.b-table.b-table-schedule
 
-                        td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks", ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}")
-                            .b-table-schedule__cel
-                                .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}", ng-click="selectIssueInterval(issue, issueChunkInterval.interval)")
+                    caption.b-table-schedule__caption: .b-table-schedule__caption-inner
+                        .row
+                            .col.col-xs-3
+                                .b-table-schedule__caption-title
+                                    button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
 
-            .row
-                .col.col-xs-12  
-                .col.col-xs-12
-                    ul.b-tags
-                        li.b-tags__tag(ng-repeat="tag in tagsIdx")
-                            a.b-tag(ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)") {{tag.name}}
-                            span(ng-if="!$last") ,
+                            .col.col-xs-9: .row
+                                .col.col-xs-4
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='week'")
+                                        a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='day'")
+                                        a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='hour'")
+                                        a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
+                                .col.col-xs-4
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_mode
+                                        a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;"): u HOUR
+                                        a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;"): u DAY
+                                        a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;"): u WEEK
+                                .col.col-xs-4
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='hour'")
+                                        a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='day'")
+                                        a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
+                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='week'")
+                                        a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
+                        .row
+                            .col.col-xs-3
+                                .b-table-schedule__caption-menu
+                                    div(style='float:left; margin-right:10px;'): a._active() Open
+                                    div(style='float:left; margin-right:10px;'): a() Closed
+                            .col.col-xs-9
+                                .b-table-schedule__caption-menu
+                                    div(style='float:left; margin-right:10px;'): a() Menu
+                                    div(style='float:left; margin-right:10px;'): a() Menu
+                                    div(style='float:left; margin-right:10px;'): a() Menu
+                                    div(style='float:right'): a() Menu
 
-            .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                    //thead.b-table__head.b-table-schedule__head
+                        tr
+                            th.b-table__cel.b-table-schedule__cel_title
+                            th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}") h
 
-                .app-dialog__head
-                    .app-dialog__heading New issue
+                    thead.b-table__head.b-table-schedule__head.b-table-schedule__head_last
+                        tr
+                            th.b-table__cel.b-table-schedule__cel_title
+                            th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
+                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='hour'")
+                                    label {{chunk.beginDate | date:'HH:mm'}}
+                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='day'")
+                                    label {{chunk.beginDate | date:'HH.mm'}}
+                                    a(ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}")
+                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='week'")
+                                    label {{chunk.beginDate | date:'MM.dd'}}
+                                    a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}")
 
-                .app-dialog__body
-                    .row
+                    tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid", ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}")
+                        tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
 
-                        .col.col-xs-12.col-md-4.col-md-push-8
-                            .row
-                                .col.col-xs-12
-                                    span(ng-repeat="tag in selectedIssueTags")
-                                        a() {{tag.name}}
-                                        span(ng-if="!$last") , 
+                            td.b-table__cel.b-table-schedule__cel_title
+                                .b-table-schedule__issue-title
+                                    a(ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')"): u {{issue.title}}
 
-                        fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
-                            .row
-                                label.col.col-xs-3.col-lg-2(required) Title
-                                input.col.col-xs-9.col-lg-10(name="title", ng-model="selectedIssue.title", required)
-                            .row
-                                label.col.col-xs-3.col-lg-2() Tags
-                                input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
-                            .row
-                                label.col.col-xs-3.col-lg-2() Details
-                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((selectedIssue.content.split('\n').length + 1) > 7 && selectedIssue.content.split('\n').length + 1) || 7}}")
+                            td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks", ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}")
+                                .b-table-schedule__cel
+                                    .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}", ng-click="selectIssueInterval(issue, issueChunkInterval.interval)")
 
-                .app-dialog__foot
-                    .row
-                        .col.col-xs-12.col-md-8
-                            .row
-                                .col.col-xs-3.col-lg-2  
-                                button.col.col-xs-5.col-lg-5(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
+                .row
+                    .col.col-xs-12  
+                    .col.col-xs-12
+                        ul.b-tags
+                            li.b-tags__tag(ng-repeat="tag in tagsIdx")
+                                a.b-tag(ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)") {{tag.name}}
+                                span(ng-if="!$last") ,
 
-            .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
-                .app-dialog__head
-                    .app-dialog__heading Issue 
-                        button(ng-show="'edit'==AppDialog.mode", ng-click="AppDialog.mode='view'") view
-                        button(ng-show="'view'==AppDialog.mode", ng-click="AppDialog.mode='edit'") edit
-                        button(ng-show="'edit'==AppDialog.mode", ng-click="deleteIssue(selectedIssue)") delete
-                        button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ► Start work
-                        button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■ Stop work
+                    .app-dialog__head
+                        .app-dialog__heading New issue
 
+                    .app-dialog__body
+                        .row
 
-                .app-dialog__body(ng-show="'view'==AppDialog.mode")
-                    .row
+                            .col.col-xs-12.col-md-4.col-md-push-8
+                                .row
+                                    .col.col-xs-12
+                                        span(ng-repeat="tag in selectedIssueTags")
+                                            a() {{tag.name}}
+                                            span(ng-if="!$last") , 
 
-                        .col.col-xs-12.col-md-4.col-md-push-8
-                            .row
-                                .col.col-xs-12
-                                    span(ng-repeat="tag in selectedIssueTags")
-                                        a() {{tag.name}}
-                                        span(ng-if="!$last") , 
+                            fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
+                                .row
+                                    label.col.col-xs-3.col-lg-2(required) Title
+                                    input.col.col-xs-9.col-lg-10(name="title", ng-model="selectedIssue.title", required)
+                                .row
+                                    label.col.col-xs-3.col-lg-2() Tags
+                                    input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
+                                .row
+                                    label.col.col-xs-3.col-lg-2() Details
+                                    textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((selectedIssue.content.split('\n').length + 1) > 7 && selectedIssue.content.split('\n').length + 1) || 7}}")
 
-                        .app-form.col.col-xs-12.col-md-8.col-md-pull-4
-                            .row
-                                .col.col-xs-3.col-lg-2  
-                                div.col.col-xs-9.col-lg-10
-                                    strong {{selectedIssue.title}}
-                            .row
-                                label.col.col-xs-3.col-lg-2  
-                                div.col.col-xs-9.col-lg-10
-                                    span {{selectedIssue.content}}
+                    .app-dialog__foot
+                        .row
+                            .col.col-xs-12.col-md-8
+                                .row
+                                    .col.col-xs-3.col-lg-2  
+                                    button.col.col-xs-5.col-lg-5(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
 
-                .app-dialog__body(ng-show="'edit'==AppDialog.mode")
-                    .row
+                .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
-                        .col.col-xs-12.col-md-4.col-md-push-8
-                            .row
-                                .col.col-xs-12
-                                    span(ng-repeat="tag in selectedIssueTags")
-                                        a() {{tag.name}}
-                                        span(ng-if="!$last") , 
-
-                        fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
-                            .row
-                                label.col.col-xs-3.col-lg-2(required) Title
-                                input.col.col-xs-9.col-lg-10(name="title", ng-model="selectedIssue.title", required)
-                            .row
-                                label.col.col-xs-3.col-lg-2() Tags
-                                input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
-                            .row
-                                label.col.col-xs-3.col-lg-2() Details
-                                textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((selectedIssue.content.split('\n').length + 1) > 7 && selectedIssue.content.split('\n').length + 1) || 7}}")
+                    .app-dialog__head
+                        .app-dialog__heading Issue 
+                            button(ng-show="'edit'==AppDialog.mode", ng-click="AppDialog.mode='view'") view
+                            button(ng-show="'view'==AppDialog.mode", ng-click="AppDialog.mode='edit'") edit
+                            button(ng-show="'edit'==AppDialog.mode", ng-click="deleteIssue(selectedIssue)") delete
+                            button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ► Start work
+                            button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■ Stop work
 
 
-                .app-dialog__foot(ng-show="'edit'==AppDialog.mode||IssueForm.$dirty")
-                    .row
-                        .col.col-xs-12.col-md-8
-                            .row
-                                .col.col-xs-3.col-lg-2  
-                                button.col.col-xs-5.col-lg-6(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Save issue
-                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';") Cancel
-                                button.col.col-xs-2.col-lg-2(ng-click="mode='view';AppDialog.resolve(false)") Close
+                    .app-dialog__body(ng-show="'view'==AppDialog.mode")
+                        .row
 
+                            .col.col-xs-12.col-md-4.col-md-push-8
+                                .row
+                                    .col.col-xs-12
+                                        span(ng-repeat="tag in selectedIssueTags")
+                                            a() {{tag.name}}
+                                            span(ng-if="!$last") , 
+
+                            .app-form.col.col-xs-12.col-md-8.col-md-pull-4
+                                .row
+                                    .col.col-xs-3.col-lg-2  
+                                    div.col.col-xs-9.col-lg-10
+                                        strong {{selectedIssue.title}}
+                                .row
+                                    label.col.col-xs-3.col-lg-2  
+                                    div.col.col-xs-9.col-lg-10
+                                        span {{selectedIssue.content}}
+
+                    .app-dialog__body(ng-show="'edit'==AppDialog.mode")
+                        .row
+
+                            .col.col-xs-12.col-md-4.col-md-push-8
+                                .row
+                                    .col.col-xs-12
+                                        span(ng-repeat="tag in selectedIssueTags")
+                                            a() {{tag.name}}
+                                            span(ng-if="!$last") , 
+
+                            fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
+                                .row
+                                    label.col.col-xs-3.col-lg-2(required) Title
+                                    input.col.col-xs-9.col-lg-10(name="title", ng-model="selectedIssue.title", required)
+                                .row
+                                    label.col.col-xs-3.col-lg-2() Tags
+                                    input.col.col-xs-9.col-lg-10(name="tags", ng-model="selectedIssue.tags", ng-list)
+                                .row
+                                    label.col.col-xs-3.col-lg-2() Details
+                                    textarea.col.col-xs-9.col-lg-10(name="content", ng-model="selectedIssue.content", rows="{{((selectedIssue.content.split('\n').length + 1) > 7 && selectedIssue.content.split('\n').length + 1) || 7}}")
+
+
+                    .app-dialog__foot(ng-show="'edit'==AppDialog.mode||IssueForm.$dirty")
+                        .row
+                            .col.col-xs-12.col-md-8
+                                .row
+                                    .col.col-xs-3.col-lg-2  
+                                    button.col.col-xs-5.col-lg-6(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Save issue
+                                    button.col.col-xs-2.col-lg-2(ng-click="mode='view';") Cancel
+                                    button.col.col-xs-2.col-lg-2(ng-click="mode='view';AppDialog.resolve(false)") Close
+
+            .b-app__foot
+
+                //.row
+                    .col.col-xs-3 3
+                    .col.col-xs-9 9
 
         .app-overlay(ng-repeat="(key, dialog) in dialogs", ng-if="dialog.$shown", ng-controller="AppDialogCtrl as AppDialog")
             .app-overlay__bg(ng-click="AppDialog.resolve(false)")
