@@ -69,6 +69,14 @@
             </tr>
           </tbody>
         </table>
+        <div class="row">
+          <div class="col col-xs-12"> </div>
+          <div class="col col-xs-12">
+            <ul class="b-tags">
+              <li ng-repeat="tag in tagsIdx" class="b-tags__tag"><a ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)" class="b-tag">{{tag.name}}</a><span ng-if="!$last">, </span></li>
+            </ul>
+          </div>
+        </div>
         <div app-dialog="IssueFormDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
           <div class="app-dialog__head">
             <div class="app-dialog__heading">New issue</div>
@@ -109,22 +117,21 @@
             </div>
           </div>
         </div>
-        <div app-dialog="IssueViewDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" ng-init="mode='view'" class="app-dialog">
+        <div app-dialog="IssueViewDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
           <div class="app-dialog__head">
             <div class="app-dialog__heading">Issue 
-              <button ng-show="'edit'==mode" ng-click="mode='view'">view</button>
-              <button ng-show="'view'==mode" ng-click="mode='edit'">edit</button>
-              <button ng-show="'edit'==mode" ng-click="deleteIssue(selectedIssue)">delete</button>
+              <button ng-show="'edit'==AppDialog.mode" ng-click="AppDialog.mode='view'">view</button>
+              <button ng-show="'view'==AppDialog.mode" ng-click="AppDialog.mode='edit'">edit</button>
+              <button ng-show="'edit'==AppDialog.mode" ng-click="deleteIssue(selectedIssue)">delete</button>
+              <button ng-if="!selectedIssue.startedAt" ng-click="startWork(selectedIssue)">► Start work</button>
+              <button ng-if="selectedIssue.startedAt" ng-click="stopWork(selectedIssue)">■ Stop work</button>
             </div>
           </div>
-          <div ng-show="'view'==mode" class="app-dialog__body">
+          <div ng-show="'view'==AppDialog.mode" class="app-dialog__body">
             <div class="row">
               <div class="col col-xs-12 col-md-4 col-md-push-8">
                 <div class="row">
-                  <div class="col col-xs-12">
-                    <button ng-if="!selectedIssue.startedAt" ng-click="startWork(selectedIssue)">► Start work</button>
-                    <button ng-if="selectedIssue.startedAt" ng-click="stopWork(selectedIssue)">■ Stop work</button>
-                  </div>
+                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                 </div>
               </div>
               <div class="app-form col col-xs-12 col-md-8 col-md-pull-4">
@@ -139,11 +146,11 @@
               </div>
             </div>
           </div>
-          <div ng-show="'edit'==mode" class="app-dialog__body">
+          <div ng-show="'edit'==AppDialog.mode" class="app-dialog__body">
             <div class="row">
               <div class="col col-xs-12 col-md-4 col-md-push-8">
                 <div class="row">
-                  <div class="col col-xs-12">...</div>
+                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                 </div>
               </div>
               <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
@@ -164,23 +171,23 @@
               </fieldset>
             </div>
           </div>
-          <div ng-show="'edit'==mode||IssueForm.$dirty" class="app-dialog__foot">
+          <div ng-show="'edit'==AppDialog.mode||IssueForm.$dirty" class="app-dialog__foot">
             <div class="row">
               <div class="col col-xs-12 col-md-8">
                 <div class="row">
                   <div class="col col-xs-3 col-lg-2"> </div>
                   <button ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-6">Save issue</button>
-                  <button ng-click="mode='view';appDialogHide('IssueViewDialog')" class="col col-xs-2 col-lg-2">Cancel</button>
-                  <button ng-click="mode='view';appDialogHide('IssueViewDialog')" class="col col-xs-2 col-lg-2">Close</button>
+                  <button ng-click="mode='view';" class="col col-xs-2 col-lg-2">Cancel</button>
+                  <button ng-click="mode='view';AppDialog.resolve(false)" class="col col-xs-2 col-lg-2">Close</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div ng-repeat="(key, dialog) in appDialog" class="app-overlay">
-        <div ng-if="dialog.$shown" ng-click="appDialogHide(key)" class="app-overlay__bg"></div>
-        <div ng-if="dialog.$shown" app-dialog-transclude="{{key}}" class="app-overlay__dialog"></div>
+      <div ng-repeat="(key, dialog) in dialogs" ng-if="dialog.$shown" ng-controller="AppDialogCtrl as AppDialog" class="app-overlay">
+        <div ng-click="AppDialog.resolve(false)" class="app-overlay__bg"></div>
+        <div app-dialog-transclude="{{key}}" class="app-overlay__dialog"></div>
       </div>
     </div>
   </body>

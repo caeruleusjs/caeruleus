@@ -675,15 +675,7 @@ body {
   height: 100%;
   padding: 30px;
 }
-.app-overlay__bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.68);
-}
-.app-overlay__dialog {
+.app-overlay {
   position: fixed;
   top: 0;
   right: 0;
@@ -693,6 +685,14 @@ body {
   height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
+}
+.app-overlay__bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.68);
 }
 .app-dialog {
   position: absolute;
@@ -956,4 +956,31 @@ body {
 }
 .b-table-schedule__head_last .b-table__cel {
   border-bottom-color: #fff;
+}
+.b-tags {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.b-tags__tag {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+.b-tag {
+  display: inline-block;
+  margin: 0;
+  padding: 0 5px;
+  line-height: 20px;
+  font-size: 12px;
+  background: #e2e2e2;
+}
+.b-tag__active {
+  background: #4082C4;
+  color: #e2e2e2;
+}
+.b-tag__active:hover {
+  color: #fff;
 }
