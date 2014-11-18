@@ -18,7 +18,7 @@
         <table class="b-table b-table-schedule">
           <caption class="b-table-schedule__caption">
             <div class="b-table-schedule__caption-title">
-              <button ng-click="appDialogToggle('IssueFormDialog')">Add issue</button>
+              <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
             </div>
             <div class="b-table-schedule__caption-nav">
               <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav-prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
@@ -73,7 +73,7 @@
           <div class="col col-xs-12"> </div>
           <div class="col col-xs-12">
             <ul class="b-tags">
-              <li ng-repeat="tag in tagsIdx" class="b-tags__tag"><a ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)" class="b-tag">{{tag.name}}</a><span ng-if="!$last">, </span></li>
+              <li ng-repeat="tag in tagsIdx" class="b-tags__tag"><a ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)" class="b-tag">{{tag.name}}</a><span ng-if="!$last">,</span></li>
             </ul>
           </div>
         </div>
@@ -85,22 +85,22 @@
             <div class="row">
               <div class="col col-xs-12 col-md-4 col-md-push-8">
                 <div class="row">
-                  <div class="col col-xs-12">...</div>
+                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                 </div>
               </div>
               <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
                 <div class="row">
                   <label required class="col col-xs-3 col-lg-2">Title</label>
-                  <input name="title" ng-model="issue.title" required class="col col-xs-9 col-lg-10">
+                  <input name="title" ng-model="selectedIssue.title" required class="col col-xs-9 col-lg-10">
                 </div>
                 <div class="row">
                   <label class="col col-xs-3 col-lg-2">Tags</label>
-                  <input name="tags" ng-model="issue.tags" ng-list class="col col-xs-9 col-lg-10">
+                  <input name="tags" ng-model="selectedIssue.tags" ng-list class="col col-xs-9 col-lg-10">
                 </div>
                 <div class="row">
                   <label class="col col-xs-3 col-lg-2">Details</label>
-                  <textarea name="content" ng-model="issue.content" rows="{{((issue.content.split('
-').length + 1) &gt; 7 &amp;&amp; issue.content.split('
+                  <textarea name="content" ng-model="selectedIssue.content" rows="{{((selectedIssue.content.split('
+').length + 1) &gt; 7 &amp;&amp; selectedIssue.content.split('
 ').length + 1) || 7}}" class="col col-xs-9 col-lg-10"></textarea>
                 </div>
               </fieldset>
@@ -111,7 +111,7 @@
               <div class="col col-xs-12 col-md-8">
                 <div class="row">
                   <div class="col col-xs-3 col-lg-2"> </div>
-                  <button ng-click="saveIssue(issue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-5">Submit new issue</button>
+                  <button ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-5">Submit new issue</button>
                 </div>
               </div>
             </div>
@@ -131,7 +131,7 @@
             <div class="row">
               <div class="col col-xs-12 col-md-4 col-md-push-8">
                 <div class="row">
-                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                 </div>
               </div>
               <div class="app-form col col-xs-12 col-md-8 col-md-pull-4">
@@ -150,7 +150,7 @@
             <div class="row">
               <div class="col col-xs-12 col-md-4 col-md-push-8">
                 <div class="row">
-                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                 </div>
               </div>
               <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
@@ -164,8 +164,8 @@
                 </div>
                 <div class="row">
                   <label class="col col-xs-3 col-lg-2">Details</label>
-                  <textarea name="content" ng-model="selectedIssue.content" rows="{{((issue.content.split('
-').length + 1) &gt; 7 &amp;&amp; issue.content.split('
+                  <textarea name="content" ng-model="selectedIssue.content" rows="{{((selectedIssue.content.split('
+').length + 1) &gt; 7 &amp;&amp; selectedIssue.content.split('
 ').length + 1) || 7}}" class="col col-xs-9 col-lg-10"></textarea>
                 </div>
               </fieldset>

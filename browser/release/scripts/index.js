@@ -127,7 +127,6 @@ angular.module('Caeruleus', ['ngRoute'])
             }
         })
 
-        $scope.issue= {}
         $scope.saveIssue= function (issue, IssueForm) {
             var create= false
             if (!(issue.guid)) { // create new issue
@@ -139,7 +138,6 @@ angular.module('Caeruleus', ['ngRoute'])
                 .then(function (issue) {
                     if (create) {
                         $scope.issues.unshift(issue)
-                        $scope.issue= {}
                         $scope.selectedIssue= null
                         $scope.appDialogToggle('IssueFormDialog')
                     } else {
@@ -157,7 +155,7 @@ angular.module('Caeruleus', ['ngRoute'])
                     })
                     $q.all(promises)
                         .then(function (tags) {
-                            console.log('tags saved', tags)
+                            //console.log('tags saved', tags)
                         })
                     ;
                 })
@@ -414,7 +412,7 @@ function appDialogTranscludeDirective($rootScope) {
 
 
 
-function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
+function bScheduleDirective($rootScope, $compile, $interval, $location, Issue, Tag) {
 
     return {
         restrict: 'EA',
@@ -556,6 +554,7 @@ function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
             })
         ;
 
+        $scope.tagsIdx= {}
         $scope.tags= Tag.query()
         $scope.tags.$promise
             .then(function (tags) {
@@ -681,17 +680,33 @@ function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
                 return false
             } else {
                 $scope.selectedTags[tag.name]= tag
+                $location.search('tags', Object.keys($scope.selectedTags))
                 return true
             }
         }
         $scope.unselectTag= function (tag) {
             if ($scope.selectedTags[tag.name]) {
                 delete $scope.selectedTags[tag.name]
+                $location.search('tags', Object.keys($scope.selectedTags))
                 return true
             } else {
                 return false
             }
         }
+
+        $rootScope.$watch('route.params', function (params) {
+            if (params && params.tags) {
+                var tags= params.tags
+                if (!angular.isArray(tags)) {
+                    tags= [tags]
+                }
+                console.log('tags', tags, $scope.tagsIdx)
+                angular.forEach(tags, function (tag) {
+                    //$scope.selectTag(true)
+                })
+            }
+        })
+
         $scope.$watchCollection('selectedTags', function (selectedTags) {
             if (Object.keys(selectedTags).length) {
                 $scope.matchedIssues= []
