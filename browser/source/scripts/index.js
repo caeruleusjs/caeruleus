@@ -119,7 +119,7 @@ angular.module('Caeruleus', ['ngRoute'])
         }
     })
 
-    .controller('IssueFormCtrl', function ($scope, Issue) {
+    .controller('IssueFormCtrl', function ($scope, $q, Issue, Tag) {
 
         $scope.$watch('AppDialog', function (AppDialog) {
             if (AppDialog) {
@@ -146,9 +146,38 @@ angular.module('Caeruleus', ['ngRoute'])
                         IssueForm.$setPristine(true)
                         $scope.AppDialog.mode='view'
                     }
+                    var promises= []
+                    angular.forEach($scope.selectedIssueTags, function (tag) {
+                        if (!(tag.guid)) {
+                            tag.guid= guid()
+                            tag.updatedAt= new Date
+                            $scope.tagsIdx[tag.name]= tag
+                        }
+                        var promise= Tag.save(tag).$promise
+                    })
+                    $q.all(promises)
+                        .then(function (tags) {
+                            console.log('tags saved', tags)
+                        })
+                    ;
                 })
             ;
         }
+
+        $scope.selectedIssueTags= {}
+        $scope.$watchCollection('selectedIssue.tags', function (tags) {
+            $scope.selectedIssueTags= {}
+            angular.forEach(tags, function (tag) {
+                var tagModel= $scope.tagsIdx[tag]
+                if (tagModel) {
+                    $scope.selectedIssueTags[tag]= tagModel
+                } else {
+                    $scope.selectedIssueTags[tag]= {
+                        name: tag
+                    }
+                }
+            })
+        })
     })
 
     .service('Issue', function ($q) {
@@ -230,6 +259,69 @@ angular.module('Caeruleus', ['ngRoute'])
         }
     })
 
+
+
+    .service('Tag', function ($q) {
+
+        this.query= function () {
+            var key= ['caeruleus','tags'].join(':')
+            var dfd= $q.defer()
+            var tags= []
+            Object.defineProperty(tags, '$promise', { configurable:true, value:dfd.promise })
+            localforage.keys(function (err, keys) {
+                var guids= []
+                var promises= []
+                angular.forEach(keys, function (key) {
+                    var match
+                    if (match= key.match(/^caeruleus:tags:([a-z0-9\-]{1,})$/)) {
+                        guids.push(match[1])
+                        promises.push($q(function (resolve, reject) {
+                            localforage.getItem(key, function (err, value) {
+                                if (err) {
+                                    reject(err)
+                                } else {
+                                    resolve(value)
+                                }
+                            })
+                        }))
+                    }
+                })
+                if (promises.length) {
+                    $q.all(promises)
+                        .then(function (values) {
+                            angular.forEach(values, function (value) {
+                                tags.push(value)
+                            })
+                            dfd.resolve(tags)
+                        })
+                    ;
+                } else {
+                    dfd.resolve(tags)
+                }
+            })
+            return tags
+        }
+
+        this.save= function (tag) {
+            if (!(tag) || !(tag.guid)) {
+                throw new Error
+            }
+            var key= ['caeruleus','tags',tag.guid].join(':')
+            var dfd= $q.defer()
+            Object.defineProperty(tag, '$promise', { configurable:true, value:dfd.promise })
+            localforage.setItem(key, tag, function (err, value) {
+                if (err) {
+                    dfd.reject(err)
+                } else {
+                    setTimeout(function () {
+                        jQuery.extend(true, tag, value)
+                        dfd.resolve(tag)
+                    }, 137)
+                }
+            })
+            return tag
+        }
+    })
 ;
 
 
@@ -322,7 +414,7 @@ function appDialogTranscludeDirective($rootScope) {
 
 
 
-function bScheduleDirective($rootScope, $compile, $interval, Issue) {
+function bScheduleDirective($rootScope, $compile, $interval, Issue, Tag) {
 
     return {
         restrict: 'EA',
@@ -464,6 +556,17 @@ function bScheduleDirective($rootScope, $compile, $interval, Issue) {
             })
         ;
 
+        $scope.tags= Tag.query()
+        $scope.tags.$promise
+            .then(function (tags) {
+                $scope.tagsIdx= {}
+                angular.forEach(tags, function (tag) {
+                    if (!($scope.tagsIdx[tag.name])) {
+                        $scope.tagsIdx[tag.name]= tag
+                    }
+                })
+            })
+        ;
 
 
         $scope.schedule= {
@@ -571,6 +674,43 @@ function bScheduleDirective($rootScope, $compile, $interval, Issue) {
             ;
         }
 
+
+        $scope.selectedTags= {}
+        $scope.selectTag= function (tag) {
+            if ($scope.selectedTags[tag.name]) {
+                return false
+            } else {
+                $scope.selectedTags[tag.name]= tag
+                return true
+            }
+        }
+        $scope.unselectTag= function (tag) {
+            if ($scope.selectedTags[tag.name]) {
+                delete $scope.selectedTags[tag.name]
+                return true
+            } else {
+                return false
+            }
+        }
+        $scope.$watchCollection('selectedTags', function (selectedTags) {
+            if (Object.keys(selectedTags).length) {
+                $scope.matchedIssues= []
+                angular.forEach($scope.issues, function (issue) {
+                    if (issue.tags && issue.tags.length) {
+                        for (var i= 0, l=issue.tags.length; i < l; i++) {
+                            var tagName= issue.tags[i]
+                            if (selectedTags[tagName]) {
+                                $scope.matchedIssues.push(issue)
+                                return
+                            }
+                        }
+                    }
+                })
+            } else {
+                $scope.matchedIssues= $scope.issues
+            }
+            $scope.schedule.issues= $scope.matchedIssues
+        })
     }
 
     function bScheduleDirectiveLink($scope, $e, $a) {

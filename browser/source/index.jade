@@ -76,6 +76,16 @@ append body
                             .b-table-schedule__cel
                                 .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}", ng-click="selectIssueInterval(issue, issueChunkInterval.interval)")
 
+            .row
+                .col.col-xs-12
+                    h2 Tags
+                    div: span(ng-repeat="tag in selectedTags")
+                        a(ng-click="unselectTag(tag)") {{tag.name}}
+                        span(ng-if="!$last") , 
+                    div: span(ng-repeat="tag in tagsIdx")
+                        a(ng-click="selectTag(tag)") {{tag.name}}
+                        span(ng-if="!$last") , 
+
             .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
                 .app-dialog__head
@@ -113,6 +123,8 @@ append body
                         button(ng-show="'edit'==AppDialog.mode", ng-click="AppDialog.mode='view'") view
                         button(ng-show="'view'==AppDialog.mode", ng-click="AppDialog.mode='edit'") edit
                         button(ng-show="'edit'==AppDialog.mode", ng-click="deleteIssue(selectedIssue)") delete
+                        button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ► Start work
+                        button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■ Stop work
 
 
                 .app-dialog__body(ng-show="'view'==AppDialog.mode")
@@ -121,8 +133,9 @@ append body
                         .col.col-xs-12.col-md-4.col-md-push-8
                             .row
                                 .col.col-xs-12
-                                    button(ng-if="!selectedIssue.startedAt", ng-click="startWork(selectedIssue)") ► Start work
-                                    button(ng-if="selectedIssue.startedAt", ng-click="stopWork(selectedIssue)") ■ Stop work
+                                    span(ng-repeat="tag in selectedIssueTags")
+                                        a() {{tag.name}}
+                                        span(ng-if="!$last") , 
 
                         .app-form.col.col-xs-12.col-md-8.col-md-pull-4
                             .row
@@ -139,7 +152,10 @@ append body
 
                         .col.col-xs-12.col-md-4.col-md-push-8
                             .row
-                                .col.col-xs-12 ...
+                                .col.col-xs-12
+                                    span(ng-repeat="tag in selectedIssueTags")
+                                        a() {{tag.name}}
+                                        span(ng-if="!$last") , 
 
                         fieldset.app-form.col.col-xs-12.col-md-8.col-md-pull-4
                             .row
