@@ -77,14 +77,12 @@ append body
                                 .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}", ng-click="selectIssueInterval(issue, issueChunkInterval.interval)")
 
             .row
+                .col.col-xs-12  
                 .col.col-xs-12
-                    h2 Tags
-                    div: span(ng-repeat="tag in selectedTags")
-                        a(ng-click="unselectTag(tag)") {{tag.name}}
-                        span(ng-if="!$last") , 
-                    div: span(ng-repeat="tag in tagsIdx")
-                        a(ng-click="selectTag(tag)") {{tag.name}}
-                        span(ng-if="!$last") , 
+                    ul.b-tags
+                        li.b-tags__tag(ng-repeat="tag in tagsIdx")
+                            a.b-tag(ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)") {{tag.name}}
+                            span(ng-if="!$last") , 
 
             .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
