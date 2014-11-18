@@ -14,174 +14,233 @@
   <body>
     <div app ng-app="Caeruleus" class="b-app">
       <div ng-view></div>
-      <div ng-if="isRoute('schedule')" b-schedule class="b-app__body">
-        <table class="b-table b-table-schedule">
-          <caption class="b-table-schedule__caption">
-            <div class="b-table-schedule__caption-title">
-              <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
+      <div ng-if="isRoute('schedule')" b-schedule class="b-app__view">
+        <div class="b-app__view-inner">
+          <div class="b-app__head">
+            <div class="b-app__head-hero">
+              <!--.row
+              .col.col-xs-12 12
+              
+              -->
             </div>
-            <div class="b-table-schedule__caption-nav">
-              <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav-prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
-              <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav-prev"><a ng-href="#/?view=day&amp;date={{getPrevDayDate().toUTCString()}}">←←</a></div>
-              <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav-prev"><a ng-href="#/?view=hour&amp;date={{getPrevHourDate().toUTCString()}}">←</a></div>
-              <div class="b-table-schedule__caption-nav-mode"><a href="#/?view=hour" ng-class="{_active:schedule.mode=='hour'}">
-                  <u>HOUR</u></a><a href="#/?view=day" ng-class="{_active:schedule.mode=='day'}">
-                  <u>DAY</u></a><a href="#/?view=week" ng-class="{_active:schedule.mode=='week'}">
-                  <u>WEEK</u></a></div>
-              <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav-next"><a ng-href="#/?view=hour&amp;date={{getNextHourDate().toUTCString()}}">→</a></div>
-              <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav-next"><a ng-href="#/?view=day&amp;date={{getNextDayDate().toUTCString()}}">→→</a></div>
-              <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav-next"><a ng-href="#/?view=week&amp;date={{getNextWeekDate().toUTCString()}}">→→→</a></div>
+            <div class="b-app__head-menu">
+              <!--.row
+              .col.col-xs-12 12
+              
+              -->
             </div>
-          </caption>
-          <!--thead.b-table__head.b-table-schedule__head
-          tr
-              th.b-table__cel.b-table-schedule__cel_title
-              th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}") h
-          
-          -->
-          <thead class="b-table__head b-table-schedule__head b-table-schedule__head_last">
-            <tr>
-              <th class="b-table__cel b-table-schedule__cel_title"></th>
-              <th ng-repeat="chunk in schedule.chunks" ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}" class="b-table__cel b-table-schedule__cel_chunk b-table-schedule__chunk-head">
-                <div ng-if="schedule.mode=='hour'" class="b-table-schedule__chunk-head__head">
-                  <label>{{chunk.beginDate | date:'HH:mm'}}</label>
-                </div>
-                <div ng-if="schedule.mode=='day'" class="b-table-schedule__chunk-head__head">
-                  <label>{{chunk.beginDate | date:'HH.mm'}}</label><a ng-href="#/?view=hour&amp;date={{chunk.beginDate.toUTCString()}}"></a>
-                </div>
-                <div ng-if="schedule.mode=='week'" class="b-table-schedule__chunk-head__head">
-                  <label>{{chunk.beginDate | date:'MM.dd'}}</label><a ng-href="#/?view=day&amp;date={{chunk.beginDate.toUTCString()}}"></a>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody ng-repeat="issue in schedule.issues track by issue.guid" ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}" class="b-table__body">
-            <tr ng-controller="ScheduleIssueCtrl as scheduleIssue">
-              <td class="b-table__cel b-table-schedule__cel_title">
-                <div class="b-table-schedule__issue-title"><a ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')">
-                    <u>{{issue.title}}</u></a></div>
-              </td>
-              <td ng-repeat="issueChunk in scheduleIssue.chunks" ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}" class="b-table__cel b-table-schedule__cel_chunk">
-                <div class="b-table-schedule__cel">
-                  <div ng-repeat="issueChunkInterval in issueChunk.intervals track by $index" ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}" ng-click="selectIssueInterval(issue, issueChunkInterval.interval)" class="b-table-schedule__cel-interval"></div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="row">
-          <div class="col col-xs-12"> </div>
-          <div class="col col-xs-12">
-            <ul class="b-tags">
-              <li ng-repeat="tag in tagsIdx" class="b-tags__tag"><a ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)" class="b-tag">{{tag.name}}</a><span ng-if="!$last">,</span></li>
-            </ul>
           </div>
-        </div>
-        <div app-dialog="IssueFormDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
-          <div class="app-dialog__head">
-            <div class="app-dialog__heading">New issue</div>
-          </div>
-          <div class="app-dialog__body">
-            <div class="row">
-              <div class="col col-xs-12 col-md-4 col-md-push-8">
-                <div class="row">
-                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+          <div class="b-app__body">
+            <div class="b-app__body-page">
+              <div class="row">
+                <table class="b-table b-table-schedule">
+                  <caption class="b-table-schedule__caption">
+                    <div class="b-table-schedule__caption-inner">
+                      <div class="row">
+                        <div class="col col-xs-3">
+                          <div class="b-table-schedule__caption-title">
+                            <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
+                          </div>
+                        </div>
+                        <div class="col col-xs-9">
+                          <div class="row">
+                            <div class="col col-xs-4">
+                              <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
+                              <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=day&amp;date={{getPrevDayDate().toUTCString()}}">←←</a></div>
+                              <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=hour&amp;date={{getPrevHourDate().toUTCString()}}">←</a></div>
+                            </div>
+                            <div class="col col-xs-4">
+                              <div class="b-table-schedule__caption-nav b-table-schedule__caption-nav_mode"><a href="#/?view=hour" ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;">
+                                  <u>HOUR</u></a><a href="#/?view=day" ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;">
+                                  <u>DAY</u></a><a href="#/?view=week" ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;">
+                                  <u>WEEK</u></a></div>
+                            </div>
+                            <div class="col col-xs-4">
+                              <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=hour&amp;date={{getNextHourDate().toUTCString()}}">→</a></div>
+                              <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=day&amp;date={{getNextDayDate().toUTCString()}}">→→</a></div>
+                              <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=week&amp;date={{getNextWeekDate().toUTCString()}}">→→→</a></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col col-xs-3">
+                          <div class="b-table-schedule__caption-menu">
+                            <div style="float:left; margin-right:10px;"><a class="_active">Open</a></div>
+                            <div style="float:left; margin-right:10px;"><a>Closed</a></div>
+                          </div>
+                        </div>
+                        <div class="col col-xs-9">
+                          <div class="b-table-schedule__caption-menu">
+                            <div style="float:left; margin-right:10px;"><a>Menu</a></div>
+                            <div style="float:left; margin-right:10px;"><a>Menu</a></div>
+                            <div style="float:left; margin-right:10px;"><a>Menu</a></div>
+                            <div style="float:right"><a>Menu</a></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </caption>
+                  <!--thead.b-table__head.b-table-schedule__head
+                  tr
+                      th.b-table__cel.b-table-schedule__cel_title
+                      th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}") h
+                  
+                  -->
+                  <thead class="b-table__head b-table-schedule__head b-table-schedule__head_last">
+                    <tr>
+                      <th class="b-table__cel b-table-schedule__cel_title"></th>
+                      <th ng-repeat="chunk in schedule.chunks" ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}" class="b-table__cel b-table-schedule__cel_chunk b-table-schedule__chunk-head">
+                        <div ng-if="schedule.mode=='hour'" class="b-table-schedule__chunk-head__head">
+                          <label>{{chunk.beginDate | date:'HH:mm'}}</label>
+                        </div>
+                        <div ng-if="schedule.mode=='day'" class="b-table-schedule__chunk-head__head">
+                          <label>{{chunk.beginDate | date:'HH.mm'}}</label><a ng-href="#/?view=hour&amp;date={{chunk.beginDate.toUTCString()}}"></a>
+                        </div>
+                        <div ng-if="schedule.mode=='week'" class="b-table-schedule__chunk-head__head">
+                          <label>{{chunk.beginDate | date:'MM.dd'}}</label><a ng-href="#/?view=day&amp;date={{chunk.beginDate.toUTCString()}}"></a>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody ng-repeat="issue in schedule.issues track by issue.guid" ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}" class="b-table__body">
+                    <tr ng-controller="ScheduleIssueCtrl as scheduleIssue">
+                      <td class="b-table__cel b-table-schedule__cel_title">
+                        <div class="b-table-schedule__issue-title"><a ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')">
+                            <u>{{issue.title}}</u></a></div>
+                      </td>
+                      <td ng-repeat="issueChunk in scheduleIssue.chunks" ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}" class="b-table__cel b-table-schedule__cel_chunk">
+                        <div class="b-table-schedule__cel">
+                          <div ng-repeat="issueChunkInterval in issueChunk.intervals track by $index" ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}" ng-click="selectIssueInterval(issue, issueChunkInterval.interval)" class="b-table-schedule__cel-interval"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="row">
+                <div class="col col-xs-12"> </div>
+                <div class="col col-xs-12">
+                  <ul class="b-tags">
+                    <li ng-repeat="tag in tagsIdx" class="b-tags__tag"><a ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)" class="b-tag">{{tag.name}}</a><span ng-if="!$last">,</span></li>
+                  </ul>
                 </div>
               </div>
-              <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
-                <div class="row">
-                  <label required class="col col-xs-3 col-lg-2">Title</label>
-                  <input name="title" ng-model="selectedIssue.title" required class="col col-xs-9 col-lg-10">
+              <div app-dialog="IssueFormDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
+                <div class="app-dialog__head">
+                  <div class="app-dialog__heading">New issue</div>
                 </div>
-                <div class="row">
-                  <label class="col col-xs-3 col-lg-2">Tags</label>
-                  <input name="tags" ng-model="selectedIssue.tags" ng-list class="col col-xs-9 col-lg-10">
-                </div>
-                <div class="row">
-                  <label class="col col-xs-3 col-lg-2">Details</label>
-                  <textarea name="content" ng-model="selectedIssue.content" rows="{{((selectedIssue.content.split('
+                <div class="app-dialog__body">
+                  <div class="row">
+                    <div class="col col-xs-12 col-md-4 col-md-push-8">
+                      <div class="row">
+                        <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+                      </div>
+                    </div>
+                    <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
+                      <div class="row">
+                        <label required class="col col-xs-3 col-lg-2">Title</label>
+                        <input name="title" ng-model="selectedIssue.title" required class="col col-xs-9 col-lg-10">
+                      </div>
+                      <div class="row">
+                        <label class="col col-xs-3 col-lg-2">Tags</label>
+                        <input name="tags" ng-model="selectedIssue.tags" ng-list class="col col-xs-9 col-lg-10">
+                      </div>
+                      <div class="row">
+                        <label class="col col-xs-3 col-lg-2">Details</label>
+                        <textarea name="content" ng-model="selectedIssue.content" rows="{{((selectedIssue.content.split('
 ').length + 1) &gt; 7 &amp;&amp; selectedIssue.content.split('
 ').length + 1) || 7}}" class="col col-xs-9 col-lg-10"></textarea>
+                      </div>
+                    </fieldset>
+                  </div>
                 </div>
-              </fieldset>
-            </div>
-          </div>
-          <div class="app-dialog__foot">
-            <div class="row">
-              <div class="col col-xs-12 col-md-8">
-                <div class="row">
-                  <div class="col col-xs-3 col-lg-2"> </div>
-                  <button ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-5">Submit new issue</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div app-dialog="IssueViewDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
-          <div class="app-dialog__head">
-            <div class="app-dialog__heading">Issue 
-              <button ng-show="'edit'==AppDialog.mode" ng-click="AppDialog.mode='view'">view</button>
-              <button ng-show="'view'==AppDialog.mode" ng-click="AppDialog.mode='edit'">edit</button>
-              <button ng-show="'edit'==AppDialog.mode" ng-click="deleteIssue(selectedIssue)">delete</button>
-              <button ng-if="!selectedIssue.startedAt" ng-click="startWork(selectedIssue)">► Start work</button>
-              <button ng-if="selectedIssue.startedAt" ng-click="stopWork(selectedIssue)">■ Stop work</button>
-            </div>
-          </div>
-          <div ng-show="'view'==AppDialog.mode" class="app-dialog__body">
-            <div class="row">
-              <div class="col col-xs-12 col-md-4 col-md-push-8">
-                <div class="row">
-                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+                <div class="app-dialog__foot">
+                  <div class="row">
+                    <div class="col col-xs-12 col-md-8">
+                      <div class="row">
+                        <div class="col col-xs-3 col-lg-2"> </div>
+                        <button ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-5">Submit new issue</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="app-form col col-xs-12 col-md-8 col-md-pull-4">
-                <div class="row">
-                  <div class="col col-xs-3 col-lg-2"> </div>
-                  <div class="col col-xs-9 col-lg-10"><strong>{{selectedIssue.title}}</strong></div>
+              <div app-dialog="IssueViewDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
+                <div class="app-dialog__head">
+                  <div class="app-dialog__heading">Issue 
+                    <button ng-show="'edit'==AppDialog.mode" ng-click="AppDialog.mode='view'">view</button>
+                    <button ng-show="'view'==AppDialog.mode" ng-click="AppDialog.mode='edit'">edit</button>
+                    <button ng-show="'edit'==AppDialog.mode" ng-click="deleteIssue(selectedIssue)">delete</button>
+                    <button ng-if="!selectedIssue.startedAt" ng-click="startWork(selectedIssue)">► Start work</button>
+                    <button ng-if="selectedIssue.startedAt" ng-click="stopWork(selectedIssue)">■ Stop work</button>
+                  </div>
                 </div>
-                <div class="row">
-                  <label class="col col-xs-3 col-lg-2"> </label>
-                  <div class="col col-xs-9 col-lg-10"><span>{{selectedIssue.content}}</span></div>
+                <div ng-show="'view'==AppDialog.mode" class="app-dialog__body">
+                  <div class="row">
+                    <div class="col col-xs-12 col-md-4 col-md-push-8">
+                      <div class="row">
+                        <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+                      </div>
+                    </div>
+                    <div class="app-form col col-xs-12 col-md-8 col-md-pull-4">
+                      <div class="row">
+                        <div class="col col-xs-3 col-lg-2"> </div>
+                        <div class="col col-xs-9 col-lg-10"><strong>{{selectedIssue.title}}</strong></div>
+                      </div>
+                      <div class="row">
+                        <label class="col col-xs-3 col-lg-2"> </label>
+                        <div class="col col-xs-9 col-lg-10"><span>{{selectedIssue.content}}</span></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div ng-show="'edit'==AppDialog.mode" class="app-dialog__body">
-            <div class="row">
-              <div class="col col-xs-12 col-md-4 col-md-push-8">
-                <div class="row">
-                  <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
-                </div>
-              </div>
-              <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
-                <div class="row">
-                  <label required class="col col-xs-3 col-lg-2">Title</label>
-                  <input name="title" ng-model="selectedIssue.title" required class="col col-xs-9 col-lg-10">
-                </div>
-                <div class="row">
-                  <label class="col col-xs-3 col-lg-2">Tags</label>
-                  <input name="tags" ng-model="selectedIssue.tags" ng-list class="col col-xs-9 col-lg-10">
-                </div>
-                <div class="row">
-                  <label class="col col-xs-3 col-lg-2">Details</label>
-                  <textarea name="content" ng-model="selectedIssue.content" rows="{{((selectedIssue.content.split('
+                <div ng-show="'edit'==AppDialog.mode" class="app-dialog__body">
+                  <div class="row">
+                    <div class="col col-xs-12 col-md-4 col-md-push-8">
+                      <div class="row">
+                        <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
+                      </div>
+                    </div>
+                    <fieldset class="app-form col col-xs-12 col-md-8 col-md-pull-4">
+                      <div class="row">
+                        <label required class="col col-xs-3 col-lg-2">Title</label>
+                        <input name="title" ng-model="selectedIssue.title" required class="col col-xs-9 col-lg-10">
+                      </div>
+                      <div class="row">
+                        <label class="col col-xs-3 col-lg-2">Tags</label>
+                        <input name="tags" ng-model="selectedIssue.tags" ng-list class="col col-xs-9 col-lg-10">
+                      </div>
+                      <div class="row">
+                        <label class="col col-xs-3 col-lg-2">Details</label>
+                        <textarea name="content" ng-model="selectedIssue.content" rows="{{((selectedIssue.content.split('
 ').length + 1) &gt; 7 &amp;&amp; selectedIssue.content.split('
 ').length + 1) || 7}}" class="col col-xs-9 col-lg-10"></textarea>
+                      </div>
+                    </fieldset>
+                  </div>
                 </div>
-              </fieldset>
-            </div>
-          </div>
-          <div ng-show="'edit'==AppDialog.mode||IssueForm.$dirty" class="app-dialog__foot">
-            <div class="row">
-              <div class="col col-xs-12 col-md-8">
-                <div class="row">
-                  <div class="col col-xs-3 col-lg-2"> </div>
-                  <button ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-6">Save issue</button>
-                  <button ng-click="mode='view';" class="col col-xs-2 col-lg-2">Cancel</button>
-                  <button ng-click="mode='view';AppDialog.resolve(false)" class="col col-xs-2 col-lg-2">Close</button>
+                <div ng-show="'edit'==AppDialog.mode||IssueForm.$dirty" class="app-dialog__foot">
+                  <div class="row">
+                    <div class="col col-xs-12 col-md-8">
+                      <div class="row">
+                        <div class="col col-xs-3 col-lg-2"> </div>
+                        <button ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid" class="col col-xs-5 col-lg-6">Save issue</button>
+                        <button ng-click="mode='view';" class="col col-xs-2 col-lg-2">Cancel</button>
+                        <button ng-click="mode='view';AppDialog.resolve(false)" class="col col-xs-2 col-lg-2">Close</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div class="b-app__foot">
+            <!--.row
+            .col.col-xs-3 3
+            .col.col-xs-9 9
+            
+            -->
           </div>
         </div>
       </div>
