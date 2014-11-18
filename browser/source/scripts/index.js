@@ -127,7 +127,6 @@ angular.module('Caeruleus', ['ngRoute'])
             }
         })
 
-        $scope.issue= {}
         $scope.saveIssue= function (issue, IssueForm) {
             var create= false
             if (!(issue.guid)) { // create new issue
@@ -139,7 +138,6 @@ angular.module('Caeruleus', ['ngRoute'])
                 .then(function (issue) {
                     if (create) {
                         $scope.issues.unshift(issue)
-                        $scope.issue= {}
                         $scope.selectedIssue= null
                         $scope.appDialogToggle('IssueFormDialog')
                     } else {
@@ -157,7 +155,7 @@ angular.module('Caeruleus', ['ngRoute'])
                     })
                     $q.all(promises)
                         .then(function (tags) {
-                            console.log('tags saved', tags)
+                            //console.log('tags saved', tags)
                         })
                     ;
                 })
