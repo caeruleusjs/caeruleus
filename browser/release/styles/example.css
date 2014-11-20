@@ -1,22 +1,21 @@
 .tc1 {
-	table-layout: fixed;
-	border-spacing: 0;
-	border-collapse: collapse;
+  table-layout: fixed;
+  border-spacing: 0;
+  border-collapse: collapse;
 }
 tbody > tr > .tdclass {
-	background-color: #E2E2E2;
-	border: 2px solid #FFF;
-	width: 11px;
-	height: 11px;
-	text-align: center;
+  background-color: #E2E2E2;
+  border: 2px solid #FFF;
+  width: 11px;
+  height: 11px;
+  text-align: center;
 }
 .tdclass0 {
-	border: 2px solid #FFF;
-	width: 11px;
-	height: 11px;
-	text-align: center;
+  border: 2px solid #FFF;
+  width: 11px;
+  height: 11px;
+  text-align: center;
 }
-
 /*
 Metric - Collect Call (Adventure Club Dubstep Remix).tc1 {
 	position: relative;
@@ -36,7 +35,6 @@ Metric - Collect Call (Adventure Club Dubstep Remix).tc1 {
 .tc1 > .tr {
 border: 2px solid #EE00EE;
 }*/
-
 /* Написано: 19-20.11.2014
 * {
 	box-sizing: border-box;

@@ -35,6 +35,7 @@ angular.module('Caeruleus', ['ngRoute'])
     })
 
     .directive('bSchedule', bScheduleDirective)
+    .directive('bScheduleMonth', bScheduleMonthDirective)
 
     .directive('app', appDirective)
 
@@ -732,4 +733,43 @@ function bScheduleDirective($rootScope, $compile, $interval, $location, Issue, T
 
     }
 
+}
+function bScheduleMonthDirective($rootScope, $compile, $interval, $location, Issue, Tag) {
+
+    return {
+        restrict: 'EA',
+
+        controllerAs: 'bScheduleMonth',
+        controller: bScheduleMonthDirectiveCtrl,
+
+        link: bScheduleMonthDirectiveLink,
+    }
+    function bScheduleMonthDirectiveCtrl($scope) {
+
+    }
+    function bScheduleMonthDirectiveLink($scope, $e, $a) {
+        console.log('ololo', $e)
+        $scope.findFirstDayOfWeek= function (date) {
+           var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+           resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
+           return resultDate
+        } 
+        var firstDay= $scope.findFirstDayOfWeek(new Date)
+        var rows= []
+        var currentDay= new Date(firstDay)
+        for (var i= 0; i < 7; i++) {
+
+            var row= []
+            rows.push(row)
+            for (var j= 0; j < 37; j++) {
+                currentDay= new Date(currentDay)
+                currentDay.setDate( currentDay.getDate() + 7 )
+                row.push(currentDay)
+            }
+            currentDay.setTime( firstDay.getTime())
+            currentDay.setDate( currentDay.getDate()+i+1)
+        }
+        console.log(rows)
+        $scope.rows= rows
+    }
 }
