@@ -748,17 +748,18 @@ function bScheduleMonthDirective($rootScope, $compile, $interval, $location, Iss
 
     }
     function bScheduleMonthDirectiveLink($scope, $e, $a) {
-        console.log('ololo', $e)
+
         $scope.findFirstDayOfWeek= function (date) {
            var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
            resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
            return resultDate
-        } 
+        }
+
         var firstDay= $scope.findFirstDayOfWeek(new Date)
+
         var rows= []
         var currentDay= new Date(firstDay)
         for (var i= 0; i < 7; i++) {
-
             var row= []
             rows.push(row)
             for (var j= 0; j < 37; j++) {
@@ -769,7 +770,7 @@ function bScheduleMonthDirective($rootScope, $compile, $interval, $location, Iss
             currentDay.setTime( firstDay.getTime())
             currentDay.setDate( currentDay.getDate()+i+1)
         }
-        console.log(rows)
+
         $scope.rows= rows
     }
 }
