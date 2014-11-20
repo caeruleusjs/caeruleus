@@ -1,0 +1,65 @@
+extends layout
+append head-scripts 
+    script(src='scripts/index.js')
+append head-styles
+    link(rel='stylesheet', href='styles/example.css')
+block body
+    div1.cont(ng-app="Caeruleus")
+        table.tc1(b-schedule-month)
+            thead
+                tr
+                    td.tdclass0(colspan="4") январь
+
+            tbody
+                tr(ng-repeat="row in rows")
+                    td.tdclass(ng-repeat="col in row")
+                    
+                
+                    
+
+
+
+
+
+
+//Написано: 19-20.11.2014
+//extends layout
+//append head-styles
+    link(rel='stylesheet', href='styles/example.css')
+    link(rel='stylesheet', href='styles/index.css')
+//block body
+    div.div1 Foobar123
+    span.div2 Foobar next
+    div.div2 Foobar next 2
+
+    div.main
+        div.main__body
+
+
+    .col.col-xs-6 122 
+        
+    //div.abs#lol
+        div.cont
+            table.class1
+                thead 
+                    tr 
+                        td
+                            span 1
+                        td 2
+                        td 3
+                tbody
+                    tr
+                        td(colspan=2) 1
+                        td 
+
+    div.dz
+
+        div.dz__l
+            | menu
+
+        div.dz__r
+            | main
+
+    script.
+
+        console.log('stole')

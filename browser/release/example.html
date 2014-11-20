@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles/example.css">
+    <script src="components/jquery/dist/jquery.min.js"></script>
+    <script src="components/angular/angular.min.js"></script>
+    <script src="components/angular-route/angular-route.min.js"></script>
+    <script src="components/angular-i18n/angular-locale_ru.js"></script>
+    <script src="components/localforage/dist/localforage.nopromises.min.js"></script>
+    <script src="scripts/index.js"></script>
+  </head>
+  <body>
+    <div1 ng-app="Caeruleus" class="cont">
+      <table b-schedule-month class="tc1">
+        <thead>
+          <tr>
+            <td colspan="4" class="tdclass0">январь</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="row in rows">
+            <td ng-repeat="col in row" class="tdclass"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div1>
+  </body>
+</html>
