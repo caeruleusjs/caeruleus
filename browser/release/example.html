@@ -2,6 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/example.css">
     <script src="components/jquery/dist/jquery.min.js"></script>
     <script src="components/angular/angular.min.js"></script>
@@ -12,15 +13,15 @@
   </head>
   <body>
     <div1 ng-app="Caeruleus" class="cont">
-      <table b-schedule-month class="tc1">
-        <thead>
+      <table b-schedule-month class="b-schedule-month">
+        <thead class="b-schedule-month__head">
           <tr>
-            <td colspan="4" class="tdclass0">январь</td>
+            <td ng-repeat="hcol in hcols" colspan="{{hcol.colspan}}" class="b-schedule-month__col b-schedule-month__col_head"><span>{{hcol.date | date:'MMM' }}</span></td>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="b-schedule-month__body">
           <tr ng-repeat="row in rows">
-            <td ng-repeat="col in row" class="tdclass"></td>
+            <td ng-repeat="col in row" title="{{col}}" class="b-schedule-month__col"></td>
           </tr>
         </tbody>
       </table>
