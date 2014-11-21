@@ -749,28 +749,59 @@ function bScheduleMonthDirective($rootScope, $compile, $interval, $location, Iss
     }
     function bScheduleMonthDirectiveLink($scope, $e, $a) {
 
-        $scope.findFirstDayOfWeek= function (date) {
-           var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
-           resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
+        $scope.findFirstDayOfMonth= function (date) {
+           var resultDate= new Date( date.getFullYear(), date.getMonth())
            return resultDate
         }
 
-        var firstDay= $scope.findFirstDayOfWeek(new Date)
+        var beginDate= $scope.findFirstDayOfMonth(new Date)
+        var endDate= new Date(beginDate)
+        endDate.setFullYear(
+            endDate.getFullYear() + 1
+        )
 
-        var rows= []
-        var currentDay= new Date(firstDay)
-        for (var i= 0; i < 7; i++) {
-            var row= []
-            rows.push(row)
-            for (var j= 0; j < 37; j++) {
-                currentDay= new Date(currentDay)
-                currentDay.setDate( currentDay.getDate() + 7 )
-                row.push(currentDay)
-            }
-            currentDay.setTime( firstDay.getTime())
-            currentDay.setDate( currentDay.getDate()+i+1)
+        var dates= []
+
+        for (var i= beginDate.getDay(); i > 0; i--) {
+            dates.push(null)
         }
 
-        $scope.rows= rows
+        for (var date= new Date(beginDate); date < endDate; date.setDate( date.getDate() +1 )) {
+            dates.push(new Date(date))
+        }
+
+        $scope.rows= [
+            [], [], [], [], [], [], []
+        ]
+
+        for (var i= 0, l= dates.length; i < l; i= i+7) {
+            for (var j= 0; j < 7; j++) {
+                $scope.rows[j].push(dates[i+j])
+            }
+        }
+
+        var hcols= $scope.hcols= []
+
+        angular.forEach($scope.rows[6], function (colDate) { // @todo требуется рефакторинг
+            var monthDate= new Date(colDate)
+            var hcol= {
+                date: monthDate,
+                colspan: 1,
+            }
+            if (!hcols.length) {
+                hcols.push(hcol)
+            } else {
+                var prevHcol= hcols[hcols.length-1]
+                if (prevHcol.date.getFullYear() == monthDate.getFullYear() && prevHcol.date.getMonth() == monthDate.getMonth()) {
+                    prevHcol.colspan++
+                } else {
+                    hcol= {
+                        date: monthDate,
+                        colspan: 1,
+                    }
+                    hcols.push(hcol)
+                }
+            }
+        })
     }
 }
