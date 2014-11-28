@@ -1,0 +1,76 @@
+extends layout
+
+
+
+append head-title
+
+    title Таблицы и таблицы
+
+append head-styles
+
+    link(rel='stylesheet', href='styles/index.css')
+
+append head-scripts
+
+    script(src='scripts/bTable.js')
+    script(src='scripts/index1.js')
+
+
+
+append body
+
+    .b-app(app, ng-app="Caeruleus1")
+
+        .b-app__view: .b-app__view-inner
+
+            .b-app__head
+                .b-app__head-hero
+
+                    //.row
+                        .col.col-xs-12 12
+
+                .b-app__head-menu
+
+                    //.row
+                        .col.col-xs-12 12
+
+            .b-app__body: .b-app__body-page
+
+                .row(ng-controller="TableCtrl as table")
+
+                    .col.col-xs-12
+                        button(ng-click="table.showAsList()") as list
+                        button(ng-click="table.showAsTree()") as tree
+
+                    b-table(table-cols="table.cols", table-rows="table.rows")
+
+
+                        b-table-template#caption(use="['bTable']")
+                            .row
+                                .col.col-xs-12    
+                        b-table-template#caption(use="['bTable']")
+                            .row
+                                .col.col-xs-3 caption here...
+                                .col.col-xs-9 here...
+                        b-table-template#caption(use="['bTable']")
+                            .row
+                                .col.col-xs-12  
+
+
+                        b-table-template(id='head-title', use="['bTable']")
+                            div title here...
+
+                        b-table-template(id='head-col', use="['bTable','tableCol','$index']")
+                            div {{$index}}
+
+
+                        b-table-template(id='body-group-title', use="['bTable','tableRow']") {{tableRow.group.title}} 
+                            a(ng-hide="tableRow.group.shown", ng-click="showGroup(tableRow.group)") show
+                            a(ng-show="tableRow.group.shown", ng-click="hideGroup(tableRow.group)") hide
+
+                        b-table-template(id='body-title', use="['bTable','tableRow', '$index']")
+                            a(ng-click=""): u row{{$index}}
+
+                        b-table-template(id='body-col', use="['bTable','tableRow','tableCol','$index']")
+                            .row
+                                .col.col-xs-12 {{$index}}
