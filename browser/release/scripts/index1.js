@@ -113,7 +113,7 @@ function TableCtrl($scope, bTable) {
             rowsWithGroups.push({
                 type: 'item',
                 item: item,
-                group: group,isGroupLast: (i===(group.items.length-1)),
+                group: group, isGroupLast: (i===(group.items.length-1)),
             })
         }.bind(this))
 

@@ -113,7 +113,7 @@ function bTableDirective($compile) {
                     '</tr>'+
                 '</thead>'+
                 '<tbody class="b-table__body" ng-repeat="tableRow in tableRows" ng-class="{_groupLast:tableRow.isGroupLast}">'+
-                    '<tr class="b-table__row b-table__row_group" ng-if="tableRow.type==\'group\'" ng-class="{_shown:tableRow.group.shown}">'+
+                    '<tr class="b-table__row b-table__row_group" ng-if="tableRow.type==\'group\'" ng-show="!tableRow.groupParent||tableRow.groupParent.shown" ng-class="{_shown:tableRow.group.shown}">'+
                         '<td class="b-table__col b-table__col_title"><div b-table-template-transclude="body-group-title"></div></td>'+
                         '<td class="b-table__col b-table__col_chunk" ng-repeat="tableCol in tableCols" ng-class="{\'_first\':$first,\'_last\':$last}"><div b-table-template-transclude="body-group-col"></div></td>'+
                     '</tr>'+
