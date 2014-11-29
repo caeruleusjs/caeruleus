@@ -6,6 +6,7 @@ angular.module('bTimeline', [])
     .service('bTimeline', bTimelineService)
 
     .directive('bTimeline', bTimelineDirective)
+    .directive('bTimelineInterval', bTimelineIntervalDirective)
 
 ;
 
@@ -53,7 +54,7 @@ function bTimelineDirective(bTimeline) {
 
         template: ''+
             '<div class="b-timeline">'+
-                '<div class="b-timeline__interval" ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
+                '<div class="b-timeline__interval" b-timeline-interval ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
             ''+
         '',
 
@@ -62,7 +63,15 @@ function bTimelineDirective(bTimeline) {
             endDate: '=timelineEndDate',
             intervals: '=timelineIntervals',
         },
+
+        controllerAs: '',
+        controller: bTimelineDirectiveCtrl,
+
         link: bTimelineDirectiveLink,
+    }
+
+    function bTimelineDirectiveCtrl($scope) {
+
     }
 
     function bTimelineDirectiveLink($scope, $e, $a) {
@@ -79,12 +88,30 @@ function bTimelineDirective(bTimeline) {
             return right +'%'
         }
 
-        $scope.$watch('intervals', function () {
+        $scope.$watchCollection('intervals', function () {
             if ($scope.intervals && $scope.intervals.length) {
                 var chunk= bTimeline.sliceIntervals($scope.intervals, $scope.beginDate, $scope.endDate)
                 $scope.chunk= chunk
             }
         })
 
+    }
+}
+
+
+
+function bTimelineIntervalDirective(bTimeline) {
+
+    return {
+        restrict: 'A',
+        require: '^bTimeline',
+
+        link: bTimelineIntervalDirectiveLink,
+    }
+
+    function bTimelineIntervalDirectiveLink($scope, $e, $a) {
+        //$scope.$watch('interval', function (interval) {
+        //    console.log('interval!11')
+        //}, true)
     }
 }

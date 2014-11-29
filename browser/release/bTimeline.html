@@ -16,7 +16,7 @@
        */
       angular.module('TimelineExample', ['bTimeline'])
       
-          .controller('TimelineCtrl', function ($scope) {
+          .controller('TimelineCtrl', function ($scope, $interval) {
               console.log('timeline ctrl.', $scope)
       
               this.splitIntervalToChunks= function (beginDate, endDate, numOfChunks) {
@@ -91,6 +91,14 @@
                   beginDate: beginDate,
                   endDate: endDate,
               })
+      
+              $interval(function () {
+                  var endDate= this.intervals[3].endDate
+                  endDate.setMinutes(
+                      endDate.getMinutes() + 1
+                  )
+              }.bind(this), 1000)
+      
           })
       
       ;
