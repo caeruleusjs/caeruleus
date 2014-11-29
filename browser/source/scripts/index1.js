@@ -69,7 +69,7 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
 
     .service('Tag', Tag)
 
-    .controller('ScheduleCtrl', function ($scope, $rootScope, bTimeline, Issue, Tag) {
+    .controller('ScheduleCtrl', function ($scope, $rootScope, $interval, bTimeline, Issue, Tag) {
 
         var schedule= this
 
@@ -177,6 +177,11 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
                     }
                 })
             })
+            .then(function () {
+                if ($scope.startedIssue) {
+                    $scope.continueWork($scope.startedIssue)
+                }
+            })
         ;
 
         $scope.tagsIdx= {}
@@ -193,6 +198,65 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
         ;
 
         console.log('issues', $scope.issues, 'tags', $scope.tags)
+
+        var startedIssueRefreshInProgress
+
+        $scope.startIssueRefresh= function (issue, interval) {
+            if (startedIssueRefreshInProgress) {
+                $interval.cancel(startedIssueRefreshInProgress)
+            }
+            var intervalEndDate= interval.endDate
+            bTimeline.updateDate(intervalEndDate)
+            return startedIssueRefreshInProgress= $interval(function () {
+                bTimeline.updateDate(intervalEndDate)
+                issue.updatedAt= new Date
+                console.log('refreshd')
+            }, 1000)
+        }
+
+        $scope.startWork= function (issue) {
+            if ($scope.startedIssue) {
+                $scope.stopWork($scope.startedIssue)
+            }
+            $scope.startedIssue= issue
+            var beginDate= new Date()
+            var endDate= new Date(beginDate)
+            var interval
+            issue.intervals= issue.intervals || []
+            issue.intervals.push(interval= {
+                guid: guid(),
+                beginDate: beginDate,
+                endDate: endDate,
+            })
+            issue.startedAt= issue.updatedAt= new Date
+            $scope.saveWork(issue)
+            $scope.startIssueRefresh(issue, interval)
+        }
+
+        $scope.stopWork= function (issue) {
+            var lastInterval= issue.intervals[issue.intervals.length-1]
+            lastInterval.endDate= new Date
+            issue.startedAt= null
+            issue.updatedAt= new Date
+            if (startedIssueRefreshInProgress) {
+                $interval.cancel(startedIssueRefreshInProgress)
+            }
+            $scope.startedIssue= null
+            $scope.saveWork(issue)
+        }
+
+        $scope.continueWork= function (issue) {
+            var lastInterval= issue.intervals[issue.intervals.length-1]
+            $scope.startIssueRefresh(issue, lastInterval)
+        }
+
+        $scope.saveWork= function (issue) {
+            Issue.save(issue).$promise
+                .then(function (issue) {
+                    console.log('saved.')
+                })
+            ;
+        }
     })
 ;
 

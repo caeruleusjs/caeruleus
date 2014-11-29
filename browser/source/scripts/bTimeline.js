@@ -69,6 +69,21 @@ function bTimelineService() {
 
 
 
+    this.updateDate= function (date, newDate, updatedAt) {
+        newDate= newDate || new Date
+        date.setHours(
+            newDate.getHours()
+        )
+        date.setMinutes(
+            newDate.getMinutes()
+        )
+        date.setSeconds(
+            newDate.getSeconds()
+        )
+    }
+
+
+
 }
 
 
