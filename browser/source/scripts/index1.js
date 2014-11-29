@@ -210,7 +210,6 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
             return startedIssueRefreshInProgress= $interval(function () {
                 bTimeline.updateDate(intervalEndDate)
                 issue.updatedAt= new Date
-                console.log('refreshd')
             }, 1000)
         }
 
@@ -257,7 +256,98 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
                 })
             ;
         }
+
+
+
+        $scope.selectedIssue
+        $scope.selectIssue= function (issue) {
+            $scope.selectedIssue= issue
+        }
+
+        $scope.selectedIssueInterval
+        $scope.selectIssueInterval= function (issue, interval) {
+            $scope.selectedIssueInterval= interval
+        }
+
+        $scope.deleteIssue= function (issue) {
+            Issue.delete(issue).$promise
+                .then(function (issue) {
+                    var i= $scope.schedule.issues.indexOf(issue)
+                    if (~i) {
+                        $scope.schedule.issues.splice(i, 1)
+                    }
+                    $scope.selectedIssue= null
+                    $scope.appDialogToggle('IssueViewDialog')
+                })
+            ;
+        }
+
     })
+
+
+
+    .controller('IssueFormCtrl', function ($scope, $q, Issue, Tag) {
+
+        $scope.$watch('AppDialog', function (AppDialog) {
+            if (AppDialog) {
+                AppDialog.mode='view'
+            }
+        })
+
+        $scope.saveIssue= function (issue, IssueForm) {
+            var create= false
+            if (!(issue.guid)) { // create new issue
+                create= true
+                issue.guid= guid()
+                issue.updatedAt= new Date
+            }
+            Issue.save(issue).$promise
+                .then(function (issue) {
+                    if (create) {
+                        $scope.issues.unshift(issue)
+                        $scope.selectedIssue= null
+                        $scope.appDialogToggle('IssueFormDialog')
+                    } else {
+                        IssueForm.$setPristine(true)
+                        $scope.AppDialog.mode='view'
+                    }
+                    var promises= []
+                    angular.forEach($scope.selectedIssueTags, function (tag) {
+                        if (!(tag.guid)) {
+                            tag.guid= guid()
+                            tag.updatedAt= new Date
+                            $scope.tagsIdx[tag.name]= tag
+                        }
+                        var promise= Tag.save(tag).$promise
+                    })
+                    $q.all(promises)
+                        .then(function (tags) {
+                            //console.log('tags saved', tags)
+                        })
+                    ;
+                })
+            ;
+        }
+
+        $scope.selectedIssueTags= {}
+        $scope.$watchCollection('selectedIssue.tags', function (tags) {
+            $scope.selectedIssueTags= {}
+            angular.forEach(tags, function (tag) {
+                var tagModel= $scope.tagsIdx[tag]
+                if (tagModel) {
+                    $scope.selectedIssueTags[tag]= tagModel
+                } else {
+                    $scope.selectedIssueTags[tag]= {
+                        name: tag
+                    }
+                }
+            })
+        })
+
+    })
+
+
+
 ;
 
 
