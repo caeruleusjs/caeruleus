@@ -69,7 +69,7 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
 
     .service('Tag', Tag)
 
-    .controller('ScheduleCtrl', function ($scope, $rootScope, $interval, bTimeline, Issue, Tag) {
+    .controller('ScheduleCtrl', function ($scope, $rootScope, $interval, $location, bTimeline, Issue, Tag) {
 
         var schedule= this
 
@@ -272,15 +272,56 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
         $scope.deleteIssue= function (issue) {
             Issue.delete(issue).$promise
                 .then(function (issue) {
-                    var i= $scope.schedule.issues.indexOf(issue)
+                    var i= $scope.issues.indexOf(issue)
                     if (~i) {
-                        $scope.schedule.issues.splice(i, 1)
+                        $scope.issues.splice(i, 1)
                     }
                     $scope.selectedIssue= null
                     $scope.appDialogToggle('IssueViewDialog')
                 })
             ;
         }
+
+        $scope.selectedTags= {}
+        $scope.selectTag= function (tag) {
+            if ($scope.selectedTags[tag.name]) {
+                return false
+            } else {
+                $scope.selectedTags[tag.name]= tag
+                $location.search('tags', Object.keys($scope.selectedTags))
+                return true
+            }
+        }
+        $scope.unselectTag= function (tag) {
+            if ($scope.selectedTags[tag.name]) {
+                delete $scope.selectedTags[tag.name]
+                $location.search('tags', Object.keys($scope.selectedTags))
+                return true
+            } else {
+                return false
+            }
+        }
+
+        $scope.matchedIssues= $scope.issues
+
+        $scope.$watchCollection('selectedTags', function (selectedTags) {
+            if (selectedTags && Object.keys(selectedTags).length) {
+                $scope.matchedIssues= []
+                angular.forEach($scope.issues, function (issue) {
+                    if (issue.tags && issue.tags.length) {
+                        for (var i= 0, l=issue.tags.length; i < l; i++) {
+                            var tagName= issue.tags[i]
+                            if (selectedTags[tagName]) {
+                                $scope.matchedIssues.push(issue)
+                                return
+                            }
+                        }
+                    }
+                })
+            } else {
+                $scope.matchedIssues= $scope.issues
+            }
+        })
 
     })
 
