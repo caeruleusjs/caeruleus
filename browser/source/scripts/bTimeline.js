@@ -52,8 +52,8 @@ function bTimelineDirective(bTimeline) {
         restrict: 'E',
 
         template: ''+
-            '<div class="b-schedule-interval-chunks">'+
-                '<div class="b-schedule-interval-chunk" ng-repeat="intervalChunk in chunk.intervals track by $index" ng-class="{_isBegin:intervalChunk.isBegin,_isEnd:intervalChunk.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,intervalChunk), right:calcChunkIntervalRight(chunk,intervalChunk)}"></div>'+
+            '<div class="b-timeline">'+
+                '<div class="b-timeline__interval" ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
             ''+
         '',
 
