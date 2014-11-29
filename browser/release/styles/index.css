@@ -772,39 +772,48 @@ body {
   border-color: #d2d2d2 #c2c2c2 #c2c2c2 #fff;
 }
 .b-table {
-  display: table;
+  table-layout: fixed;
   width: 100%;
   height: auto;
-  table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
 }
-.b-table-schedule .b-table__cel {
-  padding: 0;
+.b-table__caption {
+  margin: 0;
+  padding: 0 15px;
+  text-align: left;
+  border: 1px solid transparent;
+}
+.b-table__col {
+  height: 2em;
+  padding-left: 15px;
+  padding-right: 15px;
   background: #f2f2f2;
   border: 1px solid;
-  border-color: #fff #eee #fff #eee;
+  border-color: #fff #f2f2f2 #fff #f2f2f2;
 }
-.b-table-schedule .b-table__body .b-table__cel {
-  border-top-color: #fff;
+.b-table__col_title {
+  width: 25%;
 }
-.b-table-schedule .b-table__body .b-table__cel_first {
-  border-left: 1px solid #fff;
+.b-table__row_group .b-table__col_title {
+  font-weight: normal;
 }
-.b-table-schedule .b-table__body .b-table__cel_last {
-  border-right: 1px solid #d2d2d2;
+.b-table__row_group._shown .b-table__col_title {
+  font-weight: bold;
 }
-.b-table-schedule .b-table__body .b-table-schedule__cel_title {
-  border-left: 1px solid #fff;
+.b-table__row_item .b-table__col_chunk {
+  background: #e2e2e2;
 }
-.b-table__body_last .b-table__cel {
-  border-bottom: 1px solid #d2d2d2;
+.b-table__head .b-table__col {
+  font-weight: normal;
+  text-align: left;
 }
-.b-table-schedule .b-table__body {
-  box-shadow: 0 0 0 5px #f2f2f2;
-}
-.b-table-schedule .b-table__body._isStarted .b-table__cel {
-  background-color: #e2e2e2;
+.b-schedule-issue__title {
+  display: block;
+  position: relative;
+  padding-left: 15px;
+  padding-right: 15px;
+  line-height: 20px;
 }
 .b-table-schedule__caption {
   height: 80px;
@@ -868,149 +877,36 @@ body {
   font-weight: bold;
   color: #212121;
 }
-.b-table-schedule__cel {
-  position: relative;
-  width: 100%;
-  height: 38px;
-  line-height: 20px;
-  background: #e2e2e2;
-}
-.b-table-schedule__cel_title {
-  width: 25%;
-}
-.b-table-schedule__cel-interval {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  width: auto;
-  min-width: 1px;
-  background: #4082C4;
-}
-.b-table-schedule__cel-interval:not(._isBegin) {
-  left: -1px !important;
-}
-.b-table-schedule__cel-interval:not(._isEnd) {
-  right: -1px !important;
-}
-.b-table-schedule__cel-interval._isStarted {
-  background-color: orange !important;
-}
-.b-table-schedule__chunk-head__head {
+.b-table-schedule-head-date {
   display: block;
   position: relative;
   width: 100%;
   height: 20px;
   text-align: center;
+  font-size: 11px;
+  color: #777;
 }
-.b-table-schedule__chunk-head__head > a {
+.b-table-schedule-head-date > a {
   display: block;
   position: relative;
   z-index: 3;
   width: 100%;
   height: 100%;
 }
-.b-table-schedule__chunk-head__head > a:hover {
+.b-table-schedule-head-date > a:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
-.b-table-schedule__chunk-head__head > label {
+.b-table-schedule-head-date > b {
   display: block;
   position: absolute;
   top: 0;
   left: -50%;
   width: 100%;
   margin: 0;
-  margin-left: -1px;
   padding: 0;
   line-height: 20px;
   text-align: center;
-}
-.b-table-schedule__cel_chunk-even .b-table-schedule__chunk-head__head > label {
-  display: none;
-}
-@media (min-width: 1200px) {
-  .b-table-schedule__cel_chunk-even .b-table-schedule__chunk-head__head > label {
-    display: block;
-  }
-}
-.b-table-schedule__cel_chunk-first .b-table-schedule__chunk-head__head > label {
-  display: none !important;
-}
-.b-table-schedule__issue-title {
-  display: block;
-  position: relative;
-  padding-left: 15px;
-  padding-right: 15px;
-  line-height: 20px;
-}
-.b-table-schedule__issue-title > a {
-  display: block;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.b-table-schedule__issue-title > button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 22px;
-  height: 22px;
-}
-.b-table-schedule__head .b-table__cel {
-  padding: 0;
-  font-size: 11px;
   font-weight: normal;
-  text-align: left;
-  border-color: transparent;
-}
-.b-table-schedule__head_last .b-table__cel {
-  border-bottom-color: #fff;
-}
-.b-table {
-  table-layout: fixed;
-  width: 100%;
-  height: auto;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-.b-table__caption {
-  margin: 0;
-  padding: 0 15px;
-  text-align: left;
-  border: 1px solid transparent;
-}
-.b-table__col {
-  height: 2em;
-  padding-left: 15px;
-  padding-right: 15px;
-  background: #f2f2f2;
-  border: 1px solid;
-  border-color: #fff #f2f2f2 #fff #f2f2f2;
-}
-.b-table__col_title {
-  width: 25%;
-}
-.b-table__row_group .b-table__col_title {
-  font-weight: normal;
-}
-.b-table__row_group._shown .b-table__col_title {
-  font-weight: bold;
-}
-.b-table__row_item .b-table__col_chunk {
-  background: #e2e2e2;
-}
-.b-table__head .b-table__col {
-  font-weight: normal;
-  text-align: left;
-}
-.b-schedule-issue__title {
-  display: block;
-  position: relative;
-  padding-left: 15px;
-  padding-right: 15px;
-  line-height: 20px;
 }
 .b-timeline {
   position: relative;
@@ -1026,6 +922,15 @@ body {
   width: auto;
   min-width: 1px;
   background: #4082C4;
+}
+.b-timeline__interval:not(._isBegin) {
+  left: -1px !important;
+}
+.b-timeline__interval:not(._isEnd) {
+  right: -1px !important;
+}
+.b-timeline__interval._isStarted {
+  background-color: orange !important;
 }
 .b-tags {
   display: block;

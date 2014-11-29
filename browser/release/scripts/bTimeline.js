@@ -16,6 +16,24 @@ function bTimelineService() {
 
 
 
+    this.splitIntervalToChunks= function (beginDate, endDate, numOfChunks) {
+        var chunkDuration= (endDate - beginDate) / numOfChunks
+        var chunks= []
+        for (var i= 0, date= new Date(beginDate); i < numOfChunks; i++, date.setTime(date.getTime() + chunkDuration)) {
+            var chunkBeginDate= new Date(date)
+            var chunkEndDate= new Date(chunkBeginDate)
+            chunkEndDate.setTime( chunkEndDate.getTime() + chunkDuration )
+            var chunk= {
+                beginDate: chunkBeginDate,
+                endDate: chunkEndDate,
+            }
+            chunks.push(chunk)
+        }
+        return chunks
+    }
+
+
+
     this.sliceIntervals= function(intervals, beginDate, endDate) {
 
         var chunk= {
@@ -43,6 +61,29 @@ function bTimelineService() {
 
 
 
+    this.findFirstDayOfWeek= function (date) {
+        var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+        resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
+        return resultDate
+    }
+
+
+
+    this.updateDate= function (date, newDate, updatedAt) {
+        newDate= newDate || new Date
+        date.setHours(
+            newDate.getHours()
+        )
+        date.setMinutes(
+            newDate.getMinutes()
+        )
+        date.setSeconds(
+            newDate.getSeconds()
+        )
+    }
+
+
+
 }
 
 
@@ -54,8 +95,8 @@ function bTimelineDirective(bTimeline) {
 
         template: ''+
             '<div class="b-timeline">'+
-                '<div class="b-timeline__interval" b-timeline-interval ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
-            ''+
+                '<div class="b-timeline__interval" b-timeline-interval ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd,_isStarted:false}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
+            '</div>'+
         '',
 
         scope: {
