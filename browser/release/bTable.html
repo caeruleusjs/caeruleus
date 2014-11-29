@@ -13,7 +13,7 @@
     <script src="scripts/index1.js"></script>
   </head>
   <body>
-    <div app ng-app="Caeruleus1" class="b-app">
+    <div app ng-app="Caeruleus1" ng-cloak class="b-app">
       <div class="b-app__view">
         <div class="b-app__view-inner">
           <div class="b-app__head">
@@ -38,6 +38,7 @@
                   <button ng-click="table.showAsTree()">as tree</button>
                 </div>
                 <b-table table-cols="table.cols" table-rows="table.rows">
+                  <!-- caption-->
                   <b-table-template id="caption" use="['bTable']">
                     <div class="row">
                       <div class="col col-xs-12">   </div>
@@ -54,13 +55,16 @@
                       <div class="col col-xs-12"> </div>
                     </div>
                   </b-table-template>
+                  <!--head-->
                   <b-table-template id="head-title" use="['bTable']">
                     <div>title here...</div>
                   </b-table-template>
                   <b-table-template id="head-col" use="['bTable','tableCol','$index']">
                     <div>{{$index}}</div>
                   </b-table-template>
+                  <!-- body group-->
                   <b-table-template id="body-group-title" use="['bTable','tableRow']">{{tableRow.group.title}} <a ng-hide="tableRow.group.shown" ng-click="showGroup(tableRow.group)">show</a><a ng-show="tableRow.group.shown" ng-click="hideGroup(tableRow.group)">hide</a></b-table-template>
+                  <!-- body-->
                   <b-table-template id="body-title" use="['bTable','tableRow', '$index']"><a ng-click="">
                       <u>row{{$index}}</u></a></b-table-template>
                   <b-table-template id="body-col" use="['bTable','tableRow','tableCol','$index']">

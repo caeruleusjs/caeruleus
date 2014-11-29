@@ -19,7 +19,7 @@ append head-scripts
 
 append body
 
-    .b-app(app, ng-app="Caeruleus1")
+    .b-app(app, ng-app="Caeruleus1", ng-cloak)
 
         .b-app__view: .b-app__view-inner
 
@@ -44,6 +44,7 @@ append body
 
                     b-table(table-cols="table.cols", table-rows="table.rows")
 
+                        // caption
 
                         b-table-template#caption(use="['bTable']")
                             .row
@@ -56,21 +57,25 @@ append body
                             .row
                                 .col.col-xs-12  
 
+                        //head
 
-                        b-table-template(id='head-title', use="['bTable']")
+                        b-table-template#head-title(use="['bTable']")
                             div title here...
 
-                        b-table-template(id='head-col', use="['bTable','tableCol','$index']")
+                        b-table-template#head-col(use="['bTable','tableCol','$index']")
                             div {{$index}}
 
+                        // body group
 
-                        b-table-template(id='body-group-title', use="['bTable','tableRow']") {{tableRow.group.title}} 
+                        b-table-template#body-group-title(use="['bTable','tableRow']") {{tableRow.group.title}} 
                             a(ng-hide="tableRow.group.shown", ng-click="showGroup(tableRow.group)") show
                             a(ng-show="tableRow.group.shown", ng-click="hideGroup(tableRow.group)") hide
 
-                        b-table-template(id='body-title', use="['bTable','tableRow', '$index']")
+                        // body
+
+                        b-table-template#body-title(use="['bTable','tableRow', '$index']")
                             a(ng-click=""): u row{{$index}}
 
-                        b-table-template(id='body-col', use="['bTable','tableRow','tableCol','$index']")
+                        b-table-template#body-col(use="['bTable','tableRow','tableCol','$index']")
                             .row
                                 .col.col-xs-12 {{$index}}

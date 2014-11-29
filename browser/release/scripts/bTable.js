@@ -28,36 +28,6 @@ function bTableService() {
         })
     }
 
-    this.mapItems= function (source, onItem) {
-        angular.forEach(source.items, function (item, i) {
-            onItem(item, source, i)
-        })
-    }
-
-    this.mapGroups1= function (source, onGroup) {
-        angular.forEach(source.groups, function (group, i) {
-            onGroup(group, source, i)
-            // map source recursive
-            // NOWAY
-        })
-    }
-
-    this.mapSource= function (source, onGroup, onItem) {
-        console.log('mapSource', source)
-        if (source.groups) {
-            this.mapGroups1(source, onGroup)
-        } else {
-            this.mapItems(source, onItem)
-        }
-    }
-
-
-    //var source1= {
-    //    items: [
-    //        {}, {}, {},
-    //    ]
-    //}
-    //this.mapSource(source1)
 }
 
 
@@ -93,10 +63,10 @@ function bTableDirective($compile) {
     function bTableDirectiveLink($scope, $e, $a) {
 
         $scope.$watchCollection('tableCols', function () {
-            console.log('bTable cols!', $scope.tableCols)
+            //console.log('bTable cols!', $scope.tableCols)
         })
         $scope.$watchCollection('tableRows', function () {
-            console.log('bTable rows!', $scope.tableRows)
+            //console.log('bTable rows!', $scope.tableRows)
         })
 
         var template= ''+
