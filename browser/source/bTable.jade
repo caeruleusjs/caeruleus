@@ -13,13 +13,184 @@ append head-styles
 append head-scripts
 
     script(src='scripts/bTable.js')
-    script(src='scripts/index1.js')
+    script.
+
+        /*
+         * TableExample
+         */
+        angular.module('TableExample', ['bTable'])
+
+            .controller('TableCtrl', function TableCtrl($scope, bTable) {
+
+                this.splitIntervalToChunks= function (beginDate, endDate, numOfChunks) {
+                    var chunkDuration= (endDate - beginDate) / numOfChunks
+                    var chunks= []
+                    for (var i= 0, date= new Date(beginDate); i < numOfChunks; i++, date.setTime(date.getTime() + chunkDuration)) {
+                        var chunkBeginDate= new Date(date)
+                        var chunkEndDate= new Date(chunkBeginDate)
+                        chunkEndDate.setTime( chunkEndDate.getTime() + chunkDuration )
+                        var chunk= {
+                            beginDate: chunkBeginDate,
+                            endDate: chunkEndDate,
+                        }
+                        chunks.push(chunk)
+                    }
+                    return chunks
+                }
+
+                this.findFirstDayOfWeek= function (date) {
+                    var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                    resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
+                    return resultDate
+                }
+
+                var beginDate= this.findFirstDayOfWeek(new Date)
+                var endDate= new Date(beginDate); endDate.setDate( endDate.getDate() + 7 )
+
+                this.cols= this.splitIntervalToChunks(beginDate, endDate, 7)
+
+                this.rows= [
+
+                ]
+
+                this.showAsTree= function () {
+
+                    this.rows= [
+                        {
+                            title: 'Group 0',
+                            shown: true,
+                            items: [
+                                {
+                                    title: 'Item 0',
+                                    intervals: [
+                                        { beginDate:beginDate, endDate:endDate },
+                                    ]
+                                },{
+                                    title: 'Item 1',
+                                    intervals: [
+                                        { beginDate:beginDate, endDate:endDate },
+                                    ]
+                                },{
+                                    title: 'Item 2',
+                                    intervals: [
+                                        { beginDate:beginDate, endDate:endDate },
+                                    ]
+                                },
+                            ]
+                        },{
+                            title: 'Group 1',
+                            shown: true,
+                            items: [
+                                {
+                                    title: 'Item 3',
+                                },{
+                                    title: 'Item 4',
+                                },{
+                                    title: 'Item 5',
+                                },
+                            ]
+                        },{
+                            title: 'Group 2',
+                            shown: true,
+                            items: [
+                                {
+                                    title: 'Item 6',
+                                },{
+                                    title: 'Item 7',
+                                },{
+                                    title: 'Item 8',
+                                },
+                            ]
+                        },{
+                            title: 'Group 3',
+                            shown: true,
+                            groups: [
+                                {
+                                    title: 'Group 3.1',
+                                    shown: true,
+                                    items: [
+                                        {
+                                            title: 'Item 9',
+                                        },{
+                                            title: 'Item 10',
+                                        },{
+                                            title: 'Item 11',
+                                        },
+                                    ]
+                                },{
+                                    title: 'Group 3.2',
+                                    shown: true,
+                                    items: [
+                                        {
+                                            title: 'Item 12',
+                                        },
+                                    ]
+                                },{
+                                    title: 'Group 3.3',
+                                    shown: true,
+                                    items: [
+                                        {
+                                            title: 'Item 13',
+                                        },{
+                                            title: 'Item 14',
+                                        },{
+                                            title: 'Item 15',
+                                        },
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+
+                    var rowsWithGroups= []
+                    bTable.mapGroups(this.rows, function (group, groupParent, i) {
+                        rowsWithGroups.push({
+                            type: 'group',
+                            group: group,
+                            groupParent: groupParent,
+                        })
+                    }, function (item, group, i) {
+                        rowsWithGroups.push({
+                            type: 'item',
+                            item: item,
+                            group: group, isGroupLast: (i===(group.items.length-1)),
+                        })
+                    }.bind(this))
+
+                    this.rows= rowsWithGroups
+                }
+
+                this.showAsList= function () {
+                    this.rows= [
+                        {}, {}, {}, {}, {}, {}, {},
+                    ]
+                }
+
+                $scope.showGroup= function (group) {
+                    group.shown= true
+                    if (group.groups) {
+                        angular.forEach(group.groups, function (group) {
+                            $scope.showGroup(group)
+                        })
+                    }
+                }
+                $scope.hideGroup= function (group) {
+                    group.shown= false
+                    if (group.groups) {
+                        angular.forEach(group.groups, function (group) {
+                            $scope.hideGroup(group)
+                        })
+                    }
+                }
+            })
+
+        ;
 
 
 
 append body
 
-    .b-app(app, ng-app="Caeruleus1", ng-cloak)
+    .b-app(app, ng-app="TableExample", ng-cloak)
 
         .b-app__view: .b-app__view-inner
 
