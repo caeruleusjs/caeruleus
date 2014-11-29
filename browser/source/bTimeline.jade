@@ -121,7 +121,14 @@ append body
             .b-app__body: .b-app__body-page
 
                 h2 Это таймлайн
-
                 .row(ng-controller="TimelineCtrl as timeline")
-                    
                     b-timeline(timeline-begin-date="timeline.beginDate",timeline-end-date="timeline.endDate",timeline-intervals="timeline.intervals") {{timeline}}
+                .row
+                    .col.col-xs-6
+                        h3 1
+                        .row(ng-controller="TimelineCtrl as timeline")
+                            b-timeline(timeline-begin-date="timeline.beginDate",timeline-end-date="timeline.endDate",timeline-intervals="timeline.intervals") {{timeline}}
+                    .col.col-xs-6
+                        h3 2
+                        .row(ng-controller="TimelineCtrl as timeline")
+                            b-timeline(timeline-begin-date="timeline.beginDate",timeline-end-date="timeline.endDate",timeline-intervals="timeline.intervals") {{timeline}}
