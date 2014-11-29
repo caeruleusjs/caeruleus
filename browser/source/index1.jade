@@ -75,10 +75,12 @@ append body
                                             a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
                                         .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='week'")
                                             a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
-
                         b-table-template#caption(use="['bTable']")
                             .row
-                                .col.col-xs-12  
+                                .col.col-xs-3
+                                    .b-table-schedule__caption-menu
+                                        div(style='float:left; margin-right:10px;'): a._active() Open
+                                        div(style='float:left; margin-right:10px;'): a() Closed  
 
                         //head
 

@@ -43,6 +43,8 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
     .directive('appDialog', appDialogDirective)
     .directive('appDialogTransclude', appDialogTranscludeDirective)
 
+    .directive('bScheduleMonth', bScheduleMonthDirective)
+
     .controller('AppDialogCtrl', function ($scope, $q) {
         var dfd= $q.defer()
         this.promise= dfd.promise
@@ -387,8 +389,6 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
 
     })
 
-
-
 ;
 
 
@@ -619,5 +619,79 @@ function appDialogTranscludeDirective($rootScope) {
                 $e.append($eTranscluded)
             })
         }
+    }
+}
+
+
+
+function bScheduleMonthDirective($rootScope, $compile, $interval, $location, Issue, Tag) {
+
+    return {
+        restrict: 'EA',
+
+        controllerAs: 'bScheduleMonth',
+        controller: bScheduleMonthDirectiveCtrl,
+
+        link: bScheduleMonthDirectiveLink,
+    }
+    function bScheduleMonthDirectiveCtrl($scope) {
+
+    }
+    function bScheduleMonthDirectiveLink($scope, $e, $a) {
+
+        $scope.findFirstDayOfMonth= function (date) {
+           var resultDate= new Date( date.getFullYear(), date.getMonth())
+           return resultDate
+        }
+
+        var beginDate= $scope.findFirstDayOfMonth(new Date)
+        var endDate= new Date(beginDate)
+        endDate.setFullYear(
+            endDate.getFullYear() + 1
+        )
+
+        var dates= []
+
+        for (var i= beginDate.getDay(); i > 0; i--) {
+            dates.push(null)
+        }
+
+        for (var date= new Date(beginDate); date < endDate; date.setDate( date.getDate() +1 )) {
+            dates.push(new Date(date))
+        }
+
+        $scope.rows= [
+            [], [], [], [], [], [], []
+        ]
+
+        for (var i= 0, l= dates.length; i < l; i= i+7) {
+            for (var j= 0; j < 7; j++) {
+                $scope.rows[j].push(dates[i+j])
+            }
+        }
+
+        var hcols= $scope.hcols= []
+
+        angular.forEach($scope.rows[6], function (colDate) { // @todo требуется рефакторинг
+            var monthDate= new Date(colDate)
+            var hcol= {
+                date: monthDate,
+                colspan: 1,
+            }
+            if (!hcols.length) {
+                hcols.push(hcol)
+            } else {
+                var prevHcol= hcols[hcols.length-1]
+                if (prevHcol.date.getFullYear() == monthDate.getFullYear() && prevHcol.date.getMonth() == monthDate.getMonth()) {
+                    prevHcol.colspan++
+                } else {
+                    hcol= {
+                        date: monthDate,
+                        colspan: 1,
+                    }
+                    hcols.push(hcol)
+                }
+            }
+        })
     }
 }
