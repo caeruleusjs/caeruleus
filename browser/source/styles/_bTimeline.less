@@ -12,5 +12,13 @@
         width: auto;
         min-width: 1px;
         background: #4082C4;
+
+        &:not(._isBegin) {
+            left: -1px !important;
+        }
+        &:not(._isEnd) {
+            right: -1px !important;
+        }
+
     }
 }

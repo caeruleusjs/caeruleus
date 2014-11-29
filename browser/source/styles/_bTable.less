@@ -1,225 +1,202 @@
-.b-table {
-    display: table;
-    width: 100%; height: auto;
-    table-layout: fixed;
-    border-collapse: collapse;
-    border-spacing: 0;
-
-    &-schedule &__cel {
-        padding: 0;
-        background: #f2f2f2;
-        border: 1px solid;
-        border-color: #fff #eee #fff #eee;
-    }
-
-    &-schedule &__body &__cel {
-        border-top-color: #fff;
-        &_first {
-            border-left: 1px solid #fff;
-        }
-        &_last {
-            border-right: 1px solid #d2d2d2;
-        }
-    }
-    &-schedule &__body &-schedule__cel_title {
-        border-left: 1px solid #fff;
-    }
-
-    &__body_last &__cel {
-        border-bottom: 1px solid #d2d2d2;
-    }
-    &-schedule &__body {
-        box-shadow: 0 0 0 5px #f2f2f2;
-    }
-    &-schedule &__body._isStarted &__cel {
-        background-color: #e2e2e2;
-    }
-
-    &-schedule {
-
-        &__caption {
-            height: 80px;
-            margin: 0;
-            padding: 0 15px; padding-bottom: 30px;
-            text-align: left;
-            border: 1px solid transparent;
-        }
-            &__caption-inner {
-                position: relative;
-                height: 50px;
-            }
-
-        &__caption-title {
-            & > button {
-                width: 100%; height: 50px;
-                line-height: 28px;
-            }
-        }
-
-        &__caption-nav {
-            position: relative;
-            height: 30px;
-
-            &_prev {
-                margin-left: -15px;
-                text-align: right;
-            }
-
-            &_next {
-                margin-right: -15px;
-                text-align: left;
-            }
-
-            & > a {
-                display: block;
-                width: 100%;
-                padding: 0 15px;
-                line-height: 50px;
-                &:hover {
-                    background: #e2e2e2;
-                }
-            }
-
-            &_mode {
-                text-align: center;
-                & > a {
-                    display: inline-block;
-                    width: auto;
-                    &:hover {
-                        background: transparent;
-                    }
-                }
-            }
-
-        }
-
-        &__caption-menu {
-            line-height: 30px;
-            font-size: 12px;
-            & a {
-                color: #aaaaaa;
-                &:hover {
-                    color: #212121;
-                }
-                &._active {
-                    font-weight: bold;
-                    color: #212121;
-                }
-            }
-        }
-
-        &__cel {
-            position: relative;
-            width: 100%; height: 38px;
-            line-height: 20px;
-            background: #e2e2e2;
-
-            &_title {
-                width: 25%;
-            }
-
-            &_chunk {
-
-            }
-        }
-
-        &__cel-interval {
-            position: absolute; top: 3px; bottom: 3px;
-            width: auto; min-width: 1px;
-            background: #4082C4;
-
-            &:not(._isBegin) {
-                left: -1px !important;
-            }
-            &:not(._isEnd) {
-                right: -1px !important;
-            }
-
-            &._isStarted {
-                background-color: orange !important;
-            }
-        }
-
-        &__chunk-head {
-
-            &__head {
-                display: block;
-                position: relative;
-                width: 100%; height: 20px;
-                text-align: center;
-
-                & > a {
-                    display: block;
-                    position: relative; z-index: 3;
-                    width: 100%; height: 100%;
-
-                    &:hover {
-                        background-color: rgba(0,0,0,.05);
-                    }
-                }
-
-                & > label {
-                    display: block;
-                    position: absolute; top: 0; left: -50%;
-                    width: 100%;
-                    margin: 0; margin-left: -1px;
-                    padding: 0;
-                    line-height: 20px;
-                    text-align: center;
-                }
-            }
-
-        }
-
-        &__cel_chunk-even &__chunk-head__head > label {
-            display: none;
-            @media (min-width: 1200px) {
-                display: block;
-            }
-        }
-
-        &__cel_chunk-first &__chunk-head__head > label {
-            display: none !important;
-        }
-
-        &__issue-title {
-            display: block;
-            position: relative;
-            padding-left: 15px;
-            padding-right: 15px;
-            line-height: 20px;
-            & > a {
-                display: block;
-                position: relative;
-                width: 100%; height: 100%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            & > button {
-                position: absolute; top: 0; right: 0;
-                width: 22px; height: 22px;
-            }
-        }
-    }
-
-    &-schedule__head &__cel {
-        padding: 0;
-
-        font-size: 11px;
-        font-weight: normal;
-        text-align: left;
-
-        border-color: transparent;
-
-    }
-
-    &-schedule__head_last &__cel {
-        border-bottom-color: #fff;
-    }
-
-
-}
+//.b-table {
+//    display: table;
+//    width: 100%; height: auto;
+//    table-layout: fixed;
+//    border-collapse: collapse;
+//    border-spacing: 0;
+//
+//    &-schedule &__cel {
+//        padding: 0;
+//        background: #f2f2f2;
+//        border: 1px solid;
+//        border-color: #fff #eee #fff #eee;
+//    }
+//
+//    &-schedule &__body &__cel {
+//        border-top-color: #fff;
+//        &_first {
+//            border-left: 1px solid #fff;
+//        }
+//        &_last {
+//            border-right: 1px solid #d2d2d2;
+//        }
+//    }
+//    &-schedule &__body &-schedule__cel_title {
+//        border-left: 1px solid #fff;
+//    }
+//
+//    &__body_last &__cel {
+//        border-bottom: 1px solid #d2d2d2;
+//    }
+//    &-schedule &__body {
+//        box-shadow: 0 0 0 5px #f2f2f2;
+//    }
+//    &-schedule &__body._isStarted &__cel {
+//        background-color: #e2e2e2;
+//    }
+//
+//    &-schedule {
+//
+//        &__caption {
+//            height: 80px;
+//            margin: 0;
+//            padding: 0 15px; padding-bottom: 30px;
+//            text-align: left;
+//            border: 1px solid transparent;
+//        }
+//            &__caption-inner {
+//                position: relative;
+//                height: 50px;
+//            }
+//
+//        &__caption-title {
+//            & > button {
+//                width: 100%; height: 50px;
+//                line-height: 28px;
+//            }
+//        }
+//
+//        &__caption-nav {
+//            position: relative;
+//            height: 30px;
+//
+//            &_prev {
+//                margin-left: -15px;
+//                text-align: right;
+//            }
+//
+//            &_next {
+//                margin-right: -15px;
+//                text-align: left;
+//            }
+//
+//            & > a {
+//                display: block;
+//                width: 100%;
+//                padding: 0 15px;
+//                line-height: 50px;
+//                &:hover {
+//                    background: #e2e2e2;
+//                }
+//            }
+//
+//            &_mode {
+//                text-align: center;
+//                & > a {
+//                    display: inline-block;
+//                    width: auto;
+//                    &:hover {
+//                        background: transparent;
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        &__caption-menu {
+//            line-height: 30px;
+//            font-size: 12px;
+//            & a {
+//                color: #aaaaaa;
+//                &:hover {
+//                    color: #212121;
+//                }
+//                &._active {
+//                    font-weight: bold;
+//                    color: #212121;
+//                }
+//            }
+//        }
+//
+//        &__cel {
+//            position: relative;
+//            width: 100%; height: 38px;
+//            line-height: 20px;
+//            background: #e2e2e2;
+//
+//            &_title {
+//                width: 25%;
+//            }
+//
+//            &_chunk {
+//
+//            }
+//        }
+//
+//        &__cel-interval {
+//            position: absolute; top: 3px; bottom: 3px;
+//            width: auto; min-width: 1px;
+//            background: #4082C4;
+//
+//            &:not(._isBegin) {
+//                left: -1px !important;
+//            }
+//            &:not(._isEnd) {
+//                right: -1px !important;
+//            }
+//
+//            &._isStarted {
+//                background-color: orange !important;
+//            }
+//        }
+//
+//        &__chunk-head {
+//
+//            &__head {
+//
+//            }
+//
+//        }
+//
+//        &__cel_chunk-even &__chunk-head__head > label {
+//            display: none;
+//            @media (min-width: 1200px) {
+//                display: block;
+//            }
+//        }
+//
+//        &__cel_chunk-first &__chunk-head__head > label {
+//            display: none !important;
+//        }
+//
+//        &__issue-title {
+//            display: block;
+//            position: relative;
+//            padding-left: 15px;
+//            padding-right: 15px;
+//            line-height: 20px;
+//            & > a {
+//                display: block;
+//                position: relative;
+//                width: 100%; height: 100%;
+//                white-space: nowrap;
+//                overflow: hidden;
+//                text-overflow: ellipsis;
+//            }
+//            & > button {
+//                position: absolute; top: 0; right: 0;
+//                width: 22px; height: 22px;
+//            }
+//        }
+//    }
+//
+//    &-schedule__head &__cel {
+//        padding: 0;
+//
+//        font-size: 11px;
+//        font-weight: normal;
+//        text-align: left;
+//
+//        border-color: transparent;
+//
+//    }
+//
+//    &-schedule__head_last &__cel {
+//        border-bottom-color: #fff;
+//    }
+//
+//
+//}
 
 
 
@@ -296,5 +273,37 @@
         padding-left: 15px;
         padding-right: 15px;
         line-height: 20px;
+    }
+}
+
+
+
+.b-table-schedule-head-date {
+    display: block;
+    position: relative;
+    width: 100%; height: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+
+    & > a {
+        display: block;
+        position: relative; z-index: 3;
+        width: 100%; height: 100%;
+
+        &:hover {
+            background-color: rgba(0,0,0,.05);
+        }
+    }
+
+    & > b {
+        display: block;
+        position: absolute; top: 0; left: -50%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        line-height: 20px;
+        text-align: center;
+        font-weight: normal;
     }
 }

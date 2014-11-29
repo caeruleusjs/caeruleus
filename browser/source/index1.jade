@@ -82,18 +82,15 @@ append body
 
                         //head
 
-                        b-table-template#head-title(use="['bTable']")
-                            div title here...
-
                         b-table-template#head-col(use="['bTable','tableCol','$index']")
                             .row
-                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='hour'")
-                                    label {{tableCol.beginDate | date:'HH:mm'}}
-                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='day'")
-                                    label {{tableCol.beginDate | date:'HH:mm'}}
+                                .b-table-schedule-head-date(ng-if="schedule.mode=='hour'")
+                                    b {{tableCol.beginDate | date:'HH:mm'}}
+                                .b-table-schedule-head-date(ng-if="schedule.mode=='day'")
+                                    b {{tableCol.beginDate | date:'HH:mm'}}
                                     a(ng-href="#/?view=hour&date={{tableCol.beginDate.toUTCString()}}")
-                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='week'")
-                                    label {{tableCol.beginDate | date:'MM.dd'}}
+                                .b-table-schedule-head-date(ng-if="schedule.mode=='week'")
+                                    b {{tableCol.beginDate | date:'MM.dd'}}
                                     a(ng-href="#/?view=day&date={{tableCol.beginDate.toUTCString()}}")
 
                         // body group

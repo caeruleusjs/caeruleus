@@ -95,7 +95,7 @@ function bTimelineDirective(bTimeline) {
 
         template: ''+
             '<div class="b-timeline">'+
-                '<div class="b-timeline__interval" b-timeline-interval ng-repeat="interval in chunk.intervals" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
+                '<div class="b-timeline__interval" b-timeline-interval ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
             ''+
         '',
 
