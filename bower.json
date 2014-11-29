@@ -5,7 +5,8 @@
         "jquery": "latest",
         "angular": "latest",
         "angular-route": "latest",
-        "localforage": "latest"
+        "localforage": "latest",
+        "aeTimeline": "awesome-ui/aeTimeline"
     },
 
     "license": "GPL"
