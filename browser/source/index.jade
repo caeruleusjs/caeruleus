@@ -12,6 +12,9 @@ append head-styles
 
 append head-scripts
 
+    script(src='scripts/bTable.js')
+    script(src='scripts/bTimeline.js')
+
     script(src='scripts/index.js')
 
 
@@ -22,7 +25,7 @@ append body
 
         div(ng-view)
 
-        .b-app__view(ng-if="isRoute('schedule')", b-schedule): .b-app__view-inner
+        .b-app__view(ng-if="isRoute('schedule')", ng-controller="ScheduleCtrl as schedule"): .b-app__view-inner
 
             .b-app__head
                 .b-app__head-hero
@@ -37,74 +40,76 @@ append body
 
             .b-app__body: .b-app__body-page
 
-                .row: table.b-table.b-table-schedule
+                .row
 
-                    caption.b-table-schedule__caption: .b-table-schedule__caption-inner
-                        .row
-                            .col.col-xs-3
-                                .b-table-schedule__caption-title
-                                    button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
+                    b-table(table-cols="chunks", table-rows="matchedIssues")
 
-                            .col.col-xs-9: .row
-                                .col.col-xs-4
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='week'")
-                                        a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='day'")
-                                        a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='hour'")
-                                        a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
-                                .col.col-xs-4
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_mode
-                                        a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;"): u HOUR
-                                        a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;"): u DAY
-                                        a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;"): u WEEK
-                                .col.col-xs-4
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='hour'")
-                                        a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='day'")
-                                        a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
-                                    .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='week'")
-                                        a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
-                        .row
-                            .col.col-xs-3
-                                .b-table-schedule__caption-menu
-                                    div(style='float:left; margin-right:10px;'): a._active() Open
-                                    div(style='float:left; margin-right:10px;'): a() Closed
-                            .col.col-xs-9
-                                .b-table-schedule__caption-menu
-                                    div(style='float:left; margin-right:10px;'): a() Menu
-                                    div(style='float:left; margin-right:10px;'): a() Menu
-                                    div(style='float:left; margin-right:10px;'): a() Menu
-                                    div(style='float:right'): a() Menu
+                        // caption
 
-                    //thead.b-table__head.b-table-schedule__head
-                        tr
-                            th.b-table__cel.b-table-schedule__cel_title
-                            th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}") h
+                        b-table-template#caption(use="['bTable']")
+                            .row
+                                .col.col-xs-12    
+                        b-table-template#caption(use="['bTable']")
+                            .row
+                                .col.col-xs-3
+                                    .b-table-schedule__caption-title
+                                        button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
 
-                    thead.b-table__head.b-table-schedule__head.b-table-schedule__head_last
-                        tr
-                            th.b-table__cel.b-table-schedule__cel_title
-                            th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}")
-                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='hour'")
-                                    label {{chunk.beginDate | date:'HH:mm'}}
-                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='day'")
-                                    label {{chunk.beginDate | date:'HH.mm'}}
-                                    a(ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}")
-                                .b-table-schedule__chunk-head__head(ng-if="schedule.mode=='week'")
-                                    label {{chunk.beginDate | date:'MM.dd'}}
-                                    a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}")
+                                .col.col-xs-9: .row
+                                    .col.col-xs-4
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='week'")
+                                            a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='day'")
+                                            a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='hour'")
+                                            a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
+                                    .col.col-xs-4
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_mode
+                                            a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;"): u HOUR
+                                            a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;"): u DAY
+                                            a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;"): u WEEK
+                                    .col.col-xs-4
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='hour'")
+                                            a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='day'")
+                                            a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
+                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='week'")
+                                            a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
+                        b-table-template#caption(use="['bTable']")
+                            .row
+                                .col.col-xs-3
+                                    .b-table-schedule__caption-menu
+                                        div(style='float:left; margin-right:10px;'): a._active() Open
+                                        div(style='float:left; margin-right:10px;'): a() Closed  
 
-                    tbody.b-table__body(ng-repeat="issue in schedule.issues track by issue.guid", ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}")
-                        tr(ng-controller="ScheduleIssueCtrl as scheduleIssue")
+                        //head
 
-                            td.b-table__cel.b-table-schedule__cel_title
-                                .b-table-schedule__issue-title
-                                    a(ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')"): u {{issue.title}}
+                        b-table-template#head-col(use="['bTable','tableCol','$index']")
+                            .row
+                                .b-table-schedule-head-date(ng-if="schedule.mode=='hour'")
+                                    b {{tableCol.beginDate | date:'HH:mm'}}
+                                .b-table-schedule-head-date(ng-if="schedule.mode=='day'")
+                                    b {{tableCol.beginDate | date:'HH:mm'}}
+                                    a(ng-href="#/?view=hour&date={{tableCol.beginDate.toUTCString()}}")
+                                .b-table-schedule-head-date(ng-if="schedule.mode=='week'")
+                                    b {{tableCol.beginDate | date:'MM.dd'}}
+                                    a(ng-href="#/?view=day&date={{tableCol.beginDate.toUTCString()}}")
 
-                            td.b-table__cel.b-table-schedule__cel_chunk(ng-repeat="issueChunk in scheduleIssue.chunks", ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}")
-                                .b-table-schedule__cel
-                                    .b-table-schedule__cel-interval(ng-repeat="issueChunkInterval in issueChunk.intervals track by $index", ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}", ng-click="selectIssueInterval(issue, issueChunkInterval.interval)")
+                        // body group
+
+                        b-table-template#body-group-title(use="['bTable','tableRow']") {{tableRow.group.title}} 
+                            a(ng-hide="tableRow.group.shown", ng-click="showGroup(tableRow.group)") show
+                            a(ng-show="tableRow.group.shown", ng-click="hideGroup(tableRow.group)") hide
+
+                        // body
+
+                        b-table-template#body-title(use="['bTable','tableRow', '$index']")
+                            a(ng-click="selectIssue(tableRow); appDialogToggle('IssueViewDialog')"): u {{tableRow.title}}
+
+                        b-table-template#body-col(use="['bTable','tableRow','tableCol','$index']")
+                            .row
+
+                                b-timeline(timeline-begin-date="tableCol.beginDate",timeline-end-date="tableCol.endDate",timeline-intervals="tableRow.intervals")
 
                 .row
                     .col.col-xs-12  
@@ -208,12 +213,6 @@ append body
                                     button.col.col-xs-5.col-lg-6(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Save issue
                                     button.col.col-xs-2.col-lg-2(ng-click="mode='view';") Cancel
                                     button.col.col-xs-2.col-lg-2(ng-click="mode='view';AppDialog.resolve(false)") Close
-
-            .b-app__foot
-
-                //.row
-                    .col.col-xs-3 3
-                    .col.col-xs-9 9
 
         .app-overlay(ng-repeat="(key, dialog) in dialogs", ng-if="dialog.$shown", ng-controller="AppDialogCtrl as AppDialog")
             .app-overlay__bg(ng-click="AppDialog.resolve(false)")
