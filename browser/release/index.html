@@ -9,12 +9,14 @@
     <script src="components/angular-route/angular-route.min.js"></script>
     <script src="components/angular-i18n/angular-locale_ru.js"></script>
     <script src="components/localforage/dist/localforage.nopromises.min.js"></script>
+    <script src="scripts/bTable.js"></script>
+    <script src="scripts/bTimeline.js"></script>
     <script src="scripts/index.js"></script>
   </head>
   <body>
     <div app ng-app="Caeruleus" class="b-app">
       <div ng-view></div>
-      <div ng-if="isRoute('schedule')" b-schedule class="b-app__view">
+      <div ng-if="isRoute('schedule')" ng-controller="ScheduleCtrl as schedule" class="b-app__view">
         <div class="b-app__view-inner">
           <div class="b-app__head">
             <div class="b-app__head-hero">
@@ -33,90 +35,71 @@
           <div class="b-app__body">
             <div class="b-app__body-page">
               <div class="row">
-                <table class="b-table b-table-schedule">
-                  <caption class="b-table-schedule__caption">
-                    <div class="b-table-schedule__caption-inner">
-                      <div class="row">
-                        <div class="col col-xs-3">
-                          <div class="b-table-schedule__caption-title">
-                            <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
-                          </div>
-                        </div>
-                        <div class="col col-xs-9">
-                          <div class="row">
-                            <div class="col col-xs-4">
-                              <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
-                              <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=day&amp;date={{getPrevDayDate().toUTCString()}}">←←</a></div>
-                              <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=hour&amp;date={{getPrevHourDate().toUTCString()}}">←</a></div>
-                            </div>
-                            <div class="col col-xs-4">
-                              <div class="b-table-schedule__caption-nav b-table-schedule__caption-nav_mode"><a href="#/?view=hour" ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;">
-                                  <u>HOUR</u></a><a href="#/?view=day" ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;">
-                                  <u>DAY</u></a><a href="#/?view=week" ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;">
-                                  <u>WEEK</u></a></div>
-                            </div>
-                            <div class="col col-xs-4">
-                              <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=hour&amp;date={{getNextHourDate().toUTCString()}}">→</a></div>
-                              <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=day&amp;date={{getNextDayDate().toUTCString()}}">→→</a></div>
-                              <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=week&amp;date={{getNextWeekDate().toUTCString()}}">→→→</a></div>
-                            </div>
-                          </div>
+                <b-table table-cols="chunks" table-rows="matchedIssues">
+                  <!-- caption-->
+                  <b-table-template id="caption" use="['bTable']">
+                    <div class="row">
+                      <div class="col col-xs-12">   </div>
+                    </div>
+                  </b-table-template>
+                  <b-table-template id="caption" use="['bTable']">
+                    <div class="row">
+                      <div class="col col-xs-3">
+                        <div class="b-table-schedule__caption-title">
+                          <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col col-xs-3">
-                          <div class="b-table-schedule__caption-menu">
-                            <div style="float:left; margin-right:10px;"><a class="_active">Open</a></div>
-                            <div style="float:left; margin-right:10px;"><a>Closed</a></div>
+                      <div class="col col-xs-9">
+                        <div class="row">
+                          <div class="col col-xs-4">
+                            <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
+                            <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=day&amp;date={{getPrevDayDate().toUTCString()}}">←←</a></div>
+                            <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=hour&amp;date={{getPrevHourDate().toUTCString()}}">←</a></div>
                           </div>
-                        </div>
-                        <div class="col col-xs-9">
-                          <div class="b-table-schedule__caption-menu">
-                            <div style="float:left; margin-right:10px;"><a>Menu</a></div>
-                            <div style="float:left; margin-right:10px;"><a>Menu</a></div>
-                            <div style="float:left; margin-right:10px;"><a>Menu</a></div>
-                            <div style="float:right"><a>Menu</a></div>
+                          <div class="col col-xs-4">
+                            <div class="b-table-schedule__caption-nav b-table-schedule__caption-nav_mode"><a href="#/?view=hour" ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;">
+                                <u>HOUR</u></a><a href="#/?view=day" ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;">
+                                <u>DAY</u></a><a href="#/?view=week" ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;">
+                                <u>WEEK</u></a></div>
+                          </div>
+                          <div class="col col-xs-4">
+                            <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=hour&amp;date={{getNextHourDate().toUTCString()}}">→</a></div>
+                            <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=day&amp;date={{getNextDayDate().toUTCString()}}">→→</a></div>
+                            <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=week&amp;date={{getNextWeekDate().toUTCString()}}">→→→</a></div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </caption>
-                  <!--thead.b-table__head.b-table-schedule__head
-                  tr
-                      th.b-table__cel.b-table-schedule__cel_title
-                      th.b-table__cel.b-table-schedule__cel_chunk.b-table-schedule__chunk-head(ng-repeat="chunk in schedule.chunks", ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}") h
-                  
-                  -->
-                  <thead class="b-table__head b-table-schedule__head b-table-schedule__head_last">
-                    <tr>
-                      <th class="b-table__cel b-table-schedule__cel_title"></th>
-                      <th ng-repeat="chunk in schedule.chunks" ng-class="{'b-table-schedule__cel_chunk-first':$first,'b-table-schedule__cel_chunk-even':$even,'b-table-schedule__cel_chunk-odd':$odd,'b-table-schedule__cel_chunk-last':$last}" title="{{chunk.beginDate}} — {{chunk.endDate}}" class="b-table__cel b-table-schedule__cel_chunk b-table-schedule__chunk-head">
-                        <div ng-if="schedule.mode=='hour'" class="b-table-schedule__chunk-head__head">
-                          <label>{{chunk.beginDate | date:'HH:mm'}}</label>
+                  </b-table-template>
+                  <b-table-template id="caption" use="['bTable']">
+                    <div class="row">
+                      <div class="col col-xs-3">
+                        <div class="b-table-schedule__caption-menu">
+                          <div style="float:left; margin-right:10px;"><a class="_active">Open</a></div>
+                          <div style="float:left; margin-right:10px;"><a>Closed  </a></div>
                         </div>
-                        <div ng-if="schedule.mode=='day'" class="b-table-schedule__chunk-head__head">
-                          <label>{{chunk.beginDate | date:'HH.mm'}}</label><a ng-href="#/?view=hour&amp;date={{chunk.beginDate.toUTCString()}}"></a>
-                        </div>
-                        <div ng-if="schedule.mode=='week'" class="b-table-schedule__chunk-head__head">
-                          <label>{{chunk.beginDate | date:'MM.dd'}}</label><a ng-href="#/?view=day&amp;date={{chunk.beginDate.toUTCString()}}"></a>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody ng-repeat="issue in schedule.issues track by issue.guid" ng-class="{'b-table__body_last':$last,_isStarted:issue.startedAt}" class="b-table__body">
-                    <tr ng-controller="ScheduleIssueCtrl as scheduleIssue">
-                      <td class="b-table__cel b-table-schedule__cel_title">
-                        <div class="b-table-schedule__issue-title"><a ng-click="selectIssue(issue); appDialogToggle('IssueViewDialog')">
-                            <u>{{issue.title}}</u></a></div>
-                      </td>
-                      <td ng-repeat="issueChunk in scheduleIssue.chunks" ng-class="{'b-table__cel_first':$first,'b-table__cel_last':$last}" class="b-table__cel b-table-schedule__cel_chunk">
-                        <div class="b-table-schedule__cel">
-                          <div ng-repeat="issueChunkInterval in issueChunk.intervals track by $index" ng-class="{_isBegin:issueChunkInterval.isBegin,_isEnd:issueChunkInterval.isEnd,_isStarted:issue.startedAt}" ng-style="{left:calcChunkIntervalLeft(issueChunk,issueChunkInterval), right:calcChunkIntervalRight(issueChunk,issueChunkInterval)}" ng-click="selectIssueInterval(issue, issueChunkInterval.interval)" class="b-table-schedule__cel-interval"></div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      </div>
+                    </div>
+                  </b-table-template>
+                  <!--head-->
+                  <b-table-template id="head-col" use="['bTable','tableCol','$index']">
+                    <div class="row">
+                      <div ng-if="schedule.mode=='hour'" class="b-table-schedule-head-date"><b>{{tableCol.beginDate | date:'HH:mm'}}</b></div>
+                      <div ng-if="schedule.mode=='day'" class="b-table-schedule-head-date"><b>{{tableCol.beginDate | date:'HH:mm'}}</b><a ng-href="#/?view=hour&amp;date={{tableCol.beginDate.toUTCString()}}"></a></div>
+                      <div ng-if="schedule.mode=='week'" class="b-table-schedule-head-date"><b>{{tableCol.beginDate | date:'MM.dd'}}</b><a ng-href="#/?view=day&amp;date={{tableCol.beginDate.toUTCString()}}"></a></div>
+                    </div>
+                  </b-table-template>
+                  <!-- body group-->
+                  <b-table-template id="body-group-title" use="['bTable','tableRow']">{{tableRow.group.title}} <a ng-hide="tableRow.group.shown" ng-click="showGroup(tableRow.group)">show</a><a ng-show="tableRow.group.shown" ng-click="hideGroup(tableRow.group)">hide</a></b-table-template>
+                  <!-- body-->
+                  <b-table-template id="body-title" use="['bTable','tableRow', '$index']"><a ng-click="selectIssue(tableRow); appDialogToggle('IssueViewDialog')">
+                      <u>{{tableRow.title}}</u></a></b-table-template>
+                  <b-table-template id="body-col" use="['bTable','tableRow','tableCol','$index']">
+                    <div class="row">
+                      <b-timeline timeline-begin-date="tableCol.beginDate" timeline-end-date="tableCol.endDate" timeline-intervals="tableRow.intervals"></b-timeline>
+                    </div>
+                  </b-table-template>
+                </b-table>
               </div>
               <div class="row">
                 <div class="col col-xs-12"> </div>
@@ -234,13 +217,6 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="b-app__foot">
-            <!--.row
-            .col.col-xs-3 3
-            .col.col-xs-9 9
-            
-            -->
           </div>
         </div>
       </div>
