@@ -6,6 +6,7 @@
         "angular": "latest",
         "angular-route": "latest",
         "localforage": "latest",
+        "aeTable": "awesome-ui/aeTable",
         "aeTimeline": "awesome-ui/aeTimeline"
     },
 
