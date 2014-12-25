@@ -16,24 +16,6 @@ function bTimelineService() {
 
 
 
-    this.splitIntervalToChunks= function (beginDate, endDate, numOfChunks) {
-        var chunkDuration= (endDate - beginDate) / numOfChunks
-        var chunks= []
-        for (var i= 0, date= new Date(beginDate); i < numOfChunks; i++, date.setTime(date.getTime() + chunkDuration)) {
-            var chunkBeginDate= new Date(date)
-            var chunkEndDate= new Date(chunkBeginDate)
-            chunkEndDate.setTime( chunkEndDate.getTime() + chunkDuration )
-            var chunk= {
-                beginDate: chunkBeginDate,
-                endDate: chunkEndDate,
-            }
-            chunks.push(chunk)
-        }
-        return chunks
-    }
-
-
-
     this.sliceIntervals= function(intervals, beginDate, endDate) {
 
         var chunk= {
@@ -57,14 +39,6 @@ function bTimelineService() {
         })
 
         return chunk
-    }
-
-
-
-    this.findFirstDayOfWeek= function (date) {
-        var resultDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
-        resultDate.setHours( ((resultDate.getDay() || 7) - 1) * -24 )
-        return resultDate
     }
 
 
