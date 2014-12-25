@@ -71,48 +71,86 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
 
     .service('Tag', Tag)
 
-    .controller('ScheduleCtrl', function ($scope, $rootScope, $interval, $location, bTimeline, Issue, Tag) {
+    .service('scheduleService', function () {
+
+        this.getBeginDateOfWeek= function (date) {
+            var beginDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+            beginDate.setHours( ((beginDate.getDay() || 7) - 1) * -24 )
+            return beginDate
+        }
+
+        this.createWeek= function (date) {
+            var week= []
+            for (var beginDate, endDate, i= 0; i < 7; i++) {
+                beginDate= endDate || this.getBeginDateOfWeek(date)
+                endDate= new Date(beginDate); endDate.setDate( endDate.getDate() + 1 )
+                week.push({
+                    beginDate: beginDate,
+                    endDate: endDate,
+                })
+            }
+            return week
+        }
+
+        this.getBeginDateOfDay= function (date) {
+            var beginDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
+            return beginDate
+        }
+
+        this.createDay= function (date) {
+            var day= []
+            for (var beginDate, endDate, i= 0; i < 24; i++) {
+                beginDate= endDate || this.getBeginDateOfDay(date)
+                endDate= new Date(beginDate); endDate.setHours( endDate.getHours() + 1 )
+                day.push({
+                    beginDate: beginDate,
+                    endDate: endDate,
+                })
+            }
+            return day
+        }
+
+        this.getBeginDateOfHour= function (date) {
+            var beginDate= new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours())
+            return beginDate
+        }
+
+        this.createHour= function (date) {
+            var hour= []
+            for (var beginDate, endDate, i= 0; i < 12; i++) {
+                beginDate= endDate || this.getBeginDateOfHour(date)
+                endDate= new Date(beginDate); endDate.setMinutes( endDate.getMinutes() + 5 )
+                hour.push({
+                    beginDate: beginDate,
+                    endDate: endDate,
+                })
+            }
+            return hour
+        }
+    })
+
+    .controller('ScheduleCtrl', function ($scope, $rootScope, $interval, $location, bTimeline, Issue, Tag, scheduleService) {
 
         var schedule= this
 
         $scope.showHour= function (date) {
-            var hourBeginDate= new Date(
-                date.getFullYear(), date.getMonth(), date.getDate(),
-                date.getHours()
-            )
-            var hourEndDate= new Date(
-                date.getFullYear(), date.getMonth(), date.getDate(),
-                date.getHours() + 1
-            )
             schedule.mode= 'hour'
-            $scope.chunks= bTimeline.splitIntervalToChunks(
-                hourBeginDate,
-                hourEndDate,
-                12
+            $scope.chunks= scheduleService.createHour(
+                date || new Date
             )
         }
 
         $scope.showDay= function (date) {
-            date= date || new Date
-            var dayBeginDate= new Date(date.getFullYear(), date.getMonth(), date.getDate())
-            var dayEndDate= new Date(dayBeginDate.getFullYear(), dayBeginDate.getMonth(), dayBeginDate.getDate()+1)
             schedule.mode= 'day'
-            $scope.chunks= bTimeline.splitIntervalToChunks(
-                dayBeginDate,
-                dayEndDate,
-                24
+            $scope.chunks= scheduleService.createDay(
+                date || new Date
             )
         }
 
         $scope.showWeek= function (date) {
-            date= date || new Date
-            var weekBeginDate= bTimeline.findFirstDayOfWeek(date)
-            var weekEndDate= new Date(weekBeginDate.getFullYear(), weekBeginDate.getMonth(), weekBeginDate.getDate()+7)
             schedule.mode= 'week'
-            $scope.chunks= bTimeline.splitIntervalToChunks(
-                weekBeginDate,
-                weekEndDate,
-                7
+            $scope.chunks= scheduleService.createWeek(
+                date || new Date
             )
         }
 
