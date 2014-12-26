@@ -363,6 +363,11 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
             }
         })
 
+        $scope.$on('bTimelinePopupShow', function ($evt, bTimelinePopup) {
+            $scope.$broadcast('bTimelinePopupShown', bTimelinePopup)
+        })
+
+        $scope.selectedInterval= {}
     })
 
 

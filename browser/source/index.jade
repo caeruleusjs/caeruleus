@@ -42,6 +42,9 @@ append body
 
             .b-app__body: .b-app__body-page
 
+                //.row
+                    .col.col-xs-12 {{selectedInterval}}
+
                 .row
 
                     b-table(table-cols="chunks", table-rows="matchedIssues")
@@ -111,7 +114,7 @@ append body
                         b-table-template#body-col(use="['bTable','tableRow','tableCol','$index']")
                             .row
 
-                                b-timeline(timeline-begin-date="tableCol.beginDate",timeline-end-date="tableCol.endDate",timeline-intervals="tableRow.intervals")
+                                b-timeline(timeline-begin-date="tableCol.beginDate", timeline-end-date="tableCol.endDate", timeline-intervals="tableRow.intervals", ng-model="selectedInterval")
 
                 .row
                     .col.col-xs-12  

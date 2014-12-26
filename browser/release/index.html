@@ -36,6 +36,10 @@
           </div>
           <div class="b-app__body">
             <div class="b-app__body-page">
+              <!--.row
+              .col.col-xs-12 {{selectedInterval}}
+              
+              -->
               <div class="row">
                 <b-table table-cols="chunks" table-rows="matchedIssues">
                   <!-- caption-->
@@ -98,7 +102,7 @@
                       <u>{{tableRow.title}}</u></a></b-table-template>
                   <b-table-template id="body-col" use="['bTable','tableRow','tableCol','$index']">
                     <div class="row">
-                      <b-timeline timeline-begin-date="tableCol.beginDate" timeline-end-date="tableCol.endDate" timeline-intervals="tableRow.intervals"></b-timeline>
+                      <b-timeline timeline-begin-date="tableCol.beginDate" timeline-end-date="tableCol.endDate" timeline-intervals="tableRow.intervals" ng-model="selectedInterval"></b-timeline>
                     </div>
                   </b-table-template>
                 </b-table>
