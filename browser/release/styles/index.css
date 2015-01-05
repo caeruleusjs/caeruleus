@@ -7,11 +7,14 @@
 }
 html,
 body {
-  min-height: 100%;
   margin: 0;
   padding: 0;
 }
+html {
+  height: 100%;
+}
 body {
+  min-height: 100%;
   padding: 30px;
   font-family: arial, sans-serif;
   font-size: 14px;
@@ -58,6 +61,7 @@ button {
   text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.37);
 }
 button:active {
+  background-color: #f2f2f2;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.37);
   box-shadow: inset 1px 0 0 0 rgba(178, 178, 178, 0.37), inset -1px 0 0 0 rgba(255, 255, 255, 0.37), inset 0 1px 0 0 rgba(178, 178, 178, 0.37), inset 0 -1px 0 0 rgba(255, 255, 255, 0.37);
 }
@@ -712,7 +716,7 @@ body {
   padding-top: 50px;
 }
 .b-app__body-page {
-  padding: 15px 0;
+  padding: 30px 0;
 }
 .b-app__foot {
   position: relative;
@@ -723,6 +727,7 @@ body {
 }
 .app-overlay {
   position: fixed;
+  z-index: 9000;
   top: 0;
   right: 0;
   bottom: 0;
@@ -770,6 +775,187 @@ body {
   background: #e2e2e2;
   border: 1px solid;
   border-color: #d2d2d2 #c2c2c2 #c2c2c2 #fff;
+}
+.b-schedule {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+.b-schedule__caption-title > button {
+  display: block;
+  width: 100%;
+  height: 50px;
+}
+.b-schedule__caption-nav {
+  position: relative;
+  height: 50px;
+  white-space: nowrap;
+}
+.b-schedule__caption-nav > a {
+  display: inline-block;
+  line-height: 50px;
+}
+.b-schedule__caption-nav_mode {
+  text-align: center;
+}
+.b-schedule__caption-nav_prev {
+  text-align: left;
+}
+.b-schedule__caption-nav_prev > a {
+  margin-left: -15px;
+  padding-left: 15px;
+}
+.b-schedule__caption-nav_next {
+  text-align: right;
+}
+.b-schedule__caption-nav_next > a {
+  margin-right: -15px;
+  padding-right: 15px;
+}
+.b-schedule__caption-nav_prev > a,
+.b-schedule__caption-nav_next > a {
+  width: 100%;
+}
+.b-schedule__caption-nav_prev > a:hover,
+.b-schedule__caption-nav_next > a:hover {
+  background-color: #e2e2e2;
+}
+.b-schedule__caption-interval {
+  line-height: 30px;
+  font-size: 14px;
+  text-align: center;
+}
+.b-schedule__row {
+  display: block;
+  position: relative;
+  height: 100%;
+}
+.b-schedule__row:before,
+.b-schedule__row:after {
+  display: table;
+  content: '';
+  float: none;
+}
+.b-schedule__row:after {
+  clear: both;
+}
+.b-schedule__col {
+  display: block;
+  position: relative;
+  height: 100%;
+  float: left;
+}
+.b-schedule__col_title {
+  width: 25%;
+}
+.b-schedule__col_timeline {
+  width: 75%;
+}
+.b-schedule__head {
+  display: block;
+  position: relative;
+}
+.b-schedule__col {
+  background-color: #f2f2f2;
+}
+.b-schedule__col_title {
+  border-top: 1px solid #fff;
+}
+.b-schedule__col_title > a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 20px;
+  padding: 10px 15px;
+}
+.b-schedule__head {
+  height: 33px;
+}
+.b-schedule__body {
+  height: 43px;
+}
+.b-schedule__body .b-schedule__col_timeline {
+  background-color: #e2e2e2 !important;
+}
+.b-schedule-chunks {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.b-schedule-chunks__chunk {
+  float: left;
+  position: relative;
+  width: auto;
+  height: 100%;
+  border-left: 1px solid #f2f2f2;
+  border-top: 1px solid #fff;
+}
+.b-schedule-chunks__chunk a {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  line-height: 32px;
+  font-size: 12px;
+  text-align: center;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+.b-schedule-chunks__chunk a:hover {
+  background-color: #e2e2e2;
+}
+.b-schedule-chunks__chunk a:not([href]) {
+  color: inherit;
+  cursor: default;
+}
+.b-schedule-chunks__chunk a:not([href]):hover {
+  background-color: transparent;
+}
+.b-schedule-chunks__chunk b {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -50%;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 32px;
+  text-align: center;
+  font-weight: normal;
+}
+.b-schedule-chunks__chunk b > small {
+  position: relative;
+  z-index: 3;
+}
+.b-schedule-chunks__chunk_now a {
+  font-weight: bold;
+  background-color: #e2e2e2;
+}
+.b-schedule_hour .b-schedule-chunks__chunk {
+  width: 8.33333333%;
+}
+.b-schedule_day .b-schedule-chunks__chunk {
+  width: 4.16666667%;
+}
+.b-schedule_week .b-schedule-chunks__chunk {
+  width: 14.28571429%;
+}
+.b-schedule-timeline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-top: 1px;
+}
+.b-timeline-interval__interval__btn {
+  z-index: 37;
 }
 .b-tags {
   display: block;

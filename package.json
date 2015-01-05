@@ -1,5 +1,5 @@
 {
-    "name": "caeruleus", "version": "0.3.9",
+    "name": "caeruleus", "version": "0.5.1",
 
     "repository": "caeruleusjs/caeruleus",
 
@@ -9,10 +9,13 @@
     },
 
     "devDependencies": {
+
         "bower": "latest",
+
         "gulp": "latest",
         "gulp-less": "latest",
         "gulp-jade": "latest"
+
     },
 
     "license": "GPL"

@@ -3,75 +3,21 @@
  */
 angular.module('bTimeline', [])
 
-    .service('bTimeline', bTimelineService)
-
     .directive('bTimeline', bTimelineDirective)
-    .directive('bTimelineInterval', bTimelineIntervalDirective)
+    .directive('bTimelineTemplate', bTimelineTemplateDirective)
+    .directive('bTimelineTemplateTransclude', bTimelineTemplateTranscludeDirective)
+
+    .directive('bInputDatetime', bInputDatetimeDirective)
 
 ;
 
 
 
-function bTimelineService() {
-
-
-
-    this.sliceIntervals= function(intervals, beginDate, endDate) {
-
-        var chunk= {
-            beginDate: beginDate,
-            endDate: endDate,
-        }
-
-        angular.forEach(intervals, function (interval) {
-            if (interval.beginDate < chunk.endDate && interval.endDate > chunk.beginDate) {
-                var chunkIntervalBeginDate= (interval.beginDate < chunk.beginDate) ? chunk.beginDate : interval.beginDate
-                var chunkIntervalEndDate= (interval.endDate > chunk.endDate) ? chunk.endDate : interval.endDate
-                var chunkIntervalIsBegin= (interval.beginDate >= chunk.beginDate)
-                var chunkIntervalIsEnd= (interval.endDate <= chunk.endDate)
-                chunk.intervals= chunk.intervals || []
-                chunk.intervals.push({
-                    beginDate: chunkIntervalBeginDate, isBegin: chunkIntervalIsBegin,
-                    endDate: chunkIntervalEndDate, isEnd: chunkIntervalIsEnd,
-                    interval: interval,
-                })
-            }
-        })
-
-        return chunk
-    }
-
-
-
-    this.updateDate= function (date, newDate, updatedAt) {
-        newDate= newDate || new Date
-        date.setHours(
-            newDate.getHours()
-        )
-        date.setMinutes(
-            newDate.getMinutes()
-        )
-        date.setSeconds(
-            newDate.getSeconds()
-        )
-    }
-
-
-
-}
-
-
-
-function bTimelineDirective(bTimeline) {
+function bTimelineDirective($compile) {
 
     return {
-        restrict: 'E',
 
-        template: ''+
-            '<div class="b-timeline">'+
-                '<div class="b-timeline__interval" b-timeline-interval ng-repeat="interval in chunk.intervals track by $index" ng-class="{_isBegin:interval.isBegin,_isEnd:interval.isEnd,_isStarted:false}" ng-style="{left:calcChunkIntervalLeft(chunk,interval), right:calcChunkIntervalRight(chunk,interval)}"></div>'+
-            '</div>'+
-        '',
+        restrict: 'A',
 
         scope: {
             beginDate: '=timelineBeginDate',
@@ -79,54 +25,186 @@ function bTimelineDirective(bTimeline) {
             intervals: '=timelineIntervals',
         },
 
-        controllerAs: '',
-        controller: bTimelineDirectiveCtrl,
+        controllerAs: 'bTimeline',
+        controller: function ($scope) {
 
-        link: bTimelineDirectiveLink,
-    }
-
-    function bTimelineDirectiveCtrl($scope) {
-
-    }
-
-    function bTimelineDirectiveLink($scope, $e, $a) {
-
-        $scope.calcChunkIntervalLeft= function (chunk, interval) {
-            var chunkPercent= (chunk.endDate.getTime() - chunk.beginDate.getTime()) / 100
-            var left= ((interval.beginDate.getTime() - chunk.beginDate.getTime()) / chunkPercent)
-            var right= ((chunk.endDate.getTime() - interval.endDate.getTime()) / chunkPercent)
-            return left +'%'
-        }
-        $scope.calcChunkIntervalRight= function (chunk, interval) {
-            var chunkPercent= (chunk.endDate.getTime() - chunk.beginDate.getTime()) / 100
-            var right= ((chunk.endDate.getTime() - interval.endDate.getTime()) / chunkPercent)
-            return right +'%'
-        }
-
-        $scope.$watchCollection('intervals', function () {
-            if ($scope.intervals && $scope.intervals.length) {
-                var chunk= bTimeline.sliceIntervals($scope.intervals, $scope.beginDate, $scope.endDate)
-                $scope.chunk= chunk
+            this.$templates= {}
+            this.useTemplate= function (name, template) {
+                this.$templates[name]= template
             }
-        })
 
+            this.calcIntervalLeft= function (interval) {
+                var chunkPercent= ($scope.endDate.getTime() - $scope.beginDate.getTime()) / 100
+                var left= ((interval.beginDate.getTime() - $scope.beginDate.getTime()) / chunkPercent)
+                left= (left < 0) ? 0 : left
+                return left +'%'
+            }
+
+            this.calcIntervalRight= function (interval) {
+                var chunkPercent= ($scope.endDate.getTime() - $scope.beginDate.getTime()) / 100
+                var right= (($scope.endDate.getTime() - interval.endDate.getTime()) / chunkPercent)
+                right= (right < 0) ? 0 : right
+                return right +'%'
+            }
+
+            $scope.filterTimelineInterval= function (interval) {
+                if (interval.beginDate && interval.endDate && interval.beginDate < $scope.endDate && interval.endDate > $scope.beginDate) {
+                    return interval
+                }
+            }
+
+        },
+
+        link: function ($scope, $e, $a) {
+
+            var template= ''+
+                '<div class="b-timeline">'+
+                    '<div class="b-timeline__interval" ng-repeat="interval in intervals | filter:filterTimelineInterval" b-timeline-template-transclude="interval">'+
+                        ''+
+                    '</div>'+
+                '</div>'+
+            ''
+
+            $e.append($compile(template)($scope))
+
+        }
     }
+
 }
 
 
 
-function bTimelineIntervalDirective(bTimeline) {
+function bTimelineTemplateDirective($parse) {
 
     return {
+
         restrict: 'A',
         require: '^bTimeline',
 
-        link: bTimelineIntervalDirectiveLink,
+        transclude: 'element',
+
+        link: function ($scope, $e, $a, bTimeline, $transclude) {
+            if ($a.bTimelineTemplate) {
+                bTimeline.useTemplate($a.bTimelineTemplate, {
+                    $e: $e,
+                    $transclude: $transclude,
+                    use: $parse($a.use)(),
+                })
+            }
+        },
     }
 
-    function bTimelineIntervalDirectiveLink($scope, $e, $a) {
-        //$scope.$watch('interval', function (interval) {
-        //    console.log('interval!11')
-        //}, true)
+}
+
+
+
+function bTimelineTemplateTranscludeDirective() {
+
+    return {
+
+        transclude: true,
+
+        link: function ($scope, $e, $a) {
+
+            if ($scope.bTimeline && $a.bTimelineTemplateTransclude) {
+                var template= $scope.bTimeline.$templates[$a.bTimelineTemplateTransclude]
+                if (template) {
+                    template.$transclude(function ($eTranscluded) {
+                        var templateScope= $eTranscluded.scope()
+                        if (template.use && template.use.length) {
+                            angular.forEach(template.use, function (use) {
+                                templateScope[use]= $scope[use]
+                            })
+                        }
+                        $e.append($eTranscluded)
+                    })
+                }
+            }
+
+        }
+    }
+
+}
+
+
+
+function bInputDatetimeDirective() {
+
+    return {
+        restrict: 'A',
+
+        link: bInputDatetimeDirectiveLink,
+    }
+
+    function bInputDatetimeDirectiveLink($scope, $e, $a) {
+
+        $scope.incrBeginHours= function (interval) {
+            interval.beginDate.setHours(
+                interval.beginDate.getHours() + 1
+            )
+            if (interval.beginDate > interval.endDate) {
+                interval.beginDate.setTime(
+                    interval.endDate.getTime()
+                )
+            }
+        }
+
+        $scope.incrBeginMinutes= function (interval) {
+            interval.beginDate.setMinutes(
+                interval.beginDate.getMinutes() + 5
+            )
+            if (interval.beginDate > interval.endDate) {
+                interval.beginDate.setTime(
+                    interval.endDate.getTime()
+                )
+            }
+        }
+
+        $scope.decrBeginHours= function (interval) {
+            interval.beginDate.setHours(
+                interval.beginDate.getHours() - 1
+            )
+        }
+
+        $scope.decrBeginMinutes= function (interval) {
+            interval.beginDate.setMinutes(
+                interval.beginDate.getMinutes() - 5
+            )
+        }
+
+        $scope.incrEndHours= function (interval) {
+            interval.endDate.setHours(
+                interval.endDate.getHours() + 1
+            )
+        }
+
+        $scope.incrEndMinutes= function (interval) {
+            interval.endDate.setMinutes(
+                interval.endDate.getMinutes() + 5
+            )
+        }
+
+        $scope.decrEndHours= function (interval) {
+            interval.endDate.setHours(
+                interval.endDate.getHours() - 1
+            )
+            if (interval.endDate < interval.beginDate) {
+                interval.endDate.setTime(
+                    interval.beginDate.getTime()
+                )
+            }
+        }
+
+        $scope.decrEndMinutes= function (interval) {
+            interval.endDate.setMinutes(
+                interval.endDate.getMinutes() - 5
+            )
+            if (interval.endDate < interval.beginDate) {
+                interval.endDate.setTime(
+                    interval.beginDate.getTime()
+                )
+            }
+        }
+
     }
 }

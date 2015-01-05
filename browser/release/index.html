@@ -4,21 +4,20 @@
     <meta charset="utf-8">
     <title>Таски, таски, таски</title>
     <link rel="stylesheet" href="styles/index.css">
-    <link rel="stylesheet" href="components/aeTable/release/styles/bTable.css">
     <link rel="stylesheet" href="components/aeTimeline/release/styles/bTimeline.css">
     <script src="components/jquery/dist/jquery.min.js"></script>
     <script src="components/angular/angular.min.js"></script>
     <script src="components/angular-route/angular-route.min.js"></script>
-    <script src="components/angular-i18n/angular-locale_ru.js"></script>
     <script src="components/localforage/dist/localforage.nopromises.min.js"></script>
-    <script src="components/aeTable/release/scripts/bTable.min.js"></script>
+    <script src="scripts/bApp.js"></script>
     <script src="components/aeTimeline/release/scripts/bTimeline.min.js"></script>
+    <script src="components/aeTimeline/release/scripts/bTimelineInterval.min.js"></script>
     <script src="scripts/index.js"></script>
   </head>
   <body>
-    <div app ng-app="Caeruleus" class="b-app">
+    <div b-app ng-app="Caeruleus" class="b-app">
       <div ng-view></div>
-      <div ng-if="isRoute('schedule')" ng-controller="ScheduleCtrl as schedule" class="b-app__view">
+      <div ng-if="isRoute('schedule')" ng-controller="CaeruleusCtrl as schedule" class="b-app__view">
         <div class="b-app__view-inner">
           <div class="b-app__head">
             <div class="b-app__head-hero">
@@ -37,71 +36,142 @@
           <div class="b-app__body">
             <div class="b-app__body-page">
               <div class="row">
-                <b-table table-cols="chunks" table-rows="matchedIssues">
-                  <!-- caption-->
-                  <b-table-template id="caption" use="['bTable']">
-                    <div class="row">
-                      <div class="col col-xs-12">   </div>
+                <div class="col col-xs-3">
+                  <div class="b-schedule__caption-title">
+                    <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
+                  </div>
+                </div>
+                <div class="col col-xs-9">
+                  <div class="row">
+                    <div class="col col-xs-4">
+                      <div ng-if="schedule.mode=='week'" class="b-schedule__caption-nav b-schedule__caption-nav_prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
+                      <div ng-if="schedule.mode=='day'" class="b-schedule__caption-nav b-schedule__caption-nav_prev"><a ng-href="#/?view=day&amp;date={{getPrevDayDate().toUTCString()}}">←←</a></div>
+                      <div ng-if="schedule.mode=='hour'" class="b-schedule__caption-nav b-schedule__caption-nav_prev"><a ng-href="#/?view=hour&amp;date={{getPrevHourDate().toUTCString()}}">←</a></div>
                     </div>
-                  </b-table-template>
-                  <b-table-template id="caption" use="['bTable']">
-                    <div class="row">
-                      <div class="col col-xs-3">
-                        <div class="b-table-schedule__caption-title">
-                          <button ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')">Add issue</button>
+                    <div class="col col-xs-4">
+                      <div class="b-schedule__caption-nav b-schedule__caption-nav_mode"><a href="#/?view=hour" ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;">
+                          <u>HOUR</u></a><a href="#/?view=day" ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;">
+                          <u>DAY</u></a><a href="#/?view=week" ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;">
+                          <u>WEEK</u></a></div>
+                    </div>
+                    <div class="col col-xs-4">
+                      <div ng-if="schedule.mode=='hour'" class="b-schedule__caption-nav b-schedule__caption-nav_next"><a ng-href="#/?view=hour&amp;date={{getNextHourDate().toUTCString()}}">→</a></div>
+                      <div ng-if="schedule.mode=='day'" class="b-schedule__caption-nav b-schedule__caption-nav_next"><a ng-href="#/?view=day&amp;date={{getNextDayDate().toUTCString()}}">→→</a></div>
+                      <div ng-if="schedule.mode=='week'" class="b-schedule__caption-nav b-schedule__caption-nav_next"><a ng-href="#/?view=week&amp;date={{getNextWeekDate().toUTCString()}}">→→→</a></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col col-xs-12">
+                      <div class="b-schedule__caption-interval">{{getBeginDate()|date:'dd.MM.yyyy HH:mm'}} — {{getEndDate()|date:'dd.MM.yyyy HH:mm'}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div ng-if="schedule.mode=='hour'||schedule.mode=='day'||schedule.mode=='week'" ng-class="{'b-schedule_hour':schedule.mode=='hour','b-schedule_day':schedule.mode=='day','b-schedule_week':schedule.mode=='week'}" class="b-schedule">
+                  <div class="b-schedule__head">
+                    <div class="b-schedule__row">
+                      <div class="b-schedule__col b-schedule__col_title"></div>
+                      <div class="b-schedule__col b-schedule__col_timeline">
+                        <div class="b-schedule-chunks">
+                          <div ng-repeat="chunk in chunks" ng-class="{'b-schedule-chunks__chunk_now':isNowInterval(chunk)}" class="b-schedule-chunks__chunk">
+                            <div ng-if="schedule.mode=='hour'">
+                              <!--b: small {{chunk.beginDate|date:'HH:mm'}}--><a>{{chunk.beginDate|date:'mm'}}</a>
+                            </div>
+                            <div ng-if="schedule.mode=='day'">
+                              <!--b: small {{chunk.beginDate|date:'HH:mm'}}--><a ng-href="#/?view=hour&amp;date={{chunk.beginDate.toUTCString()}}">{{chunk.beginDate|date:'HH'}}</a>
+                            </div>
+                            <div ng-if="schedule.mode=='week'">
+                              <!--b: small {{chunk.beginDate|date:'dd.MM'}}--><a ng-href="#/?view=day&amp;date={{chunk.beginDate.toUTCString()}}">{{chunk.beginDate|date:'dd'}}</a>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="col col-xs-9">
-                        <div class="row">
-                          <div class="col col-xs-4">
-                            <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=week&amp;date={{getPrevWeekDate().toUTCString()}}">←←←</a></div>
-                            <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=day&amp;date={{getPrevDayDate().toUTCString()}}">←←</a></div>
-                            <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_prev"><a ng-href="#/?view=hour&amp;date={{getPrevHourDate().toUTCString()}}">←</a></div>
+                    </div>
+                  </div>
+                  <div ng-repeat="issue in matchedIssues track by issue.guid" class="b-schedule__body">
+                    <div class="b-schedule__row">
+                      <div class="b-schedule__col b-schedule__col_title"><a ng-click="pickIssue(issue); appDialogToggle('IssueViewDialog')">
+                          <u>{{issue.title}}</u></a></div>
+                      <div class="b-schedule__col b-schedule__col_timeline">
+                        <div b-timeline timeline-begin-date="getBeginDate()" timeline-end-date="getEndDate()" timeline-intervals="issue.intervals" class="b-schedule-timeline">
+                          <div b-timeline-template="interval" use="['bTimeline','interval']">
+                            <div b-timeline-interval>
+                              <div b-timeline-interval-template="form" use="['bTimelineInterval']" class="b-timeline-interval-form">
+                                <div class="b-timeline-interval-form__main">
+                                  <div b-input-datetime class="b-input-datetime">
+                                    <div class="b-input-datetime__t">
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                        <div class="b-input-date">
+                                          <div class="b-input-date__btn b-input-date__btn_next">
+                                            <button ng-click="incrBeginHours(bTimelineInterval.picked)">+</button>
+                                          </div>
+                                          <div class="b-input-date__input">
+                                            <input readonly value="{{bTimelineInterval.picked.beginDate|date:'HH'}}">
+                                          </div>
+                                          <div class="b-input-date__btn b-input-date__btn_prev">
+                                            <button ng-click="decrBeginHours(bTimelineInterval.picked)">−</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&#x3A;</div>
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                        <div class="b-input-date">
+                                          <div class="b-input-date__btn b-input-date__btn_next">
+                                            <button ng-click="incrBeginMinutes(bTimelineInterval.picked)">+</button>
+                                          </div>
+                                          <div class="b-input-date__input">
+                                            <input readonly value="{{bTimelineInterval.picked.beginDate|date:'mm'}}">
+                                          </div>
+                                          <div class="b-input-date__btn b-input-date__btn_prev">
+                                            <button ng-click="decrBeginMinutes(bTimelineInterval.picked)">−</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&mdash;</div>
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                        <div class="b-input-date">
+                                          <div class="b-input-date__btn b-input-date__btn_next">
+                                            <button ng-click="incrEndHours(bTimelineInterval.picked)">+</button>
+                                          </div>
+                                          <div class="b-input-date__input">
+                                            <input readonly value="{{bTimelineInterval.picked.endDate|date:'HH'}}">
+                                          </div>
+                                          <div class="b-input-date__btn b-input-date__btn_prev">
+                                            <button ng-click="decrEndHours(bTimelineInterval.picked)">−</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&#x3A;</div>
+                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                        <div class="b-input-date">
+                                          <div class="b-input-date__btn b-input-date__btn_next">
+                                            <button ng-click="incrEndMinutes(bTimelineInterval.picked)">+</button>
+                                          </div>
+                                          <div class="b-input-date__input">
+                                            <input readonly value="{{bTimelineInterval.picked.endDate|date:'mm'}}">
+                                          </div>
+                                          <div class="b-input-date__btn b-input-date__btn_prev">
+                                            <button ng-click="decrEndMinutes(bTimelineInterval.picked)">−</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <button ng-click="save(bTimelineInterval.picked, interval); bTimelineInterval.unpick()" ng-disabled="bTimelineInterval.isPickedPristine()">save interval</button>
+                                  <button ng-click="bTimelineInterval.unpick()">close</button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <div class="col col-xs-4">
-                            <div class="b-table-schedule__caption-nav b-table-schedule__caption-nav_mode"><a href="#/?view=hour" ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;">
-                                <u>HOUR</u></a><a href="#/?view=day" ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;">
-                                <u>DAY</u></a><a href="#/?view=week" ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;">
-                                <u>WEEK</u></a></div>
-                          </div>
-                          <div class="col col-xs-4">
-                            <div ng-if="schedule.mode=='hour'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=hour&amp;date={{getNextHourDate().toUTCString()}}">→</a></div>
-                            <div ng-if="schedule.mode=='day'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=day&amp;date={{getNextDayDate().toUTCString()}}">→→</a></div>
-                            <div ng-if="schedule.mode=='week'" class="b-table-schedule__caption-nav b-table-schedule__caption-nav_next"><a ng-href="#/?view=week&amp;date={{getNextWeekDate().toUTCString()}}">→→→</a></div>
-                          </div>
+                        </div>
+                        <div class="b-schedule-chunks">
+                          <div ng-repeat="chunk in chunks" class="b-schedule-chunks__chunk"></div>
                         </div>
                       </div>
                     </div>
-                  </b-table-template>
-                  <b-table-template id="caption" use="['bTable']">
-                    <div class="row">
-                      <div class="col col-xs-3">
-                        <div class="b-table-schedule__caption-menu">
-                          <div style="float:left; margin-right:10px;"><a class="_active">Open</a></div>
-                          <div style="float:left; margin-right:10px;"><a>Closed  </a></div>
-                        </div>
-                      </div>
-                    </div>
-                  </b-table-template>
-                  <!--head-->
-                  <b-table-template id="head-col" use="['bTable','tableCol','$index']">
-                    <div class="row">
-                      <div ng-if="schedule.mode=='hour'" class="b-table-schedule-head-date"><b>{{tableCol.beginDate | date:'HH:mm'}}</b></div>
-                      <div ng-if="schedule.mode=='day'" class="b-table-schedule-head-date"><b>{{tableCol.beginDate | date:'HH:mm'}}</b><a ng-href="#/?view=hour&amp;date={{tableCol.beginDate.toUTCString()}}"></a></div>
-                      <div ng-if="schedule.mode=='week'" class="b-table-schedule-head-date"><b>{{tableCol.beginDate | date:'MM.dd'}}</b><a ng-href="#/?view=day&amp;date={{tableCol.beginDate.toUTCString()}}"></a></div>
-                    </div>
-                  </b-table-template>
-                  <!-- body group-->
-                  <b-table-template id="body-group-title" use="['bTable','tableRow']">{{tableRow.group.title}} <a ng-hide="tableRow.group.shown" ng-click="showGroup(tableRow.group)">show</a><a ng-show="tableRow.group.shown" ng-click="hideGroup(tableRow.group)">hide</a></b-table-template>
-                  <!-- body-->
-                  <b-table-template id="body-title" use="['bTable','tableRow', '$index']"><a ng-click="selectIssue(tableRow); appDialogToggle('IssueViewDialog')">
-                      <u>{{tableRow.title}}</u></a></b-table-template>
-                  <b-table-template id="body-col" use="['bTable','tableRow','tableCol','$index']">
-                    <div class="row">
-                      <b-timeline timeline-begin-date="tableCol.beginDate" timeline-end-date="tableCol.endDate" timeline-intervals="tableRow.intervals"></b-timeline>
-                    </div>
-                  </b-table-template>
-                </b-table>
+                  </div>
+                </div>
               </div>
               <div class="row">
                 <div class="col col-xs-12"> </div>
@@ -111,7 +181,7 @@
                   </ul>
                 </div>
               </div>
-              <div app-dialog="IssueFormDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
+              <div b-app-dialog="IssueFormDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
                 <div class="app-dialog__head">
                   <div class="app-dialog__heading">New issue</div>
                 </div>
@@ -151,7 +221,7 @@
                   </div>
                 </div>
               </div>
-              <div app-dialog="IssueViewDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
+              <div b-app-dialog="IssueViewDialog" ng-form="IssueForm" ng-controller="IssueFormCtrl" class="app-dialog">
                 <div class="app-dialog__head">
                   <div class="app-dialog__heading">Issue 
                     <button ng-show="'edit'==AppDialog.mode" ng-click="AppDialog.mode='view'">view</button>
@@ -224,7 +294,7 @@
       </div>
       <div ng-repeat="(key, dialog) in dialogs" ng-if="dialog.$shown" ng-controller="AppDialogCtrl as AppDialog" class="app-overlay">
         <div ng-click="AppDialog.resolve(false)" class="app-overlay__bg"></div>
-        <div app-dialog-transclude="{{key}}" class="app-overlay__dialog"></div>
+        <div b-app-dialog-transclude="{{key}}" class="app-overlay__dialog"></div>
       </div>
     </div>
   </body>
