@@ -146,6 +146,12 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
 
     .config(function ($routeProvider) {
         $routeProvider
+            .when('/projects', { name: 'projects',
+                template: ''
+            })
+            .when('/tags', { name: 'tags',
+                template: ''
+            })
             .when('/', { name: 'schedule',
                 template: ''
             })
@@ -460,6 +466,30 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
 
 
 
+    .controller('CaeruleusProjectsCtrl', function () {
+        //console.log('CaeruleusProjectsCtrl')
+    })
+
+    .controller('CaeruleusTagsCtrl', function ($scope, $window, Tag) {
+
+        $scope.tags= Tag.query()
+
+        this.deleteTag= function (tag) {
+            console.log('delete tag', tag)
+            if ($window.confirm('Delete tag: '+tag.name+'?')) {
+                Tag.delete(tag).$promise
+                    .then(function () {
+                        console.log('deleted')
+                        var i= $scope.tags.indexOf(tag)
+                        if (i > -1) {
+                            $scope.tags.splice(i, 1)
+                        }
+                    })
+                ;
+            }
+        }
+
+    })
 ;
 
 
@@ -599,6 +629,23 @@ function Tag($q) {
                     jQuery.extend(true, tag, value)
                     dfd.resolve(tag)
                 }, 137)
+            }
+        })
+        return tag
+    }
+
+    this.delete= function (tag) {
+        if (!(tag) || !(tag.guid)) {
+            throw new Error
+        }
+        var key= ['caeruleus','tags',tag.guid].join(':')
+        var dfd= $q.defer()
+        Object.defineProperty(tag, '$promise', { configurable:true, value:dfd.promise })
+        localforage.removeItem(key, function (err, value) {
+            if (err) {
+                dfd.reject(err)
+            } else {
+                dfd.resolve(tag)
             }
         })
         return tag

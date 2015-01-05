@@ -17,14 +17,72 @@
   <body>
     <div b-app ng-app="Caeruleus" class="b-app">
       <div ng-view></div>
-      <div ng-if="isRoute('schedule')" ng-controller="CaeruleusCtrl as schedule" class="b-app__view">
+      <div ng-if="isRoute('projects')" ng-controller="CaeruleusProjectsCtrl as projects" class="b-app__view">
         <div class="b-app__view-inner">
           <div class="b-app__head">
             <div class="b-app__head-hero">
+              <div class="row">
+                <div class="col col-xs-12">
+                  <nav><a>Проекты</a><a href="#/tags">Теги</a><a href="#/">Таймлайн</a></nav>
+                </div>
+              </div>
+            </div>
+            <div class="b-app__head-menu">
               <!--.row
               .col.col-xs-12 12
               
               -->
+            </div>
+          </div>
+          <div class="b-app__body">
+            <div class="b-app__body-page"></div>
+          </div>
+        </div>
+      </div>
+      <div ng-if="isRoute('tags')" ng-controller="CaeruleusTagsCtrl as tagsCtrl" class="b-app__view">
+        <div class="b-app__view-inner">
+          <div class="b-app__head">
+            <div class="b-app__head-hero">
+              <div class="row">
+                <div class="col col-xs-12">
+                  <nav><a href="#/projects">Проекты</a><a>Теги</a><a href="#/">Таймлайн</a></nav>
+                </div>
+              </div>
+            </div>
+            <div class="b-app__head-menu">
+              <!--.row
+              .col.col-xs-12 12
+              
+              -->
+            </div>
+          </div>
+          <div class="b-app__body">
+            <div class="b-app__body-page">
+              <div class="row">
+                <div class="col col-xs-12">
+                  <div class="b-tags b-tags_index columns-xs-3">
+                    <div ng-repeat="tag in tags" class="b-tags__tag">
+                      <div class="b-tag">
+                        <div class="b-tag__name">{{tag.name}}</div>
+                      </div>
+                      <div class="b-tags__tag-btn"><a ng-click="tagsCtrl.deleteTag(tag)">×</a></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div ng-if="isRoute('schedule')" ng-controller="CaeruleusCtrl as schedule" class="b-app__view">
+        <div class="b-app__view-inner">
+          <div class="b-app__head">
+            <div class="b-app__head-hero">
+              <div class="row">
+                <div class="col col-xs-12">
+                  <nav><a href="#/projects">Проекты</a><a href="#/tags">Теги</a><a>Таймлайн</a></nav>
+                </div>
+              </div>
             </div>
             <div class="b-app__head-menu">
               <!--.row

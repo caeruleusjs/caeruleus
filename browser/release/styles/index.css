@@ -969,6 +969,27 @@ body {
   margin: 0;
   padding: 0;
 }
+.b-tags__tag-btn {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 20px;
+  font-size: 21px;
+  font-weight: bold;
+}
+.b-tags__tag-btn > a {
+  display: inline-block;
+  padding: 11px 10px 9px;
+}
+.b-tags_index .b-tags__tag {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+.b-tags_index .b-tag {
+  margin-bottom: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+}
 .b-tag {
   display: inline-block;
   margin: 0;
