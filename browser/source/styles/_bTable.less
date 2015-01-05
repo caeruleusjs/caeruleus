@@ -1,3 +1,227 @@
+.b-schedule {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: auto;
+
+    &__caption-title {
+        & > button {
+            display: block;
+            width: 100%;
+            height: 50px;
+        }
+    }
+
+    &__caption-nav {
+        position: relative;
+        height: 50px;
+        white-space: nowrap;
+
+        & > a {
+            display: inline-block;
+            line-height: 50px;
+        }
+
+
+        &_mode {
+            text-align: center;
+        }
+
+        &_prev {
+            text-align: left;
+            & > a {
+                margin-left: -15px;
+                padding-left: 15px;
+            }
+        }
+        &_next {
+            text-align: right;
+            & > a {
+                margin-right: -15px;
+                padding-right: 15px;
+            }
+        }
+
+        &_prev,
+        &_next {
+            & > a {
+                width: 100%;
+                &:hover {
+                    background-color: #e2e2e2;
+                }
+            }
+        }
+
+    }
+
+    &__caption-interval {
+        line-height: 30px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    &__row {
+        display: block;
+        position: relative;
+        height: 100%;
+        &:before,
+        &:after {
+            display: table; content: '';
+            float: none;
+        }
+        &:after {
+            clear: both;
+        }
+    }
+
+    &__col {
+        display: block;
+        position: relative;
+        height: 100%;
+        float: left;
+    }
+
+    &__col_title {
+        width: 25%;
+    }
+    &__col_timeline {
+        width: 75%;
+    }
+
+
+    &__head {
+        display: block;
+        position: relative;
+    }
+
+}
+
+.b-schedule {
+
+    &__col {
+        background-color: #f2f2f2;
+    }
+    &__col_title {
+        border-top: 1px solid #fff;
+        & > a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            line-height: 20px;
+            padding: 10px 15px;
+        }
+    }
+
+    &__head {
+        height: 33px;
+    }
+
+    &__head &__col {
+
+    }
+    &__head &__col_title {
+        //background-color: transparent;
+    }
+
+    &__body {
+        height: 43px;
+    }
+
+    &__body &__col_timeline {
+        background-color: #e2e2e2 !important;
+    }
+}
+
+
+
+.b-schedule-chunks {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    &__chunk {
+        float: left;
+        position: relative;
+        width: auto;
+        height: 100%;
+        border-left: 1px solid #f2f2f2;
+        border-top: 1px solid #fff;
+
+        & a {
+            display: block;
+            position: absolute; top: 0; left: 0; z-index: 1;
+            width: 100%;
+            height: 100%;
+            line-height: 32px;
+            font-size: 12px;
+            text-align: center;
+            border: 0;
+            box-shadow: none;
+            cursor: pointer;
+            &:hover {
+                background-color: #e2e2e2;
+            }
+            &:not([href]) {
+                color: inherit;
+                cursor: default;
+                &:hover {
+                    background-color: transparent;
+                }
+            }
+        }
+
+        & b {
+            display: block;
+            position: absolute; top: 0; left: -50%; left: 0;
+            width: 100%;
+            margin: 0; padding: 0; line-height: 32px;
+            text-align: center;
+            font-weight: normal;
+
+            & > small {
+                position: relative; z-index: 3;
+            }
+        }
+
+        &_now a {
+            font-weight: bold;
+            background-color: #e2e2e2;
+        }
+    }
+
+}
+
+.b-schedule_hour .b-schedule-chunks {
+    &__chunk {
+        width: (100%) / 12;
+    }
+}
+.b-schedule_day .b-schedule-chunks {
+    &__chunk {
+        width: (100%) / 24;
+    }
+}
+.b-schedule_week .b-schedule-chunks {
+    &__chunk {
+        width: (100%) / 7;
+    }
+}
+
+
+
+.b-schedule-timeline {
+    position: absolute; top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: 1px;
+}
+
+.b-timeline-interval__interval__btn {
+    z-index: 37;
+}
+
+
+
 //.b-table {
 //    display: table;
 //    width: 100%; height: auto;

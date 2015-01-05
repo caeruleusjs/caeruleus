@@ -9,25 +9,24 @@ append head-title
 append head-styles
 
     link(rel='stylesheet', href='styles/index.css')
-    link(rel='stylesheet', href='components/aeTable/release/styles/bTable.css')
     link(rel='stylesheet', href='components/aeTimeline/release/styles/bTimeline.css')
 
 append head-scripts
 
-    script(src='components/aeTable/release/scripts/bTable.min.js')
+    script(src='scripts/bApp.js')
     script(src='components/aeTimeline/release/scripts/bTimeline.min.js')
-
+    script(src='components/aeTimeline/release/scripts/bTimelineInterval.min.js')
     script(src='scripts/index.js')
 
 
 
 append body
 
-    .b-app(app, ng-app="Caeruleus")
+    .b-app(b-app, ng-app="Caeruleus")
 
         div(ng-view)
 
-        .b-app__view(ng-if="isRoute('schedule')", ng-controller="ScheduleCtrl as schedule"): .b-app__view-inner
+        .b-app__view(ng-if="isRoute('schedule')", ng-controller="CaeruleusCtrl as schedule"): .b-app__view-inner
 
             .b-app__head
                 .b-app__head-hero
@@ -42,79 +41,124 @@ append body
 
             .b-app__body: .b-app__body-page
 
-                //.row
-                    .col.col-xs-12 {{selectedInterval}}
+                .row
+
+                    .col.col-xs-3
+                        .b-schedule__caption-title
+                            button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
+
+                    .col.col-xs-9
+                        .row
+                            .col.col-xs-4
+                                .b-schedule__caption-nav.b-schedule__caption-nav_prev(ng-if="schedule.mode=='week'")
+                                    a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
+                                .b-schedule__caption-nav.b-schedule__caption-nav_prev(ng-if="schedule.mode=='day'")
+                                    a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
+                                .b-schedule__caption-nav.b-schedule__caption-nav_prev(ng-if="schedule.mode=='hour'")
+                                    a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
+                            .col.col-xs-4
+                                .b-schedule__caption-nav.b-schedule__caption-nav_mode
+                                    a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;"): u HOUR
+                                    a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;"): u DAY
+                                    a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;"): u WEEK
+                            .col.col-xs-4
+                                .b-schedule__caption-nav.b-schedule__caption-nav_next(ng-if="schedule.mode=='hour'")
+                                    a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
+                                .b-schedule__caption-nav.b-schedule__caption-nav_next(ng-if="schedule.mode=='day'")
+                                    a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
+                                .b-schedule__caption-nav.b-schedule__caption-nav_next(ng-if="schedule.mode=='week'")
+                                    a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
+                        .row
+                            .col.col-xs-12
+                                .b-schedule__caption-interval {{getBeginDate()|date:'dd.MM.yyyy HH:mm'}} — {{getEndDate()|date:'dd.MM.yyyy HH:mm'}}
 
                 .row
 
-                    b-table(table-cols="chunks", table-rows="matchedIssues")
+                    .b-schedule(ng-if="schedule.mode=='hour'||schedule.mode=='day'||schedule.mode=='week'", ng-class="{'b-schedule_hour':schedule.mode=='hour','b-schedule_day':schedule.mode=='day','b-schedule_week':schedule.mode=='week'}")
 
-                        // caption
+                        .b-schedule__head
+                            .b-schedule__row
 
-                        b-table-template#caption(use="['bTable']")
-                            .row
-                                .col.col-xs-12    
-                        b-table-template#caption(use="['bTable']")
-                            .row
-                                .col.col-xs-3
-                                    .b-table-schedule__caption-title
-                                        button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
+                                .b-schedule__col.b-schedule__col_title
 
-                                .col.col-xs-9: .row
-                                    .col.col-xs-4
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='week'")
-                                            a(ng-href="#/?view=week&date={{getPrevWeekDate().toUTCString()}}") ←←←
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='day'")
-                                            a(ng-href="#/?view=day&date={{getPrevDayDate().toUTCString()}}") ←←
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_prev(ng-if="schedule.mode=='hour'")
-                                            a(ng-href="#/?view=hour&date={{getPrevHourDate().toUTCString()}}") ←
-                                    .col.col-xs-4
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_mode
-                                            a(href="#/?view=hour", ng-class="{_active:schedule.mode=='hour'}" style="padding: 0 15px;"): u HOUR
-                                            a(href="#/?view=day", ng-class="{_active:schedule.mode=='day'}" style="padding: 0 15px;"): u DAY
-                                            a(href="#/?view=week", ng-class="{_active:schedule.mode=='week'}" style="padding: 0 15px;"): u WEEK
-                                    .col.col-xs-4
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='hour'")
-                                            a(ng-href="#/?view=hour&date={{getNextHourDate().toUTCString()}}") →
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='day'")
-                                            a(ng-href="#/?view=day&date={{getNextDayDate().toUTCString()}}") →→
-                                        .b-table-schedule__caption-nav.b-table-schedule__caption-nav_next(ng-if="schedule.mode=='week'")
-                                            a(ng-href="#/?view=week&date={{getNextWeekDate().toUTCString()}}") →→→
-                        b-table-template#caption(use="['bTable']")
-                            .row
-                                .col.col-xs-3
-                                    .b-table-schedule__caption-menu
-                                        div(style='float:left; margin-right:10px;'): a._active() Open
-                                        div(style='float:left; margin-right:10px;'): a() Closed  
+                                .b-schedule__col.b-schedule__col_timeline
+                                    .b-schedule-chunks
+                                        .b-schedule-chunks__chunk(ng-repeat="chunk in chunks", ng-class="{'b-schedule-chunks__chunk_now':isNowInterval(chunk)}")
+                                            div(ng-if="schedule.mode=='hour'")
+                                                //b: small {{chunk.beginDate|date:'HH:mm'}}
+                                                a() {{chunk.beginDate|date:'mm'}}
+                                            div(ng-if="schedule.mode=='day'")
+                                                //b: small {{chunk.beginDate|date:'HH:mm'}}
+                                                a(ng-href="#/?view=hour&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate|date:'HH'}}
+                                            div(ng-if="schedule.mode=='week'")
+                                                //b: small {{chunk.beginDate|date:'dd.MM'}}
+                                                a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate|date:'dd'}}
 
-                        //head
+                        .b-schedule__body(ng-repeat="issue in matchedIssues track by issue.guid")
+                            .b-schedule__row
 
-                        b-table-template#head-col(use="['bTable','tableCol','$index']")
-                            .row
-                                .b-table-schedule-head-date(ng-if="schedule.mode=='hour'")
-                                    b {{tableCol.beginDate | date:'HH:mm'}}
-                                .b-table-schedule-head-date(ng-if="schedule.mode=='day'")
-                                    b {{tableCol.beginDate | date:'HH:mm'}}
-                                    a(ng-href="#/?view=hour&date={{tableCol.beginDate.toUTCString()}}")
-                                .b-table-schedule-head-date(ng-if="schedule.mode=='week'")
-                                    b {{tableCol.beginDate | date:'MM.dd'}}
-                                    a(ng-href="#/?view=day&date={{tableCol.beginDate.toUTCString()}}")
+                                .b-schedule__col.b-schedule__col_title
+                                    a(ng-click="pickIssue(issue); appDialogToggle('IssueViewDialog')"): u {{issue.title}}
 
-                        // body group
+                                .b-schedule__col.b-schedule__col_timeline
 
-                        b-table-template#body-group-title(use="['bTable','tableRow']") {{tableRow.group.title}} 
-                            a(ng-hide="tableRow.group.shown", ng-click="showGroup(tableRow.group)") show
-                            a(ng-show="tableRow.group.shown", ng-click="hideGroup(tableRow.group)") hide
+                                    .b-schedule-timeline(b-timeline, timeline-begin-date="getBeginDate()", timeline-end-date="getEndDate()", timeline-intervals="issue.intervals")
+                                        div(b-timeline-template="interval", use="['bTimeline','interval']")
+                                            div(b-timeline-interval)
 
-                        // body
+                                                .b-timeline-interval-form(b-timeline-interval-template="form", use="['bTimelineInterval']")
+                                                    .b-timeline-interval-form__main
 
-                        b-table-template#body-title(use="['bTable','tableRow', '$index']")
-                            a(ng-click="selectIssue(tableRow); appDialogToggle('IssueViewDialog')"): u {{tableRow.title}}
+                                                        .b-input-datetime(b-input-datetime)
+                                                            .b-input-datetime__t
 
-                        b-table-template#body-col(use="['bTable','tableRow','tableCol','$index']")
-                            .row
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                    .b-input-date
+                                                                        .b-input-date__btn.b-input-date__btn_next
+                                                                            button(ng-click="incrBeginHours(bTimelineInterval.picked)") +
+                                                                        .b-input-date__input
+                                                                            input(readonly, value="{{bTimelineInterval.picked.beginDate|date:'HH'}}")
+                                                                        .b-input-date__btn.b-input-date__btn_prev
+                                                                            button(ng-click="decrBeginHours(bTimelineInterval.picked)") −
 
-                                b-timeline(timeline-begin-date="tableCol.beginDate", timeline-end-date="tableCol.endDate", timeline-intervals="tableRow.intervals", ng-model="selectedInterval")
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_label &#x3A;
+
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                    .b-input-date
+                                                                        .b-input-date__btn.b-input-date__btn_next
+                                                                            button(ng-click="incrBeginMinutes(bTimelineInterval.picked)") +
+                                                                        .b-input-date__input
+                                                                            input(readonly, value="{{bTimelineInterval.picked.beginDate|date:'mm'}}")
+                                                                        .b-input-date__btn.b-input-date__btn_prev
+                                                                            button(ng-click="decrBeginMinutes(bTimelineInterval.picked)") −
+
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_label &mdash;
+
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                    .b-input-date
+                                                                        .b-input-date__btn.b-input-date__btn_next
+                                                                            button(ng-click="incrEndHours(bTimelineInterval.picked)") +
+                                                                        .b-input-date__input
+                                                                            input(readonly, value="{{bTimelineInterval.picked.endDate|date:'HH'}}")
+                                                                        .b-input-date__btn.b-input-date__btn_prev
+                                                                            button(ng-click="decrEndHours(bTimelineInterval.picked)") −
+
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_label &#x3A;
+
+                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                    .b-input-date
+                                                                        .b-input-date__btn.b-input-date__btn_next
+                                                                            button(ng-click="incrEndMinutes(bTimelineInterval.picked)") +
+                                                                        .b-input-date__input
+                                                                            input(readonly, value="{{bTimelineInterval.picked.endDate|date:'mm'}}")
+                                                                        .b-input-date__btn.b-input-date__btn_prev
+                                                                            button(ng-click="decrEndMinutes(bTimelineInterval.picked)") −
+
+                                                        button(ng-click="save(bTimelineInterval.picked, interval); bTimelineInterval.unpick()", ng-disabled="bTimelineInterval.isPickedPristine()") save interval
+                                                        button(ng-click="bTimelineInterval.unpick()") close
+
+                                    .b-schedule-chunks
+                                        .b-schedule-chunks__chunk(ng-repeat="chunk in chunks")
 
                 .row
                     .col.col-xs-12  
@@ -124,7 +168,7 @@ append body
                                 a.b-tag(ng-class="{'b-tag__active':selectedTags[tag.name]}" ng-click="selectTag(tag)||unselectTag(tag)") {{tag.name}}
                                 span(ng-if="!$last") ,
 
-                .app-dialog(app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                .app-dialog(b-app-dialog="IssueFormDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
                     .app-dialog__head
                         .app-dialog__heading New issue
@@ -157,7 +201,7 @@ append body
                                     .col.col-xs-3.col-lg-2  
                                     button.col.col-xs-5.col-lg-5(ng-click="saveIssue(selectedIssue, IssueForm)" ng-disabled="IssueForm.$invalid") Submit new issue
 
-                .app-dialog(app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
+                .app-dialog(b-app-dialog="IssueViewDialog", ng-form="IssueForm", ng-controller="IssueFormCtrl")
 
                     .app-dialog__head
                         .app-dialog__heading Issue 
@@ -221,4 +265,4 @@ append body
 
         .app-overlay(ng-repeat="(key, dialog) in dialogs", ng-if="dialog.$shown", ng-controller="AppDialogCtrl as AppDialog")
             .app-overlay__bg(ng-click="AppDialog.resolve(false)")
-            .app-overlay__dialog(app-dialog-transclude="{{key}}")
+            .app-overlay__dialog(b-app-dialog-transclude="{{key}}")

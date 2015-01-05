@@ -15,35 +15,10 @@ var guid = (function() {
   };
 })()
 
-
-
 /*
  * Caeruleus
  */
-angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
-
-    //.controller('TableCtrl', TableCtrl)
-    //.controller('ScheduleTableCtrl', ScheduleTableCtrl)
-
-    //.directive('bScheduleItemIntervalChunks', bScheduleItemIntervalChunksDirective)
-
-    .config(function ($routeProvider) {
-        $routeProvider
-            .when('/', { name: 'schedule',
-                template: ''
-            })
-            .otherwise({
-                redirectTo: '/'
-            })
-        ;
-    })
-
-    .directive('app', appDirective)
-
-    .directive('appDialog', appDialogDirective)
-    .directive('appDialogTransclude', appDialogTranscludeDirective)
-
-    .directive('bScheduleMonth', bScheduleMonthDirective)
+angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
 
     .controller('AppDialogCtrl', function ($scope, $q) {
         var dfd= $q.defer()
@@ -68,8 +43,32 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
     })
 
     .service('Issue', Issue)
-
     .service('Tag', Tag)
+
+    .controller('IssueFormCtrl', function ($scope, Issue, Tag) {
+
+        $scope.$watch('AppDialog', function (AppDialog) {
+            if (AppDialog) {
+                AppDialog.mode='view'
+            }
+        })
+
+        $scope.selectedIssueTags= {}
+        $scope.$watchCollection('selectedIssue.tags', function (tags) {
+            $scope.selectedIssueTags= {}
+            angular.forEach(tags, function (tag) {
+                var tagModel= $scope.tagsIdx[tag]
+                if (tagModel) {
+                    $scope.selectedIssueTags[tag]= tagModel
+                } else {
+                    $scope.selectedIssueTags[tag]= {
+                        name: tag
+                    }
+                }
+            })
+        })
+
+    })
 
     .service('scheduleService', function () {
 
@@ -127,11 +126,42 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
             }
             return hour
         }
+
+        this.updateDate= function (date, newDate) {
+            newDate= newDate || new Date
+            date.setHours(
+                newDate.getHours()
+            )
+            date.setMinutes(
+                newDate.getMinutes()
+            )
+            date.setSeconds(
+                newDate.getSeconds()
+            )
+        }
+
     })
 
-    .controller('ScheduleCtrl', function ($scope, $rootScope, $interval, $location, bTimeline, Issue, Tag, scheduleService) {
+
+
+    .config(function ($routeProvider) {
+        $routeProvider
+            .when('/', { name: 'schedule',
+                template: ''
+            })
+            .otherwise({
+                redirectTo: '/'
+            })
+        ;
+    })
+
+
+
+    .controller('CaeruleusCtrl', function ($rootScope, $scope, $interval, $q, scheduleService, Issue, Tag) {
 
         var schedule= this
+
+
 
         $scope.showHour= function (date) {
             schedule.mode= 'hour'
@@ -200,7 +230,29 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
             }
         })
 
-        $scope.startedIssue= null
+
+
+        $scope.getBeginDate= function () {
+            return $scope.chunks[0].beginDate
+        }
+
+        $scope.getEndDate= function () {
+            return $scope.chunks[$scope.chunks.length-1].endDate
+        }
+
+        $scope.now= new Date
+        $interval(function () {
+            $scope.now= new Date
+        }, 1000)
+
+        $scope.isNowInterval= function (interval) {
+            var nowTime= $scope.now.getTime()
+            if (nowTime >= interval.beginDate.getTime() && nowTime <=interval.endDate.getTime()) {
+                return true
+            }
+            return false
+        }
+
 
         $scope.issues= Issue.query()
         $scope.issues.$promise
@@ -237,7 +289,6 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
             })
         ;
 
-        console.log('issues', $scope.issues, 'tags', $scope.tags)
 
         var startedIssueRefreshInProgress
 
@@ -246,10 +297,10 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
                 $interval.cancel(startedIssueRefreshInProgress)
             }
             var intervalEndDate= interval.endDate
-            bTimeline.updateDate(intervalEndDate)
+            scheduleService.updateDate(intervalEndDate)
             return startedIssueRefreshInProgress= $interval(function () {
-                bTimeline.updateDate(intervalEndDate)
-                issue.updatedAt= new Date
+                scheduleService.updateDate(intervalEndDate)
+                //issue.updatedAt= new Date
             }, 1000)
         }
 
@@ -298,15 +349,44 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
         }
 
 
-
         $scope.selectedIssue
-        $scope.selectIssue= function (issue) {
+        $scope.pickIssue= function (issue) {
             $scope.selectedIssue= issue
         }
 
-        $scope.selectedIssueInterval
-        $scope.selectIssueInterval= function (issue, interval) {
-            $scope.selectedIssueInterval= interval
+        $scope.saveIssue= function (issue, IssueForm) {
+            var create= false
+            if (!(issue.guid)) { // create new issue
+                create= true
+                issue.guid= guid()
+                issue.updatedAt= new Date
+            }
+            Issue.save(issue).$promise
+                .then(function (issue) {
+                    if (create) {
+                        $scope.issues.unshift(issue)
+                        $scope.selectedIssue= null
+                        $scope.appDialogToggle('IssueFormDialog')
+                    } else {
+                        if (IssueForm) IssueForm.$setPristine(true)
+                        $scope.AppDialog.mode='view'
+                    }
+                    var promises= []
+                    angular.forEach($scope.selectedIssueTags, function (tag) {
+                        if (!(tag.guid)) {
+                            tag.guid= guid()
+                            tag.updatedAt= new Date
+                            $scope.tagsIdx[tag.name]= tag
+                        }
+                        var promise= Tag.save(tag).$promise
+                    })
+                    $q.all(promises)
+                        .then(function (tags) {
+                            //console.log('tags saved', tags)
+                        })
+                    ;
+                })
+            ;
         }
 
         $scope.deleteIssue= function (issue) {
@@ -320,6 +400,19 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
                     $scope.appDialogToggle('IssueViewDialog')
                 })
             ;
+        }
+
+        $scope.$on('bTimelineIntervalPick', function ($evt, interval) {
+            $scope.$broadcast('bTimelineIntervalPicked', interval)
+        })
+
+        $scope.save= function (pickedInterval, interval) {
+            interval.beginDate.setTime(
+                pickedInterval.beginDate.getTime()
+            )
+            interval.endDate.setTime(
+                pickedInterval.endDate.getTime()
+            )
         }
 
         $scope.selectedTags= {}
@@ -363,74 +456,9 @@ angular.module('Caeruleus', ['bTable','bTimeline','ngRoute'])
             }
         })
 
-        $scope.$on('bTimelinePopupShow', function ($evt, bTimelinePopup) {
-            $scope.$broadcast('bTimelinePopupShown', bTimelinePopup)
-        })
-
-        $scope.selectedInterval= {}
     })
 
 
-
-    .controller('IssueFormCtrl', function ($scope, $q, Issue, Tag) {
-
-        $scope.$watch('AppDialog', function (AppDialog) {
-            if (AppDialog) {
-                AppDialog.mode='view'
-            }
-        })
-
-        $scope.saveIssue= function (issue, IssueForm) {
-            var create= false
-            if (!(issue.guid)) { // create new issue
-                create= true
-                issue.guid= guid()
-                issue.updatedAt= new Date
-            }
-            Issue.save(issue).$promise
-                .then(function (issue) {
-                    if (create) {
-                        $scope.issues.unshift(issue)
-                        $scope.selectedIssue= null
-                        $scope.appDialogToggle('IssueFormDialog')
-                    } else {
-                        IssueForm.$setPristine(true)
-                        $scope.AppDialog.mode='view'
-                    }
-                    var promises= []
-                    angular.forEach($scope.selectedIssueTags, function (tag) {
-                        if (!(tag.guid)) {
-                            tag.guid= guid()
-                            tag.updatedAt= new Date
-                            $scope.tagsIdx[tag.name]= tag
-                        }
-                        var promise= Tag.save(tag).$promise
-                    })
-                    $q.all(promises)
-                        .then(function (tags) {
-                            //console.log('tags saved', tags)
-                        })
-                    ;
-                })
-            ;
-        }
-
-        $scope.selectedIssueTags= {}
-        $scope.$watchCollection('selectedIssue.tags', function (tags) {
-            $scope.selectedIssueTags= {}
-            angular.forEach(tags, function (tag) {
-                var tagModel= $scope.tagsIdx[tag]
-                if (tagModel) {
-                    $scope.selectedIssueTags[tag]= tagModel
-                } else {
-                    $scope.selectedIssueTags[tag]= {
-                        name: tag
-                    }
-                }
-            })
-        })
-
-    })
 
 ;
 
@@ -574,167 +602,5 @@ function Tag($q) {
             }
         })
         return tag
-    }
-}
-
-
-
-function appDirective($rootScope) {
-    return {
-        restrict: 'A',
-        controller: function ($scope) {
-            $rootScope.$on('$routeChangeSuccess', function (evt, route) {
-                $rootScope.route= route
-            })
-            $rootScope.isRoute= function (name, returnIfTrue, returnIfFalse) {
-                if ($rootScope.route && $rootScope.route.name == name) {
-                    return (arguments.length > 1) ? returnIfTrue : true
-                } else {
-                    return (arguments.length > 2) ? returnIfFalse : false
-                }
-            }
-
-            var dialogs= $rootScope.dialogs= {}
-            $rootScope.useDialog= function (name, dialog) {
-                if (name && dialog) {
-                    dialogs[name]= dialog
-                }
-            }
-            $rootScope.getDialog= function (name) {
-                return dialogs[name] || null
-            }
-
-            $rootScope.appDialogShow= function (name) {
-                var dialog= $rootScope.getDialog(name)
-                if (dialog) {
-                    dialog.$shown= true
-                }
-            }
-            $rootScope.appDialogHide= function (name) {
-                var dialog= $rootScope.getDialog(name)
-                if (dialog) {
-                    dialog.$shown= false
-                }
-            }
-            $rootScope.appDialogToggle= function (name) {
-                var dialog= $rootScope.getDialog(name)
-                if (dialog) {
-                    if (dialog.$shown) {
-                        $rootScope.appDialogHide(name)
-                    } else {
-                        $rootScope.appDialogShow(name)
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
-function appDialogDirective($rootScope) {
-    return {
-        restrict: 'A',
-        require: '^app',
-        transclude: 'element',
-        link: function ($scope, $e, $a, app, $transclude) {
-            $rootScope.useDialog($a.appDialog, {
-                $scope: $scope,
-                $e: $e,
-                $transclude: $transclude,
-            })
-        }
-    }
-}
-
-function appDialogTranscludeDirective($rootScope) {
-    return {
-        restrict: 'A',
-        require: '^app',
-        transclude: true,
-        link: function ($scope, $e, $a) {
-            var appDialogTemplate= $rootScope.getDialog($a.appDialogTransclude)
-            //var appDialogScope= appDialogTemplate.$scope.$new()
-            var appDialogScope= appDialogTemplate.$scope
-            appDialogScope.AppDialog= $scope.AppDialog
-            if (appDialogTemplate) appDialogTemplate.$transclude(appDialogScope, function ($eTranscluded) {
-                $e.empty()
-                $e.append($eTranscluded)
-            })
-        }
-    }
-}
-
-
-
-function bScheduleMonthDirective($rootScope, $compile, $interval, $location, Issue, Tag) {
-
-    return {
-        restrict: 'EA',
-
-        controllerAs: 'bScheduleMonth',
-        controller: bScheduleMonthDirectiveCtrl,
-
-        link: bScheduleMonthDirectiveLink,
-    }
-    function bScheduleMonthDirectiveCtrl($scope) {
-
-    }
-    function bScheduleMonthDirectiveLink($scope, $e, $a) {
-
-        $scope.findFirstDayOfMonth= function (date) {
-           var resultDate= new Date( date.getFullYear(), date.getMonth())
-           return resultDate
-        }
-
-        var beginDate= $scope.findFirstDayOfMonth(new Date)
-        var endDate= new Date(beginDate)
-        endDate.setFullYear(
-            endDate.getFullYear() + 1
-        )
-
-        var dates= []
-
-        for (var i= beginDate.getDay(); i > 0; i--) {
-            dates.push(null)
-        }
-
-        for (var date= new Date(beginDate); date < endDate; date.setDate( date.getDate() +1 )) {
-            dates.push(new Date(date))
-        }
-
-        $scope.rows= [
-            [], [], [], [], [], [], []
-        ]
-
-        for (var i= 0, l= dates.length; i < l; i= i+7) {
-            for (var j= 0; j < 7; j++) {
-                $scope.rows[j].push(dates[i+j])
-            }
-        }
-
-        var hcols= $scope.hcols= []
-
-        angular.forEach($scope.rows[6], function (colDate) { // @todo требуется рефакторинг
-            var monthDate= new Date(colDate)
-            var hcol= {
-                date: monthDate,
-                colspan: 1,
-            }
-            if (!hcols.length) {
-                hcols.push(hcol)
-            } else {
-                var prevHcol= hcols[hcols.length-1]
-                if (prevHcol.date.getFullYear() == monthDate.getFullYear() && prevHcol.date.getMonth() == monthDate.getMonth()) {
-                    prevHcol.colspan++
-                } else {
-                    hcol= {
-                        date: monthDate,
-                        colspan: 1,
-                    }
-                    hcols.push(hcol)
-                }
-            }
-        })
     }
 }
