@@ -26,13 +26,73 @@ append body
 
         div(ng-view)
 
+
+
+        .b-app__view(ng-if="isRoute('projects')", ng-controller="CaeruleusProjectsCtrl as projects"): .b-app__view-inner
+
+            .b-app__head
+                .b-app__head-hero
+
+                    .row
+                        .col.col-xs-12
+                            nav
+                                a Проекты
+                                a(href='#/tags') Теги
+                                a(href='#/') Таймлайн
+
+                .b-app__head-menu
+
+                    //.row
+                        .col.col-xs-12 12
+
+            .b-app__body: .b-app__body-page
+
+
+
+        .b-app__view(ng-if="isRoute('tags')", ng-controller="CaeruleusTagsCtrl as tagsCtrl"): .b-app__view-inner
+
+            .b-app__head
+                .b-app__head-hero
+
+                    .row
+                        .col.col-xs-12
+                            nav
+                                a(href='#/projects') Проекты
+                                a Теги
+                                a(href='#/') Таймлайн
+
+                .b-app__head-menu
+
+                    //.row
+                        .col.col-xs-12 12
+
+            .b-app__body: .b-app__body-page
+
+                .row
+
+                    .col.col-xs-12
+
+                        .b-tags.b-tags_index.columns-xs-3
+
+                            .b-tags__tag(ng-repeat="tag in tags")
+                                .b-tag
+                                    .b-tag__name {{tag.name}}
+                                .b-tags__tag-btn
+                                    a(ng-click="tagsCtrl.deleteTag(tag)") ×
+
+
+
         .b-app__view(ng-if="isRoute('schedule')", ng-controller="CaeruleusCtrl as schedule"): .b-app__view-inner
 
             .b-app__head
                 .b-app__head-hero
 
-                    //.row
-                        .col.col-xs-12 12
+                    .row
+                        .col.col-xs-12
+                            nav
+                                a(href='#/projects') Проекты
+                                a(href='#/tags') Теги
+                                a Таймлайн
 
                 .b-app__head-menu
 
