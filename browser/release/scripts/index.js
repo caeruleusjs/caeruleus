@@ -430,7 +430,7 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             }
             issue.intervals.push(interval)
             $scope.pickIssueInterval(issue, interval)
-
+            $scope.saveWork(issue)
         }
 
         $scope.pickIssueInterval= function (issue, interval) {
@@ -459,6 +459,7 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             $scope.$pickedIssueInterval.beginDate.setTime( $scope.$pickedIssueIntervalDraft.beginDate.getTime() )
             $scope.$pickedIssueInterval.endDate.setTime( $scope.$pickedIssueIntervalDraft.endDate.getTime() )
             $scope.$pickedIssueInterval= null
+            $scope.saveWork(issue)
         }
 
         $scope.deleteIssueInterval= function (issue, interval) {
@@ -467,6 +468,7 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             if (i > -1) {
                 issue.intervals.splice(i, 1)
             }
+            $scope.saveWork(issue)
         }
 
         $scope.selectedTags= {}
