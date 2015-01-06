@@ -937,6 +937,11 @@ body {
   font-weight: bold;
   background-color: #e2e2e2;
 }
+.b-schedule-chunks__chunk__btn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 .b-schedule_hour .b-schedule-chunks__chunk {
   width: 8.33333333%;
 }
