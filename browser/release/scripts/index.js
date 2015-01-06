@@ -53,21 +53,6 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             }
         })
 
-        $scope.selectedIssueTags= {}
-        $scope.$watchCollection('selectedIssue.tags', function (tags) {
-            $scope.selectedIssueTags= {}
-            angular.forEach(tags, function (tag) {
-                var tagModel= $scope.tagsIdx[tag]
-                if (tagModel) {
-                    $scope.selectedIssueTags[tag]= tagModel
-                } else {
-                    $scope.selectedIssueTags[tag]= {
-                        name: tag
-                    }
-                }
-            })
-        })
-
     })
 
     .service('scheduleService', function () {
@@ -375,7 +360,6 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
                         $scope.appDialogToggle('IssueFormDialog')
                     } else {
                         if (IssueForm) IssueForm.$setPristine(true)
-                        $scope.AppDialog.mode='view'
                     }
                     var promises= []
                     angular.forEach($scope.selectedIssueTags, function (tag) {
@@ -491,6 +475,22 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             }
         }
 
+        $scope.$watchCollection('selectedIssue.tags', function (tags) {
+            $scope.selectedIssueTags= {}
+            if (tags) {
+                angular.forEach(tags, function (tag) {
+                    var tagModel= $scope.tagsIdx[tag]
+                    if (tagModel) {
+                        $scope.selectedIssueTags[tag]= tagModel
+                    } else {
+                        $scope.selectedIssueTags[tag]= {
+                            name: tag
+                        }
+                    }
+                })
+            }
+        })
+
         $scope.matchedIssues= $scope.issues
 
         $scope.$watchCollection('selectedTags', function (selectedTags) {
@@ -536,11 +536,9 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
         $scope.tags= Tag.query()
 
         this.deleteTag= function (tag) {
-            console.log('delete tag', tag)
             if ($window.confirm('Delete tag: '+tag.name+'?')) {
                 Tag.delete(tag).$promise
                     .then(function () {
-                        console.log('deleted')
                         var i= $scope.tags.indexOf(tag)
                         if (i > -1) {
                             $scope.tags.splice(i, 1)
