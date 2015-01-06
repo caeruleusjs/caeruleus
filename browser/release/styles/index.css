@@ -821,6 +821,22 @@ body {
 .b-schedule__caption-nav_next > a:hover {
   background-color: #e2e2e2;
 }
+.b-schedule__caption-issue {
+  line-height: 30px;
+  font-size: 14px;
+}
+.b-schedule__caption-issue a {
+  display: inline-block;
+  margin-right: 10px;
+  color: #aaaaaa;
+}
+.b-schedule__caption-issue a:hover {
+  color: #212121;
+}
+.b-schedule__caption-issue a._active {
+  font-weight: bold;
+  color: #212121;
+}
 .b-schedule__caption-interval {
   line-height: 30px;
   font-size: 14px;

@@ -106,6 +106,9 @@ append body
                     .col.col-xs-3
                         .b-schedule__caption-title
                             button(ng-click="selectedIssue={};appDialogToggle('IssueFormDialog')") Add issue
+                        .b-schedule__caption-issue
+                            a(ng-class="{_active:filterByState=='open'}", ng-click="filterIssueByState('open')") open
+                            a(ng-class="{_active:filterByState=='closed'}", ng-click="filterIssueByState('closed')") closed
 
                     .col.col-xs-9
                         .row
@@ -154,7 +157,7 @@ append body
                                                 //b: small {{chunk.beginDate|date:'dd.MM'}}
                                                 a(ng-href="#/?view=day&date={{chunk.beginDate.toUTCString()}}") {{chunk.beginDate|date:'dd'}}
 
-                        .b-schedule__body(ng-repeat="issue in matchedIssues track by issue.guid")
+                        .b-schedule__body(ng-repeat="issue in matchedIssues | filter:filterIssue track by issue.guid")
                             .b-schedule__row
 
                                 .b-schedule__col.b-schedule__col_title
@@ -291,7 +294,7 @@ append body
                                 .row
                                     .col.col-xs-12
                                         span
-                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','close']")
+                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','closed']")
                                 .row
                                     .col.col-xs-12
                                         span(ng-repeat="tag in selectedIssueTags")
