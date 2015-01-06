@@ -27,7 +27,6 @@ function bAppDirective($rootScope) {
             var dialogs= $rootScope.dialogs= {}
             $rootScope.useDialog= function (name, dialog) {
                 if (name && dialog) {
-                    console.log('useDialog', name, dialog)
                     dialogs[name]= dialog
                 }
             }

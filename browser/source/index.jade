@@ -254,6 +254,10 @@ append body
                             .col.col-xs-12.col-md-4.col-md-push-8
                                 .row
                                     .col.col-xs-12
+                                        span
+                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','closed']", required)
+                                .row
+                                    .col.col-xs-12
                                         span(ng-repeat="tag in selectedIssueTags")
                                             a() {{tag.name}}
                                             span(ng-if="!$last") , 
@@ -294,7 +298,7 @@ append body
                                 .row
                                     .col.col-xs-12
                                         span
-                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','closed']")
+                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','closed']", required)
                                 .row
                                     .col.col-xs-12
                                         span(ng-repeat="tag in selectedIssueTags")
