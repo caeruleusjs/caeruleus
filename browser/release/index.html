@@ -45,7 +45,9 @@
             <div class="b-app__head-hero">
               <div class="row">
                 <div class="col col-xs-12">
-                  <nav><a href="#/projects">Проекты</a><a>Теги</a><a href="#/">Таймлайн</a></nav>
+                  <nav>
+                    <!--a(href='#/projects') Проекты--><a>Теги</a><a href="#/">Таймлайн</a>
+                  </nav>
                 </div>
               </div>
             </div>
@@ -80,7 +82,9 @@
             <div class="b-app__head-hero">
               <div class="row">
                 <div class="col col-xs-12">
-                  <nav><a href="#/projects">Проекты</a><a href="#/tags">Теги</a><a>Таймлайн</a></nav>
+                  <nav>
+                    <!--a(href='#/projects') Проекты--><a href="#/tags">Теги</a><a>Таймлайн</a>
+                  </nav>
                 </div>
               </div>
             </div>
@@ -155,76 +159,95 @@
                         <div b-timeline timeline-begin-date="getBeginDate()" timeline-end-date="getEndDate()" timeline-intervals="issue.intervals" class="b-schedule-timeline">
                           <div b-timeline-template="interval" use="['bTimeline','interval']">
                             <div b-timeline-interval>
-                              <div b-timeline-interval-template="form" use="['bTimelineInterval']" class="b-timeline-interval-form">
-                                <div class="b-timeline-interval-form__main">
-                                  <div b-input-datetime class="b-input-datetime">
-                                    <div class="b-input-datetime__t">
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
-                                        <div class="b-input-date">
-                                          <div class="b-input-date__btn b-input-date__btn_next">
-                                            <button ng-click="incrBeginHours(bTimelineInterval.picked)">+</button>
-                                          </div>
-                                          <div class="b-input-date__input">
-                                            <input readonly value="{{bTimelineInterval.picked.beginDate|date:'HH'}}">
-                                          </div>
-                                          <div class="b-input-date__btn b-input-date__btn_prev">
-                                            <button ng-click="decrBeginHours(bTimelineInterval.picked)">−</button>
+                              <div b-timeline-interval-template="interval" use="['bTimelineInterval']">
+                                <div ng-if="pickedIssueInterval(issue, interval)" ng-style="{left:bTimeline.calcIntervalLeft($pickedIssueIntervalDraft),right:bTimeline.calcIntervalRight($pickedIssueIntervalDraft)}" class="b-timeline-interval__interval b-timeline-interval__interval_draft">
+                                  <div class="b-timeline-interval__interval__btn"></div>
+                                </div>
+                                <div ng-class="{'b-timeline-interval__interval_orign':pickedIssueInterval(issue, interval)}" ng-style="{left:bTimeline.calcIntervalLeft(interval),right:bTimeline.calcIntervalRight(interval)}" class="b-timeline-interval__interval">
+                                  <div ng-click="pickIssueInterval(issue, interval)" class="b-timeline-interval__interval__btn"></div>
+                                  <div ng-if="pickedIssueInterval(issue, interval)" ng-click="$event.stopPropagation()" class="b-timeline-interval__interval__form">
+                                    <div class="b-timeline-interval-form">
+                                      <div class="b-timeline-interval-form__main">
+                                        <div b-input-datetime class="b-input-datetime">
+                                          <div class="b-input-datetime__t">
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                              <div class="b-input-date">
+                                                <div class="b-input-date__btn b-input-date__btn_next">
+                                                  <button ng-click="incrBeginHours($pickedIssueIntervalDraft)">+</button>
+                                                </div>
+                                                <div class="b-input-date__input">
+                                                  <input readonly value="{{$pickedIssueIntervalDraft.beginDate|date:'HH'}}">
+                                                </div>
+                                                <div class="b-input-date__btn b-input-date__btn_prev">
+                                                  <button ng-click="decrBeginHours($pickedIssueIntervalDraft)">−</button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&#x3A;</div>
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                              <div class="b-input-date">
+                                                <div class="b-input-date__btn b-input-date__btn_next">
+                                                  <button ng-click="incrBeginMinutes($pickedIssueIntervalDraft)">+</button>
+                                                </div>
+                                                <div class="b-input-date__input">
+                                                  <input readonly value="{{$pickedIssueIntervalDraft.beginDate|date:'mm'}}">
+                                                </div>
+                                                <div class="b-input-date__btn b-input-date__btn_prev">
+                                                  <button ng-click="decrBeginMinutes($pickedIssueIntervalDraft)">−</button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&mdash;</div>
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                              <div class="b-input-date">
+                                                <div class="b-input-date__btn b-input-date__btn_next">
+                                                  <button ng-click="incrEndHours($pickedIssueIntervalDraft)">+</button>
+                                                </div>
+                                                <div class="b-input-date__input">
+                                                  <input readonly value="{{$pickedIssueIntervalDraft.endDate|date:'HH'}}">
+                                                </div>
+                                                <div class="b-input-date__btn b-input-date__btn_prev">
+                                                  <button ng-click="decrEndHours($pickedIssueIntervalDraft)">−</button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&#x3A;</div>
+                                            <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
+                                              <div class="b-input-date">
+                                                <div class="b-input-date__btn b-input-date__btn_next">
+                                                  <button ng-click="incrEndMinutes($pickedIssueIntervalDraft)">+</button>
+                                                </div>
+                                                <div class="b-input-date__input">
+                                                  <input readonly value="{{$pickedIssueIntervalDraft.endDate|date:'mm'}}">
+                                                </div>
+                                                <div class="b-input-date__btn b-input-date__btn_prev">
+                                                  <button ng-click="decrEndMinutes($pickedIssueIntervalDraft)">−</button>
+                                                </div>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&#x3A;</div>
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
-                                        <div class="b-input-date">
-                                          <div class="b-input-date__btn b-input-date__btn_next">
-                                            <button ng-click="incrBeginMinutes(bTimelineInterval.picked)">+</button>
-                                          </div>
-                                          <div class="b-input-date__input">
-                                            <input readonly value="{{bTimelineInterval.picked.beginDate|date:'mm'}}">
-                                          </div>
-                                          <div class="b-input-date__btn b-input-date__btn_prev">
-                                            <button ng-click="decrBeginMinutes(bTimelineInterval.picked)">−</button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&mdash;</div>
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
-                                        <div class="b-input-date">
-                                          <div class="b-input-date__btn b-input-date__btn_next">
-                                            <button ng-click="incrEndHours(bTimelineInterval.picked)">+</button>
-                                          </div>
-                                          <div class="b-input-date__input">
-                                            <input readonly value="{{bTimelineInterval.picked.endDate|date:'HH'}}">
-                                          </div>
-                                          <div class="b-input-date__btn b-input-date__btn_prev">
-                                            <button ng-click="decrEndHours(bTimelineInterval.picked)">−</button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_label">&#x3A;</div>
-                                      <div class="b-input-datetime__t__c b-input-datetime__t__c_input">
-                                        <div class="b-input-date">
-                                          <div class="b-input-date__btn b-input-date__btn_next">
-                                            <button ng-click="incrEndMinutes(bTimelineInterval.picked)">+</button>
-                                          </div>
-                                          <div class="b-input-date__input">
-                                            <input readonly value="{{bTimelineInterval.picked.endDate|date:'mm'}}">
-                                          </div>
-                                          <div class="b-input-date__btn b-input-date__btn_prev">
-                                            <button ng-click="decrEndMinutes(bTimelineInterval.picked)">−</button>
-                                          </div>
-                                        </div>
+                                        <button ng-click="saveIssueInterval(issue, interval);" ng-disabled="pristinePickedIssueInterval(issue, interval)">save interval</button>
+                                        <button ng-click="deleteIssueInterval(issue, interval)">delete</button>
+                                        <button ng-click="unpickIssueInterval(issue, interval)">close</button>
                                       </div>
                                     </div>
                                   </div>
-                                  <button ng-click="save(bTimelineInterval.picked, interval); bTimelineInterval.unpick()" ng-disabled="bTimelineInterval.isPickedPristine()">save interval</button>
-                                  <button ng-click="bTimelineInterval.unpick()">close</button>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div class="b-schedule-chunks">
-                          <div ng-repeat="chunk in chunks" class="b-schedule-chunks__chunk"></div>
+                          <div ng-repeat="chunk in chunks" class="b-schedule-chunks__chunk">
+                            <div ng-click="pickIssueTimeline(issue, chunk)" class="b-schedule-chunks__chunk__btn"></div>
+                            <div ng-if="pickedIssueTimeline(issue, chunk)" ng-click="$event.stopPropagation()" class="b-timeline-interval-form">
+                              <div class="b-timeline-interval-form__main">
+                                <button ng-click="createIssueInterval(issue, chunk)">create interval</button>
+                                <button ng-click="unpickIssueTimeline(issue, chunk)">close</button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -292,6 +315,10 @@
                 <div ng-show="'view'==AppDialog.mode" class="app-dialog__body">
                   <div class="row">
                     <div class="col col-xs-12 col-md-4 col-md-push-8">
+                      <div class="row">
+                        <div class="col col-xs-12"><span>
+                            <select ng-model="selectedIssue.state" ng-options="state for state in ['open','close']"></select></span></div>
+                      </div>
                       <div class="row">
                         <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                       </div>

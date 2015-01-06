@@ -408,17 +408,65 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             ;
         }
 
-        $scope.$on('bTimelineIntervalPick', function ($evt, interval) {
-            $scope.$broadcast('bTimelineIntervalPicked', interval)
-        })
+        $scope.$pickedIssue= $scope.$pickedIssueTimeline= $scope.$pickedIssueInterval= null
 
-        $scope.save= function (pickedInterval, interval) {
-            interval.beginDate.setTime(
-                pickedInterval.beginDate.getTime()
-            )
-            interval.endDate.setTime(
-                pickedInterval.endDate.getTime()
-            )
+        $scope.pickIssueTimeline= function (issue, timeline) {
+            $scope.$pickedIssue= issue
+            $scope.$pickedIssueTimeline= timeline
+            $scope.$pickedIssueInterval= null
+        }
+        $scope.unpickIssueTimeline= function () {
+            $scope.$pickedIssue= $scope.$pickedIssueTimeline= null
+        }
+        $scope.pickedIssueTimeline= function (issue, timeline) {
+            return ($scope.$pickedIssue === issue && timeline && $scope.$pickedIssueTimeline === timeline)
+        }
+
+        $scope.createIssueInterval= function (issue, interval) {
+            interval= {
+                guid: guid(),
+                beginDate: new Date(interval.beginDate),
+                endDate: new Date(interval.endDate),
+            }
+            issue.intervals.push(interval)
+            $scope.pickIssueInterval(issue, interval)
+
+        }
+
+        $scope.pickIssueInterval= function (issue, interval) {
+            $scope.$pickedIssue= issue
+            $scope.$pickedIssueInterval= interval
+            $scope.$pickedIssueTimeline= null
+            $scope.$pickedIssueIntervalDraft= {
+                beginDate: new Date(interval.beginDate),
+                endDate: new Date(interval.endDate),
+            }
+        }
+        $scope.unpickIssueInterval= function () {
+            $scope.$pickedIssue= $scope.$pickedIssueInterval= $scope.$pickedIssueIntervalDraft= null
+        }
+        $scope.pickedIssueInterval= function (issue, interval) {
+            return ($scope.$pickedIssue === issue && interval && $scope.$pickedIssueInterval === interval)
+        }
+        $scope.pristinePickedIssueInterval= function (issue, interval) {
+            if (!$scope.$pickedIssueIntervalDraft) return false
+            if ($scope.$pickedIssueIntervalDraft.beginDate.getTime() != interval.beginDate.getTime()) return false
+            if ($scope.$pickedIssueIntervalDraft.endDate.getTime() != interval.endDate.getTime()) return false
+            return true
+        }
+
+        $scope.saveIssueInterval= function (issue, interval) {
+            $scope.$pickedIssueInterval.beginDate.setTime( $scope.$pickedIssueIntervalDraft.beginDate.getTime() )
+            $scope.$pickedIssueInterval.endDate.setTime( $scope.$pickedIssueIntervalDraft.endDate.getTime() )
+            $scope.$pickedIssueInterval= null
+        }
+
+        $scope.deleteIssueInterval= function (issue, interval) {
+            $scope.$pickedIssueInterval= $scope.$pickedIssueIntervalDraft= null
+            var i= issue.intervals.indexOf(interval)
+            if (i > -1) {
+                issue.intervals.splice(i, 1)
+            }
         }
 
         $scope.selectedTags= {}

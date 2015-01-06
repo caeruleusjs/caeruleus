@@ -57,7 +57,7 @@ append body
                     .row
                         .col.col-xs-12
                             nav
-                                a(href='#/projects') Проекты
+                                //a(href='#/projects') Проекты
                                 a Теги
                                 a(href='#/') Таймлайн
 
@@ -90,7 +90,7 @@ append body
                     .row
                         .col.col-xs-12
                             nav
-                                a(href='#/projects') Проекты
+                                //a(href='#/projects') Проекты
                                 a(href='#/tags') Теги
                                 a Таймлайн
 
@@ -165,61 +165,73 @@ append body
                                     .b-schedule-timeline(b-timeline, timeline-begin-date="getBeginDate()", timeline-end-date="getEndDate()", timeline-intervals="issue.intervals")
                                         div(b-timeline-template="interval", use="['bTimeline','interval']")
                                             div(b-timeline-interval)
+                                                div(b-timeline-interval-template="interval", use="['bTimelineInterval']")
 
-                                                .b-timeline-interval-form(b-timeline-interval-template="form", use="['bTimelineInterval']")
-                                                    .b-timeline-interval-form__main
+                                                    .b-timeline-interval__interval.b-timeline-interval__interval_draft(ng-if="pickedIssueInterval(issue, interval)", ng-style="{left:bTimeline.calcIntervalLeft($pickedIssueIntervalDraft),right:bTimeline.calcIntervalRight($pickedIssueIntervalDraft)}")
+                                                        .b-timeline-interval__interval__btn
 
-                                                        .b-input-datetime(b-input-datetime)
-                                                            .b-input-datetime__t
+                                                    .b-timeline-interval__interval(ng-class="{'b-timeline-interval__interval_orign':pickedIssueInterval(issue, interval)}" ng-style="{left:bTimeline.calcIntervalLeft(interval),right:bTimeline.calcIntervalRight(interval)}")
+                                                        .b-timeline-interval__interval__btn(ng-click="pickIssueInterval(issue, interval)")
+                                                        .b-timeline-interval__interval__form(ng-if="pickedIssueInterval(issue, interval)", ng-click="$event.stopPropagation()")
+                                                            .b-timeline-interval-form
+                                                                .b-timeline-interval-form__main
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
-                                                                    .b-input-date
-                                                                        .b-input-date__btn.b-input-date__btn_next
-                                                                            button(ng-click="incrBeginHours(bTimelineInterval.picked)") +
-                                                                        .b-input-date__input
-                                                                            input(readonly, value="{{bTimelineInterval.picked.beginDate|date:'HH'}}")
-                                                                        .b-input-date__btn.b-input-date__btn_prev
-                                                                            button(ng-click="decrBeginHours(bTimelineInterval.picked)") −
+                                                                    .b-input-datetime(b-input-datetime)
+                                                                        .b-input-datetime__t
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_label &#x3A;
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                                .b-input-date
+                                                                                    .b-input-date__btn.b-input-date__btn_next
+                                                                                        button(ng-click="incrBeginHours($pickedIssueIntervalDraft)") +
+                                                                                    .b-input-date__input
+                                                                                        input(readonly, value="{{$pickedIssueIntervalDraft.beginDate|date:'HH'}}")
+                                                                                    .b-input-date__btn.b-input-date__btn_prev
+                                                                                        button(ng-click="decrBeginHours($pickedIssueIntervalDraft)") −
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
-                                                                    .b-input-date
-                                                                        .b-input-date__btn.b-input-date__btn_next
-                                                                            button(ng-click="incrBeginMinutes(bTimelineInterval.picked)") +
-                                                                        .b-input-date__input
-                                                                            input(readonly, value="{{bTimelineInterval.picked.beginDate|date:'mm'}}")
-                                                                        .b-input-date__btn.b-input-date__btn_prev
-                                                                            button(ng-click="decrBeginMinutes(bTimelineInterval.picked)") −
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_label &#x3A;
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_label &mdash;
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                                .b-input-date
+                                                                                    .b-input-date__btn.b-input-date__btn_next
+                                                                                        button(ng-click="incrBeginMinutes($pickedIssueIntervalDraft)") +
+                                                                                    .b-input-date__input
+                                                                                        input(readonly, value="{{$pickedIssueIntervalDraft.beginDate|date:'mm'}}")
+                                                                                    .b-input-date__btn.b-input-date__btn_prev
+                                                                                        button(ng-click="decrBeginMinutes($pickedIssueIntervalDraft)") −
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
-                                                                    .b-input-date
-                                                                        .b-input-date__btn.b-input-date__btn_next
-                                                                            button(ng-click="incrEndHours(bTimelineInterval.picked)") +
-                                                                        .b-input-date__input
-                                                                            input(readonly, value="{{bTimelineInterval.picked.endDate|date:'HH'}}")
-                                                                        .b-input-date__btn.b-input-date__btn_prev
-                                                                            button(ng-click="decrEndHours(bTimelineInterval.picked)") −
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_label &mdash;
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_label &#x3A;
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                                .b-input-date
+                                                                                    .b-input-date__btn.b-input-date__btn_next
+                                                                                        button(ng-click="incrEndHours($pickedIssueIntervalDraft)") +
+                                                                                    .b-input-date__input
+                                                                                        input(readonly, value="{{$pickedIssueIntervalDraft.endDate|date:'HH'}}")
+                                                                                    .b-input-date__btn.b-input-date__btn_prev
+                                                                                        button(ng-click="decrEndHours($pickedIssueIntervalDraft)") −
 
-                                                                .b-input-datetime__t__c.b-input-datetime__t__c_input
-                                                                    .b-input-date
-                                                                        .b-input-date__btn.b-input-date__btn_next
-                                                                            button(ng-click="incrEndMinutes(bTimelineInterval.picked)") +
-                                                                        .b-input-date__input
-                                                                            input(readonly, value="{{bTimelineInterval.picked.endDate|date:'mm'}}")
-                                                                        .b-input-date__btn.b-input-date__btn_prev
-                                                                            button(ng-click="decrEndMinutes(bTimelineInterval.picked)") −
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_label &#x3A;
 
-                                                        button(ng-click="save(bTimelineInterval.picked, interval); bTimelineInterval.unpick()", ng-disabled="bTimelineInterval.isPickedPristine()") save interval
-                                                        button(ng-click="bTimelineInterval.unpick()") close
+                                                                            .b-input-datetime__t__c.b-input-datetime__t__c_input
+                                                                                .b-input-date
+                                                                                    .b-input-date__btn.b-input-date__btn_next
+                                                                                        button(ng-click="incrEndMinutes($pickedIssueIntervalDraft)") +
+                                                                                    .b-input-date__input
+                                                                                        input(readonly, value="{{$pickedIssueIntervalDraft.endDate|date:'mm'}}")
+                                                                                    .b-input-date__btn.b-input-date__btn_prev
+                                                                                        button(ng-click="decrEndMinutes($pickedIssueIntervalDraft)") −
+
+                                                                    button(ng-click="saveIssueInterval(issue, interval);", ng-disabled="pristinePickedIssueInterval(issue, interval)") save interval
+                                                                    button(ng-click="deleteIssueInterval(issue, interval)") delete
+                                                                    button(ng-click="unpickIssueInterval(issue, interval)") close
 
                                     .b-schedule-chunks
                                         .b-schedule-chunks__chunk(ng-repeat="chunk in chunks")
-
+                                            .b-schedule-chunks__chunk__btn(ng-click="pickIssueTimeline(issue, chunk)")
+                                            .b-timeline-interval-form(ng-if="pickedIssueTimeline(issue, chunk)", ng-click="$event.stopPropagation()")
+                                                .b-timeline-interval-form__main
+                                                    button(ng-click="createIssueInterval(issue, chunk)") create interval
+                                                    button(ng-click="unpickIssueTimeline(issue, chunk)") close
                 .row
                     .col.col-xs-12  
                     .col.col-xs-12
@@ -276,6 +288,10 @@ append body
                         .row
 
                             .col.col-xs-12.col-md-4.col-md-push-8
+                                .row
+                                    .col.col-xs-12
+                                        span
+                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','close']")
                                 .row
                                     .col.col-xs-12
                                         span(ng-repeat="tag in selectedIssueTags")

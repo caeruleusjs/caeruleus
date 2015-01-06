@@ -1,12 +1,17 @@
 {
-    "name": "caeruleus", "version": "0.5.3",
+    "name": "caeruleus", "version": "0.5.5",
 
     "dependencies": {
+
         "jquery": "latest",
+
         "angular": "latest",
         "angular-route": "latest",
+
         "localforage": "latest",
+
         "aeTimeline": "awesome-ui/aeTimeline"
+
     },
 
     "license": "GPL"
