@@ -512,6 +512,17 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             }
         })
 
+        $scope.filterByState= null
+        $scope.filterIssueByState= function (state) {
+            $scope.filterByState= state
+        }
+        $scope.filterIssueByState('open')
+
+        $scope.filterIssue= function (issue) {
+            if (!$scope.filterByState || $scope.filterByState == issue.state) {
+                return issue
+            }
+        }
     })
 
 
