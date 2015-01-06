@@ -45,7 +45,9 @@
             <div class="b-app__head-hero">
               <div class="row">
                 <div class="col col-xs-12">
-                  <nav><a href="#/projects">Проекты</a><a>Теги</a><a href="#/">Таймлайн</a></nav>
+                  <nav>
+                    <!--a(href='#/projects') Проекты--><a>Теги</a><a href="#/">Таймлайн</a>
+                  </nav>
                 </div>
               </div>
             </div>
@@ -80,7 +82,9 @@
             <div class="b-app__head-hero">
               <div class="row">
                 <div class="col col-xs-12">
-                  <nav><a href="#/projects">Проекты</a><a href="#/tags">Теги</a><a>Таймлайн</a></nav>
+                  <nav>
+                    <!--a(href='#/projects') Проекты--><a href="#/tags">Теги</a><a>Таймлайн</a>
+                  </nav>
                 </div>
               </div>
             </div>
@@ -217,6 +221,7 @@
                                     </div>
                                   </div>
                                   <button ng-click="save(bTimelineInterval.picked, interval); bTimelineInterval.unpick()" ng-disabled="bTimelineInterval.isPickedPristine()">save interval</button>
+                                  <button ng-click="deleteIssueInterval(issue, interval)">delete</button>
                                   <button ng-click="bTimelineInterval.unpick()">close</button>
                                 </div>
                               </div>
@@ -224,7 +229,7 @@
                           </div>
                         </div>
                         <div class="b-schedule-chunks">
-                          <div ng-repeat="chunk in chunks" class="b-schedule-chunks__chunk"></div>
+                          <div ng-repeat="chunk in chunks" ng-click="createIssueInterval(issue, chunk)" class="b-schedule-chunks__chunk"></div>
                         </div>
                       </div>
                     </div>
@@ -292,6 +297,10 @@
                 <div ng-show="'view'==AppDialog.mode" class="app-dialog__body">
                   <div class="row">
                     <div class="col col-xs-12 col-md-4 col-md-push-8">
+                      <div class="row">
+                        <div class="col col-xs-12"><span>
+                            <select ng-model="selectedIssue.state" ng-options="state for state in ['open','close']"></select></span></div>
+                      </div>
                       <div class="row">
                         <div class="col col-xs-12"><span ng-repeat="tag in selectedIssueTags"><a>{{tag.name}}</a><span ng-if="!$last">, </span></span></div>
                       </div>

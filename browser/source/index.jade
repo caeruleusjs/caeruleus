@@ -57,7 +57,7 @@ append body
                     .row
                         .col.col-xs-12
                             nav
-                                a(href='#/projects') Проекты
+                                //a(href='#/projects') Проекты
                                 a Теги
                                 a(href='#/') Таймлайн
 
@@ -90,7 +90,7 @@ append body
                     .row
                         .col.col-xs-12
                             nav
-                                a(href='#/projects') Проекты
+                                //a(href='#/projects') Проекты
                                 a(href='#/tags') Теги
                                 a Таймлайн
 
@@ -215,10 +215,11 @@ append body
                                                                             button(ng-click="decrEndMinutes(bTimelineInterval.picked)") −
 
                                                         button(ng-click="save(bTimelineInterval.picked, interval); bTimelineInterval.unpick()", ng-disabled="bTimelineInterval.isPickedPristine()") save interval
+                                                        button(ng-click="deleteIssueInterval(issue, interval)") delete
                                                         button(ng-click="bTimelineInterval.unpick()") close
 
                                     .b-schedule-chunks
-                                        .b-schedule-chunks__chunk(ng-repeat="chunk in chunks")
+                                        .b-schedule-chunks__chunk(ng-repeat="chunk in chunks", ng-click="createIssueInterval(issue, chunk)")
 
                 .row
                     .col.col-xs-12  
@@ -276,6 +277,10 @@ append body
                         .row
 
                             .col.col-xs-12.col-md-4.col-md-push-8
+                                .row
+                                    .col.col-xs-12
+                                        span
+                                            select(ng-model="selectedIssue.state", ng-options="state for state in ['open','close']")
                                 .row
                                     .col.col-xs-12
                                         span(ng-repeat="tag in selectedIssueTags")

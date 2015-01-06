@@ -421,6 +421,21 @@ angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
             )
         }
 
+        $scope.createIssueInterval= function (issue, interval) {
+            issue.intervals.push({
+                guid: guid(),
+                beginDate: new Date(interval.beginDate),
+                endDate: new Date(interval.endDate),
+            })
+        }
+
+        $scope.deleteIssueInterval= function (issue, interval) {
+            var i= issue.intervals.indexOf(interval)
+            if (i > -1) {
+                issue.intervals.splice(i, 1)
+            }
+        }
+
         $scope.selectedTags= {}
         $scope.selectTag= function (tag) {
             if ($scope.selectedTags[tag.name]) {
