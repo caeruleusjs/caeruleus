@@ -1,5 +1,5 @@
 {
-    "name": "caeruleus", "version": "0.6.1",
+    "name": "caeruleus", "version": "0.6.3",
 
     "dependencies": {
 
@@ -10,6 +10,7 @@
 
         "localforage": "latest",
 
+        "aeApp": "awesome-ui/aeApp",
         "aeTimeline": "awesome-ui/aeTimeline"
 
     },
