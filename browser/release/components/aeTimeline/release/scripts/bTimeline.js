@@ -8,7 +8,6 @@ angular.module('bTimeline', [])
     .directive('bTimelineTemplateTransclude', bTimelineTemplateTranscludeDirective)
 
     .directive('bInputDatetime', bInputDatetimeDirective)
-
 ;
 
 
@@ -47,7 +46,7 @@ function bTimelineDirective($compile) {
                 return right +'%'
             }
 
-            $scope.filterTimelineInterval= function (interval) {
+            $scope.matchTimelineInterval= function (interval) {
                 if (interval.beginDate && interval.endDate && interval.beginDate < $scope.endDate && interval.endDate > $scope.beginDate) {
                     return interval
                 }
@@ -59,7 +58,7 @@ function bTimelineDirective($compile) {
 
             var template= ''+
                 '<div class="b-timeline">'+
-                    '<div class="b-timeline__interval" ng-repeat="interval in intervals | filter:filterTimelineInterval" b-timeline-template-transclude="interval">'+
+                    '<div class="b-timeline__interval" ng-repeat="interval in intervals | filter:matchTimelineInterval" b-timeline-template-transclude="interval">'+
                         ''+
                     '</div>'+
                 '</div>'+
