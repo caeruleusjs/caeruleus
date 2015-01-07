@@ -10,6 +10,7 @@
 
         "localforage": "latest",
 
+        "aeApp": "awesome-ui/aeApp",
         "aeTimeline": "awesome-ui/aeTimeline"
 
     },
