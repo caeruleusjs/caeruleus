@@ -18,7 +18,7 @@ var guid = (function() {
 /*
  * Caeruleus
  */
-angular.module('Caeruleus', ['bApp', 'bTimeline','bTimelineInterval'])
+angular.module('Caeruleus', ['bApp', 'bTimeline'])
 
     .controller('AppDialogCtrl', function ($scope, $q) {
         var dfd= $q.defer()
